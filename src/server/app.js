@@ -78,16 +78,16 @@ app.post('/api/authenticate', authController.authenticate);
 app.post('/controllers/register-controller', registerController.register);
 app.post('/controllers/authenticate-controller', authController.authenticate);
 
-// app.get('/logout', (req, res, next) => {
-//     req.session.destroy();
-//     res.end(`You are logged out.`)
-// })
+app.get('/logout', (req, res, next) => {
+    req.session.destroy();
+    // res.end(`You are logged out.`)
+      res.redirect("/")
+})
 
 app.post('/api/sessions', (req, res, next) => {
     const user = req.body;
-    // console.log(user)
 
-    findUser(user.email)
+    findUser(user.email) 
       .then((_user) => {
         if (!_user) {
           throw { status: 401 };

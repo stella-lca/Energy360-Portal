@@ -1,123 +1,58 @@
-
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenConnect</title>
-    <!-- <link rel="stylesheet" href="./assets/styles/styles.css" /> -->
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>GreenConnect</title>
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+			crossorigin="anonymous"
+		/>
+	</head>
+	<body>
+        <style>
+            h2 {
+            color: green;
+        }
     
-  </head>
-  <body>
-    <style>
-      body {font-family: Arial; margin-left: 10%; margin-right: 10%; align-items: center}
-form {border: 3px solid #f1f1f1;}
-
-#container {
-position: relative;
-padding: 25px;
-margin: auto;
-max-width: 500px;
-}
-
-.field input:first-child {
-margin-top: -1px;
-}
-
-.submit {
-background-color: #4CAF50;
-color: white;
-padding: 14px 20px;
-margin: 8px 0;
-border: none;
-cursor: pointer;
-width: 100%;
-/*margin-bottom: 10px;*/
-}
-
-.submit:hover {
-opacity: 0.8;
-}
-
-.remember_me {
-padding: 10px 0;
-}
-
-.alert {
-display: none;
-margin-top: 10px;
-background: pink;
-color: darkred;
-border-color: red;
-padding: 3px 10px;
-}
-
-input[type=email], input[type=password]{
-/*border-radius: 0 !important;*/
-width: 100%;
-padding: 12px 20px;
-margin: 8px 0;
-display: inline-block;
-border: 1px solid #ccc;
-box-sizing: border-box;
-}
-
-fieldset {
-    border: none;
-}
-
-.imgcontainer {
-text-align: center;
-margin: 24px 0 12px 0;
-}
-
-img.logo {
-width: 30%;
-/*border-radius: 50%;*/
-}
-
-.login_phase_two {
-display: none;
-}
-
-span.forgotPW {
-    display: block;
-    float: none;
-    text-align: right;
-    background-color:#f1f1f1;
-    padding: 5px 20px;
-}
-</style>
+        #container {
+            position: relative;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 500px;
+            border: 3px solid #f1f1f1;
+        }
+        
+        .form-group {
+            margin:10px
+        }
+        </style>                         
     <div id="container">
-        <div id="accountLogin" class="login_phase_one">
+			<div class="text-center">
+				<img
+					class="d-block mx-auto mb-4"
+					src="https://cutone.org/wp-content/themes/wp_lcassociates/img/GC-logo.PNG"
+					alt="logo"
+					class="d-block"
+				/>
+        <h6>Sign In or <a href="/signup"> Sign Up </a></h6>
+			</div>
             <form id="loginForm" action="/api/authenticate" method="POST" >
-                <div class="imgcontainer">
-                    <img src="https://cutone.org/wp-content/themes/wp_lcassociates/img/GC-logo.PNG" alt="logo" class="d-block">
-                    </div>
-                    <h1 style=" font-size:95%; margin-left: 2%; text-align: center">Sign In or <a href="/signup"> Sign Up </a></h1>
-                <fieldset>
-                  <div class="field">
-                      <label for="loginEmail"> Email : </label>
-                      <input id="loginEmail" class="form-control" type="email" name="email" placeholder="Email" spellcheck="false" tabindex="1" autofocus />
-                  </div>
-                  <div class="field">
-                      <label for="password"> Password : </label>
-                      <input id="loginPW" class="form-control" type="password" name="password" placeholder="Password" tabindex="2" />
-                  </div>
-                  <p class="form_error loginError"></p>
-                  <div class="login_submit">
-                      <div class="remember_me">
-                          <input type="checkbox" tabindex="3" value="remember-me" id="remember_me">Remember Me
-                      </div>
-                      <input class="submit" type="submit" value="Submit">  
-                      <br />
-                      <div class="alert alert-danger" role="alert">
-                          <p id="passwordError" class="form_error"></p>
-                          <p id="emailError" class="form_error"></p>
-                      </div>
-                  </div>
-              </fieldset>
-                    <div style="background-color:#f1f1f1">    
-                        <span class="forgotPW" > Forgot the password?  <a href="/signup"> Click here </a></span></div>
+                <div class="form-group">
+                    <label for="loginEmail"> Email : </label>
+                    <input id="loginEmail" class="form-control" type="email" name="email" placeholder="Email" spellcheck="false" tabindex="1" required />
+                </div>
+                <div class="form-group">
+                    <label for="password"> Password : </label>
+                    <input id="loginPW" class="form-control" type="password" name="password" placeholder="Password" tabindex="2" />
+                </div>
+                <!-- <div class="custom-control custom-checkbox ">
+                    <input class="custom-control-input" type="checkbox" tabindex="3" value="remember-me" id="remember_me">
+                    <label for="RememberMe" class="custom-control-label">Remember Me</label>
+                </div> -->
+                <input class="btn btn-success btn-lg btn-block mt-4" type="submit" value="Submit" />   
+                        <!-- <span class="forgotPW" > Forgot the password?  <a href="#"> Click here </a></span></div> -->
             </form>
         </div>
     </div>
