@@ -1,0 +1,77 @@
+body {font-family: Arial; margin-left: 10%; margin-right: 10%; align-items: center}
+form {border: 3px solid #f1f1f1;}
+
+#container {
+position: relative;
+padding: 25px;
+margin: auto;
+max-width: 500px;
+}
+
+.field input:first-child {
+margin-top: -1px;
+}
+
+#submit {
+background-color: #4CAF50;
+color: white;
+padding: 14px 20px;
+margin: 8px 0;
+border: none;
+cursor: pointer;
+width: 100%;
+/*margin-bottom: 10px;*/
+}
+
+#submit:hover {
+opacity: 0.8;
+}
+
+.remember_me {
+padding: 10px 0;
+}
+
+.alert {
+display: none;
+margin-top: 10px;
+background: pink;
+color: darkred;
+border-color: red;
+padding: 3px 10px;
+}
+
+input[type=email], input[type=password]{
+/*border-radius: 0 !important;*/
+width: 100%;
+padding: 12px 20px;
+margin: 8px 0;
+display: inline-block;
+border: 1px solid #ccc;
+box-sizing: border-box;
+}
+
+fieldset {
+    border: none;
+}
+
+.imgcontainer {
+text-align: center;
+margin: 24px 0 12px 0;
+}
+
+img.logo {
+width: 30%;
+/*border-radius: 50%;*/
+}
+
+.login_phase_two {
+display: none;
+}
+
+span.forgotPW {
+    display: block;
+    float: none;
+    text-align: right;
+    background-color:#f1f1f1;
+    padding: 5px 20px;
+}
