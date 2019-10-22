@@ -1,7 +1,6 @@
 const sequelize = require("./db");
 const dotenv = require('dotenv').config();
 const jwt = require("jwt-simple");
-// const bcrypt = require("bcrypt");
 
 const findUser = async (email) => {
     const sql_select = "SELECT * FROM [dbo].[GCEP_Users] WHERE email = ? ";
@@ -34,9 +33,6 @@ findByToken = async function(token){
 }
 
 const createUser = (user) => {
-// const salt = bcrypt.genSaltSync(process.env.SALT_ROUNDS * 1);
-//   const hash  = bcrypt.hashSync(user.password, salt);
-  // user.password = hash
 
   const sql_insert =
     "INSERT INTO [dbo].[GCEP_Users](firstName, lastName, streetAddress1, streetAddress2, city"
