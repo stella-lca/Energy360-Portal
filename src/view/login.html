@@ -41,11 +41,11 @@
             <form id="loginForm" action="/api/authenticate" method="POST" >
                 <div class="form-group">
                     <label for="loginEmail"> Email : </label>
-                    <input id="loginEmail" class="form-control" type="email" name="email" placeholder="Email" spellcheck="false" tabindex="1" required />
+                    <input id="loginEmail" class="form-control" type="email" name="email" placeholder="Email" spellcheck="false" required />
                 </div>
                 <div class="form-group">
                     <label for="password"> Password : </label>
-                    <input id="loginPW" class="form-control" type="password" name="password" placeholder="Password" tabindex="2" />
+                    <input id="loginPW" class="form-control" type="password" name="password" placeholder="Password" minlength="6" required/>
                 </div>
                 <!-- <div class="custom-control custom-checkbox ">
                     <input class="custom-control-input" type="checkbox" tabindex="3" value="remember-me" id="remember_me">
