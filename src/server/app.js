@@ -14,20 +14,49 @@ app.use(express.json());
 app.use(session({
 	secret: 'secret',
 	resave: true,
-	saveUninitialized: true
+  saveUninitialized: true,
+  cookie: { secure: true }
 }));
 
+/* Register */
  app.get('/signup', function (req, res) {  
     res.sendFile(path.join(__dirname, '../view/register.html'));
  }) 
 
+ /* Login */
 app.get('/', function (req, res) {  
   res.sendFile(path.join(__dirname, '../view/login.html'));
 }) 
 
-app.get('/api', verify, (req,res) => {
+/* Home */
+app.get('/home', verify, (req, res) => {
     res.status(200).sendFile(path.join(__dirname, '../view/home.html'))
 })
+
+
+/* redirect to utility website */
+app.get('/utilityProvider', verify, (req, res) => {
+  console.log(req.session)
+  const utilityProvider = req.session.accountType;
+  const CECONY_redir = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${process.env.GreenConnect_ID}`; 
+  const ORU_redir = `https://www.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${process.env.GreenConnect_ID}`; 
+ 
+
+  if(utilityProvider === 'CECONY'){
+    res.send('This will be redirect to :'+ CECONY_redir)
+    // res.redirect(CECONY_redir)
+  } else if(utilityProvider === 'ORU'){
+    res.send('This will be redirect to :'+ ORU_redir)
+    // res.redirect(ORU_redir)
+  }
+
+  // res.status(500)
+  // res.render('error', { error: err })
+  
+})
+
+/* Scope Selection URI */
+app.get('/api/scope')
 
 /* route to handle login and registration */
 app.post('/api/register', registerController.register);

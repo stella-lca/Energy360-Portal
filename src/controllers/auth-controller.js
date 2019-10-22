@@ -21,7 +21,8 @@ module.exports.authenticate = function(req, res) {
             // res.redirect(`/api/token=${token}`)
 
             req.session.loggedIn = true;
-            res.redirect('/api')
+            req.session.accountType = users[0].accountTypeDetail
+            res.redirect('/home')
 
           })
         } else {
