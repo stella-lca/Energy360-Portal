@@ -7,23 +7,20 @@ const dotenv = require('dotenv').config();
 const jwt = require("jwt-simple");
 const authController = require('../controllers/auth-controller')
 const registerController = require('../controllers/register-controller')
-const {findUser} = require('../server/model/User') 
+const {findUser, findByToken} = require('../server/model/User') 
+const verify = require("./routes/verifyToken");
 
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 app.use(express.json());
 
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge:60000}
-}))
+// app.use(session({
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { maxAge:60000}
+// }))
 
-// app.get('/signin', function (req, res) {  
-//     res.sendFile(path.join(__dirname, '../view/index.html'));
-//  }) 
- 
  app.get('/signup', function (req, res) {  
     res.sendFile(path.join(__dirname, '../view/register.html'));
  }) 
@@ -45,30 +42,33 @@ app.use(session({
 //       .catch(next);
 //   });
 
-app.get('/', (req, res, next) => {
+// //Middleware for Authorization
+app.use( async (req,res,next) => {
+  const {authorization} = req.headers
+  console.log('auth--->', authorization)
 
-  // res.setHeader('Content-type', 'text/html')
+  if(!authorization){
+    return next();
+  } 
   
-  if(req.session.token){
+  findByToken(authorization)
+  .then(user => {
+    req.user = user;
+    next()
+  })
+  .catch(next)
+  
+})
+
+app.get('/', (req, res, next) => {
+  console.log('request user info', req)
+  if(req.user){
+    console.log('successful')
       res.sendFile(path.join(__dirname, '../view/home.html'))
   }else{
+    console.log('no user')
     res.sendFile(path.join(__dirname, '../view/login.html'))
   }
-
-    // if(req.session.views){
-    //     req.session.views++
-    //     res.setHeader('Content-type', 'text/html')
-        
-    //     res.write(`<p>views: ${req.session.views}</p>`)
-    //     res.write('<p>expire in: '+ (req.session.cookie.maxAge / 1000)+'s</p>')
-    //     res.end()
-    // } else {
-    //     req.session.views=1;
-    //     res.end('Welcome to GreenConnect!')
-    // }
-// console.log(__dirname)
-// res.sendFile(path.join(__dirname, '../view/index.html'));
-    // res.sendFile(path.join(__dirname,'index.html'));
 })
 
 /* route to handle login and registration */
@@ -79,24 +79,32 @@ app.post('/controllers/register-controller', registerController.register);
 app.post('/controllers/authenticate-controller', authController.authenticate);
 
 app.get('/logout', (req, res, next) => {
-    req.session.destroy();
+    // req.session.destroy();
     // res.end(`You are logged out.`)
-      res.redirect("/")
+    req.removeHeader('authorization')
+    res.redirect("/")
 })
 
 app.post('/api/sessions', (req, res, next) => {
     const user = req.body;
 
     findUser(user.email) 
-      .then((_user) => {
-        if (!_user) {
-          throw { status: 401 };
-        }
-        const token = jwt.encode({id:_user.id}, process.env.JWT_SECRET)
-
+    .then((users) => {
+      if (users.length > 0 ) {
+        const token = jwt.encode({id: user.id}, process.env.JWT_SECRET)
         return res.status(200).send({ token });
-      })
-      .catch((err) => next(err));
+      }
+      throw { status: 401 };
+    })
+    .catch((err) => next(err));
 });
+
+app.get('/api/sessions', (req, res,next) => {
+
+  if(req.headers.authorization){
+    res.end();
+  } 
+  next({status:401})
+})
 
 module.exports = app
