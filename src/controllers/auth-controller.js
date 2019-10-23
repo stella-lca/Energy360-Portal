@@ -1,4 +1,3 @@
-// const dotenv = require('dotenv');
 const { findUser } = require("../server/model/User");
 const bcrypt = require("bcrypt");
 const axios = require("axios");
@@ -22,6 +21,9 @@ module.exports.authenticate = function(req, res) {
 
             req.session.loggedIn = true;
             req.session.accountType = users[0].accountTypeDetail
+            req.session.user = users[0]
+            console.log('user', req.session.user)
+            console.log('account type detail', req.session.user.accountTypeDetail)
             res.redirect('/home')
 
           })
