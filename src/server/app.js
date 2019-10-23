@@ -3,40 +3,60 @@ const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv').config();
-const jwt = require('jsonwebtoken')
 const authController = require('../controllers/auth-controller')
 const registerController = require('../controllers/register-controller')
-const {findUser, findByToken} = require('../server/model/User') 
 const verify = require("./routes/verifyToken");
+const session = require('express-session')
 
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(session({
+	secret: 'secret',
+	resave: true,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}));
 
-
+/* Register */
  app.get('/signup', function (req, res) {  
     res.sendFile(path.join(__dirname, '../view/register.html'));
  }) 
 
+ /* Login */
 app.get('/', function (req, res) {  
   res.sendFile(path.join(__dirname, '../view/login.html'));
 }) 
 
-app.get('/api/:token', (req, res)=> {
-  const token = req.params['token'].split('=')[1];
-  console.log(token)
-  jwt.verify(token, process.env.JWT_SECRET, (err, authData) => {
-    if(err){
-      res.sendStatus(403)
-    }else{
-      res.status(200).sendFile(path.join(__dirname, '../view/home.html'))
-    }
-  })
+/* Home */
+app.get('/home', verify, (req, res) => {
+    res.status(200).sendFile(path.join(__dirname, '../view/home.html'))
 })
 
-app.get('/api', (req,res) => {
-  res.write('Welcome to the GreenConnect API');
+
+/* redirect to utility website */
+app.get('/utilityProvider', verify, (req, res) => {
+  console.log(req.session)
+  const utilityProvider = req.session.accountType;
+  const CECONY_redir = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${process.env.GreenConnect_ID}`; 
+  const ORU_redir = `https://www.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${process.env.GreenConnect_ID}`; 
+ 
+
+  if(utilityProvider === 'CECONY'){
+    res.send('This will be redirect to :'+ CECONY_redir)
+    // res.redirect(CECONY_redir)
+  } else if(utilityProvider === 'ORU'){
+    res.send('This will be redirect to :'+ ORU_redir)
+    // res.redirect(ORU_redir)
+  }
+
+  // res.status(500)
+  // res.render('error', { error: err })
+  
 })
+
+/* Scope Selection URI */
+app.get('/api/scope')
 
 /* route to handle login and registration */
 app.post('/api/register', registerController.register);
@@ -47,30 +67,8 @@ app.post('/controllers/authenticate-controller', authController.authenticate);
 
 /* Log out */
 app.get('/logout', (req, res, next) => {
-    // res.end(`You are logged out.`)
+    req.session.destroy();
     res.redirect("/")
 })
-
-
-// app.post('/api/sessions', (req, res, next) => {
-//     const user = req.body;
-
-//     findUser(user.email) 
-//     .then((users) => {
-//       if (users.length > 0 ) {
-//         const token = jwt.encode({id: user.id}, process.env.JWT_SECRET)
-//         return res.status(200).send({ token });
-//       }
-//       throw { status: 401 };
-//     })
-//     .catch((err) => next(err));
-// });
-
-// app.get('/api/sessions', (req, res,next) => {
-//   if(req.headers.authorization){
-//     res.end();
-//   } 
-//   next({status:401})
-// })
 
 module.exports = app

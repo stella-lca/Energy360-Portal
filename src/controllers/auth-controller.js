@@ -17,23 +17,14 @@ module.exports.authenticate = function(req, res) {
             // res.json({
             //   token
             // })
-            res.redirect(`/api/token=${token}`)
+            
+            // res.redirect(`/api/token=${token}`)
+
+            req.session.loggedIn = true;
+            req.session.accountType = users[0].accountTypeDetail
+            res.redirect('/home')
 
           })
-          
-          // axios.post("http://localhost:3000/api/sessions", users[0])
-          //   .then(res => res.data.token)
-          //   .then(async token => {
-          //     await axios.get("http://localhost:3000/api/sessions",{
-          //       headers: {
-          //         authorization: token
-          //       }
-          //     })
-          //     res.redirect("/");
-          //   })
-          //   .catch(err => console.log(err));
-
-
         } else {
           res.json({
             status: false,
