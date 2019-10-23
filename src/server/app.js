@@ -11,12 +11,14 @@ const session = require('express-session')
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 app.use(express.json());
+
+//need to revise secret & expire
 app.use(session({
-	secret: 'secret',
-	resave: true,
+  secret: process.env.SESSION_SECRET,
+  resave: false,
   saveUninitialized: true,
-  cookie: { secure: true }
-}));
+  cookie: { maxAge:60000}
+}))
 
 /* Register */
  app.get('/signup', function (req, res) {  
