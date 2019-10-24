@@ -1,16 +1,19 @@
 const dotenv = require('dotenv').config();
+const {updateUser} = require('../server/model/User') 
 
-module.exports.redirectBack = function(req, res){
-    const {scope} = req.body
-  
+module.exports.redirectBack = async function(req, res){
+    const {scope} = req.body;
+
     if(req.session !== undefined && req.session.user !== undefined ){
+      await updateUser(req.session.user.id, {scope})
+
       const utilityProvider = req.session.user.accountTypeDetail;
       const ceconyRedirectBackURL = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?`
                                   +`client_id=${process.env.CLIENT_ID}`
                                   +`&scope=${scope}`
       const oruRedirectBackURL = `https://www.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?`
                                   +`client_id=${process.env.CLIENT_ID}`
-                                  +`&scope=${body}`
+                                  +`&scope=${scope}`
       
       if(utilityProvider === 'CECONY'){
         res.send('This will be redirect to '+ ceconyRedirectBackURL)

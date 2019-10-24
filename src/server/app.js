@@ -7,6 +7,8 @@ const authController = require('../controllers/auth-controller')
 const registerController = require('../controllers/register-controller')
 const redirectController = require('../controllers/redirect-controller')
 const redirectBackController = require('../controllers/redirect-back-controller')
+const tokenController = require('../controllers/token-controller')
+const resetPasswordController = require('../controllers/reset-pw-controller')
 const verify = require("./routes/verifyToken");
 const session = require('express-session')
 
@@ -32,9 +34,16 @@ app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, '../view/login.html'));
 }) 
 
+/* Forgot my password*/
+app.get('/forgot-my-password', (req, res) =>{
+  res.sendFile(path.join(__dirname, '../view/forgot-password.html'));
+})
+
+/* Send email to reset password*/
+app.post('/forgot-my-password/', resetPasswordController.forgotPassword)
+
 /* Home */
 app.get('/home', verify, (req, res) => {
-    console.log('home session',req.session)
     res.status(200).sendFile(path.join(__dirname, '../view/home.html'))
 })
 
@@ -42,7 +51,11 @@ app.get('/home', verify, (req, res) => {
 app.get('/utility/callback', verify, redirectController.redirect)
 
 
-/* Scope Selection URI */
+/* 
+Scope Selection URI 
+example: http://localhost:3000/scope-selection/?accountid=159&startdate=05/21/2019&enddate=12/21/2019&DataCustodianID=ConEdison
+*/
+
 app.get('/scope-selection', verify, (req, res) => {
   
   if(req.session && req.session.user){
@@ -55,20 +68,19 @@ app.get('/scope-selection', verify, (req, res) => {
 })
 
 /* redirect customer back to utility website */
-app.post('/utility/core-auth/callback', verify, redirectBackController.redirectBack)
+app.post('/scope-selection/callback', verify, redirectBackController.redirectBack)
 
 /* route to handle login and registration */
 app.post('/api/register', registerController.register);
 app.post('/api/authenticate', authController.authenticate);
- 
 
-// app.post('/controllers/register-controller', registerController.register);
-// app.post('/controllers/authenticate-controller', authController.authenticate);
+/* Utility sends generated authorization code */
+app.get('/auth/callback', tokenController.authenticateToken);
 
 /* Log out */
 app.get('/logout', (req, res, next) => {
     req.session.destroy();
-    res.redirect("/")
+    res.status(200).redirect("/")
 })
 
 module.exports = app

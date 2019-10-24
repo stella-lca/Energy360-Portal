@@ -1,8 +1,10 @@
 const sequelize = require("./db");
 const dotenv = require('dotenv').config();
 const jwt = require("jwt-simple");
+const moment = require('moment');
 
-const findUser = async (email) => {
+/* Search the user by email*/
+findUser = async function(email){
     const sql_select = "SELECT * FROM [dbo].[GCEP_Users] WHERE email = ? ";
     
     return (await sequelize.query(sql_select, {
@@ -11,16 +13,32 @@ const findUser = async (email) => {
     }))
 
 };
+
+/* Update user data*/
+updateUser = async function(userID, newData){ //newData will be an object: key = column name and value = new info
+  const currentDate = moment().format('YYYY-MM-DD HH:MM:SS');
+  const keys = Object.keys(newData);
+  const reducer = (accum, key) =>(accum + `, ${key} = '${newData[key]}'`);
+  const set = keys.reduce(reducer, `modifiedDate = '${currentDate}'`);
+  const sql_update = `UPDATE [dbo].[GCEP_Users] SET ${set} WHERE id = ? `;
   
+  return (await sequelize.query(sql_update, {
+    replacements: [userID],
+    type: sequelize.QueryTypes.UPDATE
+  }))
+
+};
+  
+/* Find the user by authorization token*/
 findByToken = async function(token){
   try{
     const sql_selectByID = "SELECT * FROM [dbo].[GCEP_Users] WHERE id = ? "
     const {id} = jwt.decode(token, process.env.JWT_SECRET);
-    
+
     const users = await sequelize.query(sql_selectByID, {
       replacements: [id],
       type: sequelize.QueryTypes.SELECT
-    })
+    });
 
     if(users.length>0){
       return users[0]
@@ -30,10 +48,11 @@ findByToken = async function(token){
   catch(ex){
     throw({status:401})
   }
+
 }
 
-const createUser = (user) => {
-
+/* Save new user */
+createUser = function(user){
   const sql_insert =
     "INSERT INTO [dbo].[GCEP_Users](firstName, lastName, streetAddress1, streetAddress2, city"
     +", zipCode, state, country, phone, email, password, accountTypeDetail) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -49,13 +68,13 @@ const createUser = (user) => {
         }))
   .catch(error => res.json({
     status:false,
-    message:'Error: there are some error with query'+console.log(error)
+    message:'Error: there are some error with query. '+ console.log(error)
   }))
 
 };
 
 //deleteUser -- need to include this in user account option
-const deleteUser = async user => {
+deleteUser = async function(user){
     const sql_delete = "DELETE FROM [dbo].[GCEP_Users] WHERE email = ? ";
     
     await sequelize.query(sql_delete, {
@@ -88,5 +107,7 @@ const deleteUser = async user => {
   module.exports = {
     findUser,
     createUser,
-    findByToken
+    findByToken,
+    updateUser,
+    deleteUser
   };
