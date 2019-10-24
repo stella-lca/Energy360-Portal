@@ -4,8 +4,8 @@ module.exports = function(req, res, next){
     res.status(200)
     next();
   } else {
-      req.session.redirectUrl = req.originalUrl || req.url 
-      
+    req.session.redirectUrl = req.originalUrl || req.url 
     res.status(403).redirect('/')
   }
+  
 }

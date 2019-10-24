@@ -45,19 +45,16 @@ app.get('/utility/callback', verify, redirectController.redirect)
 /* Scope Selection URI */
 app.get('/scope-selection', verify, (req, res) => {
   
-  console.log(req.query)
   if(req.session && req.session.user){
     const keys = ['accountid', 'startdate', 'enddate', 'DataCustodianID'];
-  keys.map( key => req.session.user[key] = req.query[key])
+    keys.map( key => req.session.user[key] = req.query[key])
   }
-  
-  console.log(req.session.user)
 
   res.status(200).sendFile(path.join(__dirname, '../view/scopeSelection.html'))
 
 })
 
-/* redirect back to utility website */
+/* redirect customer back to utility website */
 app.post('/utility/core-auth/callback', verify, redirectBackController.redirectBack)
 
 /* route to handle login and registration */
