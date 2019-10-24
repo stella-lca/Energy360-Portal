@@ -6,6 +6,7 @@ const dotenv = require('dotenv').config();
 const authController = require('../controllers/auth-controller')
 const registerController = require('../controllers/register-controller')
 const redirectController = require('../controllers/redirect-controller')
+const redirectBackController = require('../controllers/redirect-back-controller')
 const verify = require("./routes/verifyToken");
 const session = require('express-session')
 
@@ -18,7 +19,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge:60000}
+  cookie: { maxAge:600000} // 10 mins
 }))
 
 /* Register */
@@ -33,35 +34,31 @@ app.get('/', function (req, res) {
 
 /* Home */
 app.get('/home', verify, (req, res) => {
+    console.log('home session',req.session)
     res.status(200).sendFile(path.join(__dirname, '../view/home.html'))
 })
 
-
-
 /* redirect to utility website */
-app.get('/utilityProvider', verify, redirectController.redirect)
+app.get('/utility/callback', verify, redirectController.redirect)
+
 
 /* Scope Selection URI */
-app.get('/api/scope-selection', (req, res, next) => {
+app.get('/scope-selection', verify, (req, res) => {
+  
+  console.log(req.query)
+  if(req.session && req.session.user){
+    const keys = ['accountid', 'startdate', 'enddate', 'DataCustodianID'];
+  keys.map( key => req.session.user[key] = req.query[key])
+  }
+  
+  console.log(req.session.user)
+
   res.status(200).sendFile(path.join(__dirname, '../view/scopeSelection.html'))
+
 })
 
 /* redirect back to utility website */
-app.post('/api/redirect-back', (req, res) => {
-  const ceconyRedirectBackURL = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${process.env.GREENCONNECT_ID}`
-  const oruRedirectBackURL = `https://www.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${process.env.GREENCONNECT_ID}`
-  
-  if(utilityProvider === 'CECONY'){
-    res.send('This will be redirect to :'+ ceconyRedirectBackURL)
-    // res.redirect(CECONY_redir)
-  } else if(utilityProvider === 'ORU'){
-    res.send('This will be redirect to :'+ oruRedirectBackURL)
-    // res.redirect(ORU_redir)
-  }
-
-  // res.status(500)
-  // res.render('error', { error: err })
-})
+app.post('/utility/core-auth/callback', verify, redirectBackController.redirectBack)
 
 /* route to handle login and registration */
 app.post('/api/register', registerController.register);

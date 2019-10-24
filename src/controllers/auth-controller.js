@@ -18,16 +18,31 @@ module.exports.authenticate = function(req, res) {
             // })
             
             // res.redirect(`/api/token=${token}`)
-
+            const {firstName, lastName, email, accountTypeDetail} = users[0];
+            const user = {firstName, lastName, email, accountTypeDetail}
             req.session.loggedIn = true;
-            req.session.accountType = users[0].accountTypeDetail
-            req.session.user = users[0]
-            console.log('user', req.session.user)
-            console.log('account type detail', req.session.user.accountTypeDetail)
-            res.redirect('/home')
+            req.session.token = token;
+            req.session.user = user;
+            // req.session.user.accountTypeDetail = users[0].accountTypeDetail
+            // req.session.user = users[0]
+
+            // const keys = ['firstName', 'lastName', 'email', 'accountTypeDetail']
+            // keys.map(key => req.session.user[key] = users[0][key])
+
+            // console.log('authcontroll session --->', req.session)
+            // if(req.session.scopeSelection){
+            //   req.session.scopeSelection = false
+            //     res.redirect('/scope-selection') 
+            // } else {
+            //   res.redirect('/home')
+            // }
+            const redirectUrl = req.session.redirectUrl || '/home';
+            delete req.session.redirectUrl;
+            res.redirect(redirectUrl);
 
           })
         } else {
+          res.status(403)
           res.json({
             status: false,
             message: "Error: email and password do not match"
