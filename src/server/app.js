@@ -3,12 +3,16 @@ const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv').config();
+
+/* controllers */
 const authController = require('../controllers/auth-controller')
 const registerController = require('../controllers/register-controller')
 const redirectController = require('../controllers/redirect-controller')
 const redirectBackController = require('../controllers/redirect-back-controller')
 const tokenController = require('../controllers/token-controller')
+const forgotMyPasswordController = require('../controllers/forgot-my-password')
 const resetPasswordController = require('../controllers/reset-pw-controller')
+
 const verify = require("./routes/verifyToken");
 const session = require('express-session')
 
@@ -40,10 +44,12 @@ app.get('/forgot-my-password', (req, res) =>{
 })
 
 /* Send email to reset password*/
-app.post('/forgot-my-password/', resetPasswordController.forgotPassword)
+app.post('/forgot-my-password/', forgotMyPasswordController.forgotPassword)
 
 /* Reset my password */
 app.get('/reset-password', (req, res) =>{
+  req.session.resetPasswordToken = req.query.token;
+  console.log(req.session.resetPasswordToken)
   res.sendFile(path.join(__dirname, '../view/reset-password.html'));
 })
 
