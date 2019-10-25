@@ -94,4 +94,13 @@ app.get('/logout', (req, res, next) => {
     res.status(200).redirect("/")
 })
 
+ /* LCA Policy */
+app.get('/privacy-policy', (req, res) => {
+  res.status(200).sendFile(path.join(__dirname, '../view/policy.html'))
+})
+
+/* terms-of-service */
+app.get('/terms-of-service', (req, res)=>{
+  res.status(200).sendFile(path.join(__dirname, '../view/terms-of-service.html'))
+})
 module.exports = app
