@@ -22,12 +22,12 @@ module.exports.authenticateToken = async function(req, res) {
   let tokenData = {};
   const headers= {
     'content-type': 'application/json',
-    'ocp-apim-subscription-key': process.env.headers,
+    'ocp-apim-subscription-key': process.env.APPSETTING_SUBSCRIPTION_KEY,
   }
   const data = {
     "grantType":"client_credentials",
-    "clientId": process.env.CLIENT_ID,
-    "clientSecret": process.env.CLIENT_SECRET,
+    "clientId": process.env.APPSETTING_CLIENT_ID,
+    "clientSecret": process.env.APPSETTING_CLIENT_SECRET,
     "redirectUri": "<<registred redirect uri>>",
     "authCode" : authCode,
     // "scope": session.user.scope

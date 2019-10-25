@@ -14,7 +14,7 @@ module.exports.register = async function(req,res){
         message:'Error: User already Exist'
       })
     } else {
-      const salt = bcrypt.genSaltSync(process.env.SALT_ROUNDS * 1);
+      const salt = bcrypt.genSaltSync(process.env.APPSETTING_SALT_ROUNDS * 1);
       const hash  = bcrypt.hashSync(password, salt);
       const user = [firstName, lastName, streetAddress1, streetAddress2, city, zipCode, state, country, phone, email, hash, accountTypeDetail]
       const sql_insert =

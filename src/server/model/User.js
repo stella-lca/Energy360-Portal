@@ -33,7 +33,7 @@ updateUser = async function(userID, newData){ //newData will be an object: key =
 findByToken = async function(token){
   try{
     const sql_selectByID = "SELECT * FROM [dbo].[GCEP_Users] WHERE id = ? "
-    const {id} = jwt.decode(token, process.env.JWT_SECRET);
+    const {id} = jwt.decode(token, process.env.APPSETTING_JWT_SECRET);
 
     const users = await sequelize.query(sql_selectByID, {
       replacements: [id],

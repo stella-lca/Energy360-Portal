@@ -9,10 +9,10 @@ module.exports.redirectBack = async function(req, res){
 
       const utilityProvider = req.session.user.accountTypeDetail;
       const ceconyRedirectBackURL = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?`
-                                  +`client_id=${process.env.CLIENT_ID}`
+                                  +`client_id=${process.env.APPSETTING_CLIENT_ID}`
                                   +`&scope=${scope}`
       const oruRedirectBackURL = `https://www.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?`
-                                  +`client_id=${process.env.CLIENT_ID}`
+                                  +`client_id=${process.env.APPSETTING_CLIENT_ID}`
                                   +`&scope=${scope}`
       
       if(utilityProvider === 'CECONY'){
