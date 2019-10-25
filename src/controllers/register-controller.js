@@ -25,10 +25,7 @@ module.exports.register = async function(req,res){
         replacements: user,
         type: sequelize.QueryTypes.INSERT
       })
-      .then(() => res.write(`Hi, ${firstName}. Welcome to GreenConnect`))
-      .catch(error => res.json({
-        status:false,
-        message:'Error: there are some error with query'
-      }))
+      .then(() => res.status(201).redirect('/'))
+      .catch(error => res.sendStatus(400))
     }
 }
