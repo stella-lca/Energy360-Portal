@@ -12,7 +12,7 @@ module.exports.authenticate = function(req, res) {
     .then(users => {
       if (users.length > 0) {
         if (bcrypt.compareSync(password, users[0].password)) {
-          jwt.sign({user: users[0]}, process.env.JWT_SECRET, {expiresIn: '1h'}, (err, token) => {
+          jwt.sign({user: users[0]}, process.env.APPSETTING_JWT_SECRET, {expiresIn: '1h'}, (err, token) => {
 
             const {firstName, lastName, email, accountTypeDetail, id} = users[0];
             const user = {firstName, lastName, email, accountTypeDetail, id}

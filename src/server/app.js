@@ -22,7 +22,7 @@ app.use(express.json());
 
 //need to revise secret & expire
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.APPSETTING_SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge:600000} // 10 mins

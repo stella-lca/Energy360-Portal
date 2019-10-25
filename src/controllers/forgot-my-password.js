@@ -5,7 +5,7 @@ const nodeoutlook = require('nodejs-nodemailer-outlook');
 const async = require('async');
 
 const generateEmailBody = (token) => {
-  const resetPasswordURL = `http://localhost:3000/reset-password?token=${token}`
+  const resetPasswordURL = `https://greenconnect-entrepreneur-portal-TestVer.azurewebsites.net/reset-password?token=${token}`
   return `<style>
   h2 {
   color: green;
@@ -58,8 +58,8 @@ exports.forgotPassword = function(req, res) {
       },
       function(user, done) {
         // create the reset password token
-        const salt = bcrypt.genSaltSync(process.env.SALT_ROUNDS * 1);
-        const token = bcrypt.hashSync(process.env.RESET_PASSWORD, salt);
+        const salt = bcrypt.genSaltSync(process.env.APPSETTING_SALT_ROUNDS * 1);
+        const token = bcrypt.hashSync(process.env.APPSETTING_RESET_PASSWORD, salt);
         done(null, user, token);
       },
       function(user, token, done) {
@@ -72,14 +72,14 @@ exports.forgotPassword = function(req, res) {
         const emailBody = generateEmailBody(token)
         nodeoutlook.sendEmail({
             auth: {
-                user: process.env.ADMIN_EMAIL,
-                pass: process.env.ADMIN_PASSWORD
+                user: process.env.APPSETTING_ADMIN_EMAIL,
+                pass: process.env.APPSETTING_ADMIN_PASSWORD
             },
-            from: process.env.ADMIN_EMAIL,
+            from: process.env.APPSETTING_ADMIN_EMAIL,
             to: email,
             subject: 'GreenConnect - reset your password!',
             html: emailBody,
-            replyTo: process.env.ADMIN_EMAIL,
+            replyTo: process.env.APPSETTING_ADMIN_EMAIL,
             onError: (err) => done(err),
             onSuccess: () => res.send('Kindly check your email for further instructions')
         });

@@ -1,5 +1,4 @@
 const sequelize = require("./db");
-const dotenv = require('dotenv').config();
 const moment = require('moment');
 
 /* Find token data from authCode*/
