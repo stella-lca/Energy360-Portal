@@ -42,6 +42,11 @@ app.get('/forgot-my-password', (req, res) =>{
 /* Send email to reset password*/
 app.post('/forgot-my-password/', resetPasswordController.forgotPassword)
 
+/* Reset my password */
+app.get('/reset-password', (req, res) =>{
+  res.sendFile(path.join(__dirname, '../view/reset-password.html'));
+})
+
 /* Home */
 app.get('/home', verify, (req, res) => {
     res.status(200).sendFile(path.join(__dirname, '../view/home.html'))
