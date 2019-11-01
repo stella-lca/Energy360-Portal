@@ -28,12 +28,10 @@ module.exports.authenticate = function(req, res) {
 
           })
         } else {
-          res.status(403)
-          res.json({
-            status: false,
-            message: "Error: email and password do not match"
-          });
+          res.status(403).send('Your email or password is incorrect.')
         }
+      } else {
+        res.status(403).send('Your email or password is incorrect.');
       }
     })
     .catch(error =>
