@@ -14,12 +14,13 @@ findUser = async function(email){
 
 };
 
+
 /* Update user data*/
 updateUser = async function(userID, newData){ //newData will be an object: key = column name and value = new info
   const currentDate = moment().format('YYYY-MM-DD HH:MM:SS');
   const keys = Object.keys(newData);
   const reducer = (accum, key) =>(accum + `, ${key} = '${newData[key]}'`);
-  const set = keys.reduce(reducer, `modifiedDate = '${currentDate}'`);
+  const set = keys.reduce(reducer, `modifiedDate = GETDATE()`);
   const sql_update = `UPDATE [dbo].[GCEP_Users] SET ${set} WHERE id = ? `;
   
   return (await sequelize.query(sql_update, {
@@ -84,6 +85,43 @@ deleteUser = async function(user){
 
     return user.email
 };
+
+/* Find the user by authorization token*/
+valifyResetPasswordToken = async function(token){
+  try{
+    const sql_select = "SELECT * FROM [dbo].[GCEP_Users] WHERE resetPasswordToken = ? "
+
+    const users = await sequelize.query(sql_select, {
+      replacements: [token],
+      type: sequelize.QueryTypes.SELECT
+    });
+    const currentDate = moment().format('YYYY-MM-DD HH:MM:SS');
+    const user = users[0];
+
+    if(users.length > 0 && currentDate < moment(user.resetPasswordExpires).format('YYYY-MM-DD HH:MM:SS')){
+      return true
+    }
+    return false
+  }
+  catch(ex){
+    throw({status:401})
+  }
+}
+
+/* Update user data*/
+updatePassword = async function(token, newPassword){ //newData will be an object: key = column name and value = new info
+  const salt = bcrypt.genSaltSync(process.env.APPSETTING_SALT_ROUNDS * 1);
+  const hash  = bcrypt.hashSync(newPassword, salt);
+  const currentDate = moment().format('YYYY-MM-DD HH:MM:SS');
+  const set =`password = '${hash}', resetPasswordToken = NULL , resetPasswordExpires = NULL, modifiedDate = GETDATE()`;
+  const sql_update = `UPDATE [dbo].[GCEP_Users] SET ${set} WHERE resetPasswordToken = ? `;
+  
+  return (await sequelize.query(sql_update, {
+    replacements: [token],
+    type: sequelize.QueryTypes.UPDATE
+  }));
+
+};
   
 // findUser({email: 'stella@cutone.org'}).then(user => console.log(user))
 
@@ -109,5 +147,7 @@ deleteUser = async function(user){
     createUser,
     findByToken,
     updateUser,
-    deleteUser
+    deleteUser,
+    valifyResetPasswordToken,
+    updatePassword,
   };
