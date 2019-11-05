@@ -6,7 +6,7 @@ module.exports.redirectBack = async function(req, res){
     const scopes = scope.join("|");
     
     if(req.session !== undefined && req.session.user !== undefined ){
-      await updateUser(req.session.user.id, {scopes})
+      await updateUser(req.session.user.id, {scope:scopes})
 
       const utilityProvider = req.session.user.accountTypeDetail;
       const ceconyRedirectBackURL = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?`
