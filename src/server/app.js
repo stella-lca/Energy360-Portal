@@ -11,7 +11,6 @@ const redirectController = require('../controllers/redirect-controller')
 const redirectBackController = require('../controllers/redirect-back-controller')
 const tokenController = require('../controllers/token-controller')
 const forgotMyPasswordController = require('../controllers/forgot-my-password')
-const resetPasswordController = require('../controllers/reset-pw-controller')
 
 const verify = require("./routes/verifyToken");
 const session = require('express-session')
@@ -46,12 +45,22 @@ app.get('/forgot-my-password', (req, res) =>{
 /* Send email to reset password*/
 app.post('/forgot-my-password/', forgotMyPasswordController.forgotPassword)
 
-/* Reset my password */
-app.get('/reset-password', (req, res) =>{
-  req.session.resetPasswordToken = req.query.token;
-  console.log(req.session.resetPasswordToken)
-  res.sendFile(path.join(__dirname, '../view/reset-password.html'));
-})
+/* Send email to reset password*/
+app.post('/forgot-my-password', forgotMyPasswordController.forgotPassword);
+
+/* Link to reset my password */
+app.get('/reset-password', async(req, res) =>{
+  const {token} = req.query;
+  req.session.token = token;
+    const response = await valifyResetPasswordToken(token);
+    console.log('response', response)
+    if(response){
+      res.status(200).sendFile(path.join(__dirname, '../view/reset-password.html'));
+    } else {
+      res.sendStatus(401)
+    }
+
+});
 
 /* Home */
 app.get('/home', verify, (req, res) => {
