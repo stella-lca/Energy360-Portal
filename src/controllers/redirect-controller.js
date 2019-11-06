@@ -7,11 +7,11 @@ module.exports.redirect = function(req, res){
    
   
     if(utilityProvider === 'CECONY'){
-      res.send('This will be redirect to :'+ CECONY_redir)
-      // res.redirect(CECONY_redir)
+//       res.send('This will be redirect to :'+ CECONY_redir)
+      res.redirect(CECONY_redir)
     } else if(utilityProvider === 'ORU'){
-      res.send('This will be redirect to :'+ ORU_redir)
-      // res.redirect(ORU_redir)
+//       res.send('This will be redirect to :'+ ORU_redir)
+      res.redirect(ORU_redir)
     }
   
     // res.status(500)
