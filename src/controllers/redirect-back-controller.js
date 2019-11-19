@@ -3,7 +3,7 @@ const {updateUser} = require('../server/model/User')
 
 module.exports.redirectBack = async function(req, res){
     const {scope} = req.body;
-    const scopes = scope.join("|");
+    const scopes = (Array.isArray(scope))? scope.join("|") : scope;
     
     if(req.session !== undefined && req.session.user !== undefined ){
       await updateUser(req.session.user.id, {scope:scopes})
