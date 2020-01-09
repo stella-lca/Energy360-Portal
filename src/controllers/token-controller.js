@@ -38,7 +38,7 @@ module.exports.authenticateToken = async function(req, res) {
 		grantType: "client_credentials",
 		clientId: process.env.APPSETTING_CLIENT_ID,
 		clientSecret: process.env.APPSETTING_CLIENT_SECRET,
-		redirectUri: "<<registred redirect uri>>",
+		redirectUri: "https://greenconnect-entrepreneur-portal-testver.azurewebsites.net/api/token-data",
 		authCode
 		// "scope": session.user.scope
 	};

@@ -97,6 +97,11 @@ app.post('/api/authenticate', authController.authenticate);
 /* Utility sends generated authorization code */
 app.get('/auth/callback', tokenController.authenticateToken);
 
+/* redirect url with token data */
+app.get('/api/token-data', (req, res) => {
+  res.send(req.body)
+})
+
 /* Log out */
 app.get('/logout', (req, res, next) => {
     req.session.destroy();
