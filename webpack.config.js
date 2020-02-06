@@ -1,22 +1,29 @@
 const path = require('path')
+const HtmlWebPackPlugin = require("html-webpack-plugin");
 
-const appConfig = require('./app.config.js')
+const appConfig = require('./config')
 
-const REACT_DIRPATH = path.resolve(__dirname, 'src/views')
-const BUILD_DIRPATH = path.resolve(__dirname, 'src/public/javascripts/dist')
+const REACT_PATH = path.resolve(__dirname, 'src')
+const BUILD_PATH = path.resolve(__dirname, 'dist')
+
+const htmlWebpackPlugin = new HtmlWebPackPlugin({
+  template: "./src/index.html",
+  filename: "./index.html"
+});
 
 module.exports = {
   mode: 'production',
   devtool: false,
   entry: {
-    root: path.resolve(REACT_DIRPATH, 'Root.jsx')
+    root: path.resolve(REACT_PATH, 'App.js')
   },
   output: {
-    path: BUILD_DIRPATH,
-    publicPath: '/javascripts/dist/',
+    path: BUILD_PATH,
+    publicPath: '/',
     filename: '[name].bundle.js',
     chunkFilename: '[name].bundle.js'
   },
+  target: 'web',
   optimization: {
     splitChunks: {
       cacheGroups: {
@@ -33,7 +40,7 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        include: REACT_DIRPATH,
+        include: REACT_PATH,
         exclude: /node_modules/,
         use: [
           {
@@ -96,11 +103,27 @@ module.exports = {
             loader: 'sass-loader'
           }
         ]
+      },
+      {
+        test: /\.html$/,
+        use: [
+          {
+            loader: "html-loader"
+          }
+        ]
       }
     ]
   },
-  serve: {
-    port: appConfig.port,
-    content: BUILD_DIRPATH
+  plugins: [ 
+    new HtmlWebPackPlugin({
+      template: "./src/index.html",
+      filename: "./index.html"
+    })
+  ],
+  devtool: 'cheap-module-eval-source-map',
+  performance: {
+    maxEntrypointSize: 400000,
+    maxAssetSize: 100000,
+    hints: 'warning'
   }
 }
