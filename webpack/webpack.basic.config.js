@@ -66,13 +66,13 @@ module.exports = {
       },
       {
         test: /\.(jpe?g|png|gif)$/i,
+        exclude: /(node_modules)/,
         use: [
           {
             loader: 'file-loader',
-            options: {
-              name: '[path][name].[ext]',
-              outputPath: '../'
-            }
+            // options: {
+            //   name: '[name].[ext]'
+            // }
           }
         ]
       },
@@ -83,8 +83,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               limit: '10000',
-              name: '[path][name].[ext]',
-              outputPath: '../'
+              name: '[path][name].[ext]'
             }
           }
         ]
@@ -103,6 +102,7 @@ module.exports = {
   plugins: [ 
     new HtmlWebPackPlugin({
       template: "./src/index.html",
+      favicon: './src/assets/img/favicon.png',
       filename: "./index.html"
     }),
     new WebpackShellPlugin({
