@@ -70,9 +70,11 @@ module.exports = {
         use: [
           {
             loader: 'file-loader',
-            // options: {
-            //   name: '[name].[ext]'
-            // }
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'imgs/',
+              publicPath: 'imgs'
+            }
           }
         ]
       },
@@ -83,7 +85,9 @@ module.exports = {
             loader: 'url-loader',
             options: {
               limit: '10000',
-              name: '[path][name].[ext]'
+              name: '[name].[ext]',
+              outputPath: 'fonts/',
+              publicPath: '../'
             }
           }
         ]

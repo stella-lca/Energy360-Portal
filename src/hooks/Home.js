@@ -3,9 +3,12 @@ import { Link } from "react-router-dom";
 import { Container } from "reactstrap";
 import BkImg from "../assets/img/antoine-barres.jpg";
 import CloudImg from "../assets/img/clouds.png";
+import Header from './Header';
 
 
 const Home = props => (
+  <>
+  {/* <Header /> */}
   <div className="page-header section-dark home-layout" style={{backgroundImage: `url(${BkImg})`}} >
     <div className="filter" />
     <div className="content-center">
@@ -25,6 +28,7 @@ const Home = props => (
     </div>
     <div className="moving-clouds" style={{backgroundImage: `url(${CloudImg})`}} />
   </div>
+  </>
 );
 
 export default Home;

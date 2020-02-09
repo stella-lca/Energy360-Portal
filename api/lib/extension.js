@@ -1,4 +1,4 @@
-const appConfig = require('../../app.config.js')
+const appConfig = require('../../config')
 
 module.exports = {
   validateRequestHeader: (req, res) => {

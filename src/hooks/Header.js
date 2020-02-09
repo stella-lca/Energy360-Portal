@@ -12,6 +12,7 @@ import {
   Container
 } from "reactstrap";
 import classnames from "classnames";
+import Logo from "../assets/img/GC-logo.png" 
 
 const Header = () => {
   const [navbarColor, setNavbarColor] = React.useState("navbar-transparent");
@@ -25,13 +26,13 @@ const Header = () => {
   React.useEffect(() => {
     const updateNavbarColor = () => {
       if (
-        document.documentElement.scrollTop > 299 ||
-        document.body.scrollTop > 299
+        document.documentElement.scrollTop > 99 ||
+        document.body.scrollTop > 99
       ) {
         setNavbarColor("");
       } else if (
-        document.documentElement.scrollTop < 300 ||
-        document.body.scrollTop < 300
+        document.documentElement.scrollTop < 100 ||
+        document.body.scrollTop < 100
       ) {
         setNavbarColor("navbar-transparent");
       }
@@ -44,21 +45,38 @@ const Header = () => {
     };
   });
 
+  console.log('ffwefwfwf', navbarCollapse)
+
   return (
     <Navbar className={classnames("fixed-top", navbarColor)} expand="lg">
-      <Container>
-        <NavbarBrand
-          data-placement="bottom"
-          href="/index"
-          target="_blank"
-          title="Coded by Creative Tim"
-        >
-          Paper Kit React
-        </NavbarBrand>
+        <div className="navbar-translate">
+          <NavbarBrand
+            data-placement="bottom"
+            href="/"
+            title="Energy360"
+          >
+            <img
+                className="d-block logo"
+                src={Logo}
+                alt="logo"
+            />
+          </NavbarBrand>
+          {/* <button
+            aria-expanded={navbarCollapse}
+            className={classnames("navbar-toggler navbar-toggler", {
+              toggled: navbarCollapse
+            })}
+            onClick={toggleNavbarCollapse}
+          >
+            <span className="navbar-toggler-bar bar1" />
+            <span className="navbar-toggler-bar bar2" />
+            <span className="navbar-toggler-bar bar3" />
+          </button> */}
+        </div>
         <Collapse
           className="justify-content-end"
           navbar
-          isOpen={navbarCollapse}
+          isOpen={true}
         >
           <Nav navbar>
             <NavItem>
@@ -66,19 +84,33 @@ const Header = () => {
                 Home
               </Link>
             </NavItem>
-            <NavItem>
+            {/* <NavItem>
               <Link to="/profile" className="nav-link">
                 Profile
               </Link>
+            </NavItem> */}
+            <NavItem>
+              <Link to="/scope" className="nav-link">
+                Scopes
+              </Link>
             </NavItem>
             <NavItem>
-              <Link to="/hookscontainer" className="nav-link">
-                Scopes
+              <Link to="/policy" className="nav-link">
+                Policy
+              </Link>
+            </NavItem>
+            <NavItem>
+              <Link to="/terms-of-service" className="nav-link">
+                Terms Of Service
+              </Link>
+            </NavItem>
+            <NavItem>
+              <Link to="/login" className="nav-link">
+                Login/Register
               </Link>
             </NavItem>
           </Nav>
         </Collapse>
-      </Container>
     </Navbar>
   );
 };
