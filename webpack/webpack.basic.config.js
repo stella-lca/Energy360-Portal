@@ -101,7 +101,7 @@ module.exports = {
   performance: {
     maxEntrypointSize: 400000,
     maxAssetSize: 100000,
-    hints: 'warning'
+    hints: false
   },
   plugins: [ 
     new HtmlWebPackPlugin({

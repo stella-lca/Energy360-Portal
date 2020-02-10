@@ -2,45 +2,22 @@ import React, { useContext, useEffect } from "react";
 import { Router, Route, Switch, Redirect } from "react-router";
 import history from "./utils/history";
 import Context from "./utils/context";
-import AuthCheck from "./utils/authcheck";
 import importedComponent from "react-imported-component";
 import Loading from "./hooks/Loading";
 import Header from "./hooks/Header";
 
-import HooksContainer1 from "./hooks/hook1";
-import Callback from "./hooks/callback";
-import HooksForm from "./hooks/hooks_form1";
-import PrivateComponent from "./hooks/privatecomponent";
-import Profile from "./hooks/profile";
+import Home from "./hooks/Home"
+import Login from "./hooks/Login"
+import Register from "./hooks/Register"
+import Policy from "./hooks/Policy"
+import Terms from "./hooks/Terms"
+import Scope from "./hooks/Scope"
+import PasswordReset from "./hooks/PasswordReset"
 
 import "./assets/css/bootstrap.min.css";
 import "./assets/scss/paper-kit.scss";
 import "./assets/css/demo.css";
 
-const Home = importedComponent(() => import("./hooks/Home"), {
-  LoadingComponent: Loading
-});
-
-const Login = importedComponent(() => import("./hooks/Login"), {
-  LoadingComponent: Loading
-});
-
-const Register = importedComponent(() => import("./hooks/Register"), {
-  LoadingComponent: Loading
-});
-const Policy = importedComponent(() => import("./hooks/Policy"), {
-  LoadingComponent: Loading
-});
-const Terms = importedComponent(() => import("./hooks/Terms"), {
-  LoadingComponent: Loading
-});
-const Scope = importedComponent(() => import("./hooks/Scope"), {
-  LoadingComponent: Loading
-});
-const PasswordReset = importedComponent(() => import("./hooks/PasswordReset"), {
-  LoadingComponent: Loading
-});
-           
 
 const MainLayout = props => {
   return (
