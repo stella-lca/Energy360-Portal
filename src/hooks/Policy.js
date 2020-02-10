@@ -6,7 +6,9 @@ const Policy = props => (
     <div
       className="content-header"
     >
-      <h1><span>Privacy Policy</span></h1>
+      <Container>
+        <h1><span>Privacy Policy</span></h1>
+      </Container>
     </div>
     <div className="content-center">
       <Container>

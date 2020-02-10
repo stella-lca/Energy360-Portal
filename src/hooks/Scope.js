@@ -1,5 +1,4 @@
 import React from "react";
-// import { Container, Form, FormGroup, Input, Label, Button } from "reactstrap";
 import {
   Container,
   Col,
@@ -21,7 +20,7 @@ const Scope = props => (
     </div>
     <Container>
       <Row>
-        <Col className="mx-auto" md="6">
+        <Col className="mx-auto scrope-select" md="7">
           <h3>Please Select Authorization Scope Below</h3>
           <Form>
             <FormGroup>
@@ -39,9 +38,11 @@ const Scope = props => (
                 <Input type="checkbox" id="checkbox3" /> Real-TimeScope
               </Label>
             </FormGroup>
-            <Button block className="btn-round" color="danger">
-              Button
-            </Button>
+            <FormGroup className="button-group">
+              <Button block className="btn-round" color="danger">
+                Submit
+              </Button>
+            </FormGroup>
           </Form>
         </Col>
       </Row>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Button, Row, Col, Card, Form, Input } from "reactstrap";
+import { Container, Button, Row, Col, Card, Form, Input, FormGroup } from "reactstrap";
 
 
 const Login = props => (
@@ -47,9 +47,14 @@ const Login = props => (
             <Input placeholder="Email" type="text" />
             <label>Password</label>
             <Input placeholder="Password" type="password" />
-            <Button block className="btn-round" color="danger">
-              Register
-            </Button>
+            <FormGroup className="button-group">
+              <Button block className="btn-round" color="danger">
+                Login
+              </Button>
+              <Button href="/register" block className="btn-round" color="danger">
+                Go to Sign up
+              </Button>
+            </FormGroup>
           </Form>
           <div className="forgot">
             <Button

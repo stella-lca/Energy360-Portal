@@ -86,7 +86,7 @@ const routes = [
     className: "scope-component",
     layout: MainLayout,
     exact: false,
-    private: true
+    private: false
   },
   {
     path: "/login",

@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Button, Row, Col, Card, Form, Input, FormGroup } from "reactstrap";
+import { Container, Button, Row, Col, Card, Form, Input, Label, FormGroup, FormText } from "reactstrap";
 
 
 const Register = props => (
@@ -16,32 +16,6 @@ const Register = props => (
             />
             <h2 className="mx-auto mb-4">User Registration</h2>
           </div>
-          {/* <div className="social-line text-center">
-            <Button
-              className="btn-neutral btn-just-icon mr-1"
-              color="facebook"
-              href="#pablo"
-              onClick={e => e.preventDefault()}
-            >
-              <i className="fa fa-facebook-square" />
-            </Button>
-            <Button
-              className="btn-neutral btn-just-icon mr-1"
-              color="google"
-              href="#pablo"
-              onClick={e => e.preventDefault()}
-            >
-              <i className="fa fa-google-plus" />
-            </Button>
-            <Button
-              className="btn-neutral btn-just-icon"
-              color="twitter"
-              href="#pablo"
-              onClick={e => e.preventDefault()}
-            >
-              <i className="fa fa-twitter" />
-            </Button>
-          </div> */}
           
           <Form className="register-formd">
             <Row md="12">
@@ -51,7 +25,7 @@ const Register = props => (
               </Col>
               <Col md='6'>
                   <label>Last Name</label>
-                  <Input placeholder="First Name" type="text" />
+                  <Input placeholder="Last Name" type="text" />
               </Col>
               <Col md='12'>
                 <label>Street Address 1</label>
@@ -63,19 +37,28 @@ const Register = props => (
               </Col>
               <Col md='6'>
                 <label>City</label>
-                <Input placeholder="Password" type="text" />
+                <Input placeholder="City" type="text" />
               </Col>
               <Col md='6'>
                 <label>Zip Code</label>
-                <Input placeholder="Password" type="text" />
+                <Input placeholder="Zip Code" type="number" mask={[/\d/, /\d/, /\d/, /\d/, /\d/]} />
+                <FormText color="muted">
+                  (Format: 00000)
+                </FormText>
               </Col>
               <Col md='12'>
                 <label>Select State</label>
-                <Input placeholder="Select State" type="text" />
+                <Input type="select" name="select" id="stateSelect">
+                  <option>New York</option>
+                  <option>Log Angeles</option>
+                </Input>
               </Col>
               <Col md='12'>
                 <label>Select Country</label>
-                <Input placeholder="Select Country" type="text" />
+                <Input type="select" name="select" id="stateCountry">
+                  <option>United States</option>
+                  <option>United Kingdom</option>
+                </Input>
               </Col>
               <Col md='12'>
                 <label>Email address</label>
@@ -84,21 +67,37 @@ const Register = props => (
               <Col md='12'>
                 <label>Phone</label>
                 <Input placeholder="Phone" type="phone" />
+                <FormText color="muted">
+                 (Format: 000-000-0000)
+                </FormText>
               </Col>
               <Col md='12'>
-                <label>Password</label>
+                <label>Password (Min. 6 characters)</label>
                 <Input placeholder="Password" type="password" />
               </Col>
-              <Col md='12'>
-                <label>Select Your Utility Company</label>
-                <Input placeholder="Email" type="text" />
+              <Col md='12' className="utility-block">
+                <label className="col-form-label">Select Your Utility Company</label>
+                <FormGroup check>
+                  <Label check>
+                    <Input type="radio" name="radio2" /> CECONY
+                  </Label>
+                </FormGroup>
+                <FormGroup check>
+                  <Label check>
+                    <Input type="radio" name="radio2" /> ORU
+                  </Label>
+                </FormGroup>
               </Col>
               <Col md='6'></Col>
             </Row>
-           
-            <Button block className="btn-round" color="danger">
-              Register
-            </Button>
+           <FormGroup className="button-group">
+              <Button block className="btn-round" color="danger">
+                Register
+              </Button>
+              <Button href="/login" block className="btn-round" color="danger">
+                Go to Login
+              </Button>
+           </FormGroup>
           </Form>
           <div className="forgot">
             <Button

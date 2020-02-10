@@ -37,6 +37,7 @@ const Header = () => {
         setNavbarColor("navbar-transparent");
       }
     };
+    setNavbarCollapse(false)
 
     window.addEventListener("scroll", updateNavbarColor);
 
@@ -45,7 +46,6 @@ const Header = () => {
     };
   });
 
-  console.log('ffwefwfwf', navbarCollapse)
 
   return (
     <Navbar className={classnames("fixed-top", navbarColor)} expand="lg">
@@ -61,7 +61,7 @@ const Header = () => {
                 alt="logo"
             />
           </NavbarBrand>
-          {/* <button
+          <button
             aria-expanded={navbarCollapse}
             className={classnames("navbar-toggler navbar-toggler", {
               toggled: navbarCollapse
@@ -71,12 +71,12 @@ const Header = () => {
             <span className="navbar-toggler-bar bar1" />
             <span className="navbar-toggler-bar bar2" />
             <span className="navbar-toggler-bar bar3" />
-          </button> */}
+          </button>
         </div>
         <Collapse
           className="justify-content-end"
           navbar
-          isOpen={true}
+          isOpen={navbarCollapse}
         >
           <Nav navbar>
             <NavItem>
@@ -107,6 +107,11 @@ const Header = () => {
             <NavItem>
               <Link to="/login" className="nav-link">
                 Login/Register
+              </Link>
+            </NavItem>
+            <NavItem>
+              <Link to="/logout" className="nav-link">
+                Logout
               </Link>
             </NavItem>
           </Nav>

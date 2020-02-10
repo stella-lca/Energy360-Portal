@@ -359,7 +359,7 @@
 
 .middle-container {
   display: flex;
-  height: 100vh !important;
+  height: 95vh !important;
 }
 
 .page-content {
@@ -371,7 +371,7 @@
     h1 {
       position: absolute;
       bottom: 1em;
-      left: 1em;
+      left: 2em;
       font-weight: 700;
       color: white;
     }
@@ -407,12 +407,11 @@
   padding-right: 5em;
   background-color: darkcyan;
 
-
   @media screen and (max-width: 800px) {
     padding-left: unset;
     padding-right: unset;
   }
- 
+
   .navbar-brand {
     margin: 0px;
     padding: 0px;
@@ -427,30 +426,101 @@
 }
 
 @media screen and (max-width: 800px) {
-    .navbar.navbar-expand-lg {
-        padding-left: unset;
-        padding-right: unset;
-        padding: 15px;
-        // background-color: unset;
-      
-        @media screen and (max-width: 800px) {
-          padding-left: unset;
-          padding-right: unset;
-        }
-       
-        .navbar-brand {
-          margin: 0px;
-          padding: 0px;
-      
-          .logo {
-            height: 5em;
-            padding-top: 5px;
-            margin-left: 20px;
-            padding: 10px;
-          }
-        }
-        button.toggled {
-            
-        }
+  .navbar.navbar-expand-lg {
+    padding-left: unset;
+    padding-right: unset;
+    padding: 15px;
+    // background-color: unset;
+
+    @media screen and (max-width: 800px) {
+      padding-left: unset;
+      padding-right: unset;
+    }
+
+    .navbar-brand {
+      margin: 0px;
+      padding: 0px;
+
+      .logo {
+        height: 5em;
+        padding-top: 5px;
+        margin-left: 20px;
+        padding: 10px;
       }
+    }
   }
+  .page-content {
+    .content-header {
+      h1 {
+        font-size: 27px;
+      }
+    }
+  }
+}
+
+.card-signup {
+  label {
+    display: inline-block;
+    margin-bottom: 0.15rem;
+    margin-top: 1rem;
+    font-weight: 500;
+  }
+
+  .utility-block {
+    .form-check-label {
+      margin-top: 0;
+    }
+    .form-check {
+      margin-bottom: 0;
+    }
+  }
+  .button-group {
+    margin-top: 40px;
+  }
+}
+
+.reset-password {
+  max-width: 400px;
+  min-height: unset;
+  h2 {
+    margin-top: 0;
+    padding: 0 10px;
+    font-size: 30px;
+    font-weight: 500;
+  }
+}
+
+.register {
+  h2 {
+    text-align: center;
+  }
+}
+
+.content-center {
+  color: black;
+  h2 {
+    font-size: 2.8em;
+  }
+}
+
+.scrope-select {
+    max-width: 550px;
+    color: black;
+    h3{
+        text-align: center;
+        font-weight: 700;
+    }
+    form {
+        margin-top: 2em;
+        label {
+            font-size: 20px;
+            font-weight: 300;
+        }
+        input {
+            font-size: larger;
+        }
+        .button-group {
+            margin-top: 2em;
+        }
+    }
+}
