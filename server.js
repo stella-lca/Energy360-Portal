@@ -4,8 +4,9 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const cors = require("cors");
 const app = express();
+require("dotenv").config();
 
-const { port } = require("./config");
+const { SERVER_PORT } = process.env;
 const router = require("./api/routes");
 
 app.use(cors());
@@ -21,8 +22,8 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist/index.html"));
 });
 
-http.createServer(app).listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+http.createServer(app).listen(SERVER_PORT, () => {
+  console.log(`Server running at http://localhost:${SERVER_PORT}/`);
 });
 
 module.exports = app;
