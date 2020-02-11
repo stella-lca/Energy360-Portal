@@ -10,21 +10,25 @@ export const AuthReducer = (state = initialState, action) => {
       case ACTION_TYPES.LOGIN_SUCCESS:
         return {
           ...state,
-          is_authenticated: true
+          is_authenticated: true,
+          profile: action.payload
         }
       case ACTION_TYPES.LOGIN_FAILURE:
         return {
           ...state,
-          is_authenticated: false
+          is_authenticated: false,
+          profile: null
         }
-      case ACTION_TYPES.ADD_PROFILE:
+      case ACTION_TYPES.SIGNUP_SUCCESS:
         return {
           ...state,
+          is_authenticated: true,
           profile: action.payload
         }
-      case ACTION_TYPES.REMOVE_PROFILE:
+      case ACTION_TYPES.SIGNUP_FAILURE:
         return {
           ...state,
+          is_authenticated: false,
           profile: null
         }
       default:

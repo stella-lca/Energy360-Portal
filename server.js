@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Express Routing
-app.use("/", router);
+app.use("/api", router);
 
 // React Routing
 app.get("*", (req, res) => {

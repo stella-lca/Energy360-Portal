@@ -1,8 +1,12 @@
-import React from 'react';
-import { render } from 'react-dom'
-import ContextState from './context';
+import React from "react";
+import { render } from "react-dom";
+import { ContextProvider } from "./context";
+import Routes from "./routes";
 
+const App = () => (
+  <ContextProvider>
+    <Routes />
+  </ContextProvider>
+);
 
-const App = () => <ContextState />
-
-render(<App />, document.getElementById('root'));
+render(<App />, document.getElementById("root"));

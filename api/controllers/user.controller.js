@@ -59,7 +59,7 @@ exports.signin = (req, res) => {
         });
       }
 
-      const { firstName, lastName, email } = data;
+      const { firstName, lastName, email } = user;
       res.status(200).send({ firstName, lastName, email });
     })
     .catch(err => {
@@ -72,9 +72,9 @@ exports.findOne = (req, res) => {
   const { id } = req.params;
 
   User.findByPk(id)
-    .then(data => {
-      if (data) {
-        const { firstName, lastName, email } = data;
+    .then(user => {
+      if (user) {
+        const { firstName, lastName, email } = user;
         return res.send({ firstName, lastName, email });
       } else {
         return res.status(404).send({ message: "User Not found." });

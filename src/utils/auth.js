@@ -1,70 +1,49 @@
-import auth0 from 'auth0-js'
-import history from './history';
+import React, { useContext } from "react";
+import { ContextState } from "../context";
+import axios from "axios"
 
-export default class Auth {
-  auth0 = new auth0.WebAuth({
-    domain: 'webapp1.auth0.com',
-    clientID: 'uZxUdMAsiDWeu3OrNpoi4JwJscdF5nAx',
-    redirectUri: 'http://localhost:3000/callback',
-    responseType: 'token id_token',
-    scope: 'openid profile email'
-  })
+const { API_URL } = process.env;
 
-  userProfile = {}
+const authUtils = () => {
+  // const [handleUserLogin, handleUserLogout, handleSignup] = useContext(
+  //   ContextState
+  // );
 
-  login = () => {
-      this.auth0.authorize()
-  }
-
-  handleAuth = () => {
-    this.auth0.parseHash((err, authResult) => {
-      if(authResult) {
-        localStorage.setItem('access_token', authResult.accessToken)
-        localStorage.setItem('id_token', authResult.idToken)
-
-        let expiresAt = JSON.stringify((authResult.expiresIn * 1000 + new Date().getTime()))
-        localStorage.setItem('expiresAt', expiresAt)
-
-        this.getProfile();
-        setTimeout(() => { history.replace('/authcheck') }, 600);
-      } else {
-        console.log(err)
-      }
+ function userLogin(user) {
+    console.log("request user login ===>", user);
+    axios({
+      method: "get",
+      url: `${API_URL}/user`,
+      param: user
     })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  // const userSignup = () => {
+  //   if (state.isPlaying) {
+  //     state.audioPlayer.pause();
+  //   } else {
+  //     state.audioPlayer.play();
+  //   }
+  //   setState(state => ({ ...state, isPlaying: !state.isPlaying }));
+  // };
+
+  // const register = () => {
+  //   const newIndex =
+  //     (((state.currentTrackIndex + -1) % state.tracks.length) +
+  //       state.tracks.length) %
+  //     state.tracks.length;
+  //   playTrack(newIndex);
+  // };
+
+  return {
+    userLogin
   }
+};
 
-  getAccessToken = () => {
-    if(localStorage.getItem('access_token')) {
-      const accessToken = localStorage.getItem('access_token')
-      return accessToken
-    } else {
-      return null
-    }
-  }
-
-
-  getProfile = () => {
-    let accessToken = this.getAccessToken()
-    if(accessToken) {
-      this.auth0.client.userInfo(accessToken, (err, profile) => {
-          if(profile) {
-            this.userProfile = { profile }
-          }
-      } )
-    }
-  }
-
-
-  logout = () => {
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('id_token')
-    localStorage.removeItem('expiresAt')
-    setTimeout(() => { history.replace('/authcheck') }, 200);
-  }
-
-  isAuthenticated = () => {
-    let expiresAt = JSON.parse(localStorage.getItem('expiresAt'))
-    return new Date().getTime() < expiresAt
-  }
-
-}
+export default authUtils;

@@ -1,23 +1,19 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Router, Route, Switch, Redirect } from "react-router";
-import history from "./utils/history";
-import Context from "./utils/context";
-import importedComponent from "react-imported-component";
-import Loading from "./hooks/Loading";
+import { createBrowserHistory } from 'history'
+import { ContextState } from "./context";
 import Header from "./hooks/Header";
-
-import Home from "./hooks/Home"
-import Login from "./hooks/Login"
-import Register from "./hooks/Register"
-import Policy from "./hooks/Policy"
-import Terms from "./hooks/Terms"
-import Scope from "./hooks/Scope"
-import PasswordReset from "./hooks/PasswordReset"
+import Home from "./hooks/Home";
+import Login from "./hooks/Login";
+import Register from "./hooks/Register";
+import Policy from "./hooks/Policy";
+import Terms from "./hooks/Terms";
+import Scope from "./hooks/Scope";
+import PasswordReset from "./hooks/PasswordReset";
 
 import "./assets/css/bootstrap.min.css";
 import "./assets/scss/paper-kit.scss";
 import "./assets/css/demo.css";
-
 
 const MainLayout = props => {
   return (
@@ -113,13 +109,13 @@ const AppRoute = ({
 );
 
 const Routes = () => {
-  const context = useContext(Context);
+  const { authState } = useContext(ContextState);
   return (
     <div>
-      <Router history={history}>
+      <Router history={createBrowserHistory()}>
         <Switch>
           {routes.map((route, i) => (
-            <AppRoute key={i} {...route} authenticate={context.authState} />
+            <AppRoute key={i} {...route} authenticate={authState} />
           ))}
         </Switch>
       </Router>
