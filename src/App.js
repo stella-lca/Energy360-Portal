@@ -9,4 +9,5 @@ const App = () => (
   </ContextProvider>
 );
 
+App()
 render(<App />, document.getElementById("root"));

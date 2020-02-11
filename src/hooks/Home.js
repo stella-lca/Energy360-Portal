@@ -8,7 +8,6 @@ import Header from './Header';
 
 const Home = props => (
   <>
-  {/* <Header /> */}
   <div className="page-header section-dark home-layout" style={{backgroundImage: `url(${BkImg})`}} >
     <div className="filter" />
     <div className="content-center">

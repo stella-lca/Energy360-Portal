@@ -4,7 +4,6 @@ import Header from './Header';
 
 const Policy = props => (
   <>
-  {/* <Header /> */}
   <div className="page-content">
     <div className="content-header">
       <h1><span>Terms Of Service</span></h1>

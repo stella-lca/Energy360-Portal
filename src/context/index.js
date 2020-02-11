@@ -1,6 +1,6 @@
 import React, { useReducer } from "react";
-import * as ACTIONS from "../store/actions/actions";
-import * as AuthReducer from "../store/reducers/auth_reducer";
+import * as ACTIONS from "../store/actions";
+import * as AuthReducer from "../store/reducers/authReducer";
 
 const ContextState = React.createContext([{}, () => {}]);
 
@@ -10,16 +10,16 @@ const ContextProvider = props => {
     AuthReducer.initialState
   );
 
-  const handleLogin = () => {
-    dispatchAuthReducer(ACTIONS.login_success());
+  const handleLogin = user => {
+    dispatchAuthReducer(ACTIONS.login_success(user));
   };
 
   const handleLogout = () => {
     dispatchAuthReducer(ACTIONS.login_failure());
   };
 
-  const handleSignup = profile => {
-    dispatchAuthReducer(ACTIONS.signup_success(profile));
+  const handleSignup = user => {
+    dispatchAuthReducer(ACTIONS.signup_success(user));
   };
 
   return (
@@ -27,9 +27,9 @@ const ContextProvider = props => {
       value={{
         authState: stateAuthReducer.is_authenticated,
         profileState: stateAuthReducer.profile,
-        handleUserLogin: () => handleLogin(),
+        handleUserLogin: user => handleLogin(user),
         handleUserLogout: () => handleLogout(),
-        handleSignup: profile => handleSignup(profile)
+        handleUserSignup: user => handleSignup(user)
       }}
     >
       {props.children}

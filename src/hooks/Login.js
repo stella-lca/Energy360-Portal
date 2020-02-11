@@ -1,4 +1,5 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
 import {
   Container,
   Button,
@@ -13,28 +14,21 @@ import { ContextState } from "../context";
 import authUtils from "../utils/auth";
 
 const Login = () => {
-  const {
-    authState,
-    profileState,
-    handleUserLogin,
-    handleUserLogout,
-    handleSignup
-  } = useContext(ContextState);
   const { userLogin } = authUtils();
-
-  // console.log(userLogin)
+  const { authState } = useContext(ContextState);
 
   const onSigninSubmit = e => {
+    e.preventDefault();
     const formData = new FormData(e.target);
     const user = {};
 
-    e.preventDefault();
     for (let entry of formData.entries()) {
       user[entry[0]] = entry[1];
     }
     userLogin(user);
   };
 
+  if (authState) return <Redirect to="/" />;
   return (
     <Container>
       <Row>

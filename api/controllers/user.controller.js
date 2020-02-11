@@ -38,8 +38,8 @@ exports.signup = async (req, res) => {
 
 // User Signin
 exports.signin = (req, res) => {
-  const { email, password } = req.body;
-
+  const { email, password } = req.query;
+  
   User.findOne({
     where: {
       email

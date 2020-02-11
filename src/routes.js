@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Router, Route, Switch, Redirect } from "react-router";
-import { createBrowserHistory } from 'history'
+import { createBrowserHistory } from "history";
 import { ContextState } from "./context";
 import Header from "./hooks/Header";
 import Home from "./hooks/Home";
@@ -112,7 +112,7 @@ const Routes = () => {
   const { authState } = useContext(ContextState);
   return (
     <div>
-      <Router history={createBrowserHistory()}>
+      <Router key={Math.random()} history={createBrowserHistory()}>
         <Switch>
           {routes.map((route, i) => (
             <AppRoute key={i} {...route} authenticate={authState} />
