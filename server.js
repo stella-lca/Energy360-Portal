@@ -6,7 +6,8 @@ const cors = require("cors");
 const app = express();
 require("dotenv").config();
 
-const { SERVER_PORT } = process.env;
+const PORT = process.env.PORT || 3000;
+
 const router = require("./api/routes");
 
 app.use(cors());
@@ -22,8 +23,8 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist/index.html"));
 });
 
-http.createServer(app).listen(SERVER_PORT, () => {
-  console.log(`Server running at http://localhost:${SERVER_PORT}/`);
+http.createServer(app).listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}/`);
 });
 
 module.exports = app;
