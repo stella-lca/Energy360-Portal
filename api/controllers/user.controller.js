@@ -27,7 +27,8 @@ exports.signup = async (req, res) => {
     } else {
       User.create({ ...params, password: bcrypt.hashSync(password, 8) })
         .then(user => {
-          res.send({ message: "User was registered successfully!", user });
+          const { firstName, lastName, email, accountTypeDetail } = user;
+          res.status(200).send({ firstName, lastName, email, accountTypeDetail });
         })
         .catch(err => {
           res.status(500).send({ message: err.message });
@@ -39,13 +40,17 @@ exports.signup = async (req, res) => {
 // User Signin
 exports.signin = (req, res) => {
   const { email, password } = req.query;
-  
+  console.log(email)
+
   User.findOne({
     where: {
       email
     }
   })
     .then(user => {
+
+      console.log(user)
+
       // Email validation
       if (!user) {
         return res.status(202).send({ message: "User Not found." });
@@ -59,10 +64,11 @@ exports.signin = (req, res) => {
         });
       }
 
-      const { firstName, lastName, email } = user;
-      res.status(200).send({ firstName, lastName, email });
+      const { firstName, lastName, email, accountTypeDetail } = user;
+      res.status(200).send({ firstName, lastName, email, accountTypeDetail });
     })
     .catch(err => {
+      console.log(err)
       res.status(500).send({ message: err.message });
     });
 };

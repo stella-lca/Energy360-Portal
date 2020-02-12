@@ -31,12 +31,12 @@ const SingleLayout = props => {
 
 const routes = [
   {
-    path: "/",
+    path: "/home",
     component: Home,
     className: "home-component",
     layout: MainLayout,
-    exact: true,
-    private: false
+    exact: false,
+    private: true
   },
   {
     path: "/policy",
@@ -60,14 +60,14 @@ const routes = [
     className: "scope-component",
     layout: MainLayout,
     exact: false,
-    private: false
+    private: true
   },
   {
-    path: "/login",
+    path: "/",
     component: Login,
     className: "login-component",
     layout: SingleLayout,
-    exact: false,
+    exact: true,
     private: false
   },
   {

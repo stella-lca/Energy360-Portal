@@ -85,7 +85,7 @@ const Menu = () => {
           </NavItem>
           {!authState ? (
             <NavItem>
-              <Link to="/login" className="nav-link">
+              <Link to="/" className="nav-link">
                 Login/Register
               </Link>
             </NavItem>

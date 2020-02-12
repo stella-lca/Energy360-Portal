@@ -38,7 +38,6 @@ const authUtils = () => {
     })
       .then(response => {
         const { status, data } = response;
-
         if (status === 200) {
           handleUserSignup(data);
         } else {

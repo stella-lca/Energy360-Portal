@@ -52,7 +52,7 @@ const Login = () => {
     }
   };
 
-  if (authState) return <Redirect to="/" />;
+  if (authState) return <Redirect to="/home" />;
   else
     return (
       <Container>

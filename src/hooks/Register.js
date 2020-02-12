@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { Container, Button, Row, Col, Card, Alert, FormText } from "reactstrap";
+import { Container, Input,Label, Button, FormGroup, Row, Col, Card, Alert, FormText } from "reactstrap";
 import { Form } from "tabler-react";
 import { ContextState } from "../context";
 import authUtils from "../utils/auth";
@@ -61,7 +61,7 @@ const Register = () => {
     }
   };
 
-  if (authState) return <Redirect to="/" />;
+  if (authState) return <Redirect to="/home" />;
   return (
     <Container>
       <Row>
@@ -211,18 +211,19 @@ const Register = () => {
                   </Form.Group>
                 </Col>
                 <Col md="12" className="utility-block">
-                  <Form.Group label="Select Your Utility Company">
-                    <Form.Radio
-                      label="CECONY"
-                      name="accountTypeDetail"
-                      value="CECONY"
-                    />
-                    <Form.Radio
-                      label="ORU"
-                      name="accountTypeDetail"
-                      value="ORU"
-                    />
-                  </Form.Group>
+                  <label>Radio Buttons</label>
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="accountTypeDetail" value="CECONY" defaultChecked/>
+                      CECONY
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="accountTypeDetail" value="ORU" />
+                      ORU
+                    </Label>
+                  </FormGroup>
                 </Col>
                 <Col md="6"></Col>
               </Row>
@@ -231,7 +232,7 @@ const Register = () => {
                 <Button block className="btn-round" color="info">
                   Register
                 </Button>
-                <Button href="/login" block className="btn-round" color="info">
+                <Button href="/" block className="btn-round" color="info">
                   Go to Login
                 </Button>
               </Form.Group>
