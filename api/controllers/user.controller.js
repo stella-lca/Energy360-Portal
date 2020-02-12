@@ -48,9 +48,6 @@ exports.signin = (req, res) => {
     }
   })
     .then(user => {
-
-      console.log(user)
-
       // Email validation
       if (!user) {
         return res.status(202).send({ message: "User Not found." });

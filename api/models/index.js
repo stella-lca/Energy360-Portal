@@ -1,13 +1,24 @@
 const Sequelize = require("sequelize");
 require("dotenv").config();
 
-const { DB_HOST, DB_USER, DB_PASS, DB_NAME } = process.env;
+const {
+  SQLAZURECONNSTR_DB_HOST,
+  SQLAZURECONNSTR_DB_USER,
+  SQLAZURECONNSTR_DB_PW,
+  SQLAZURECONNSTR_DB_NAME
+} = process.env;
+
 const db = {};
 
-const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
-  host: DB_HOST,
-  dialect: "mysql"
-});
+const sequelize = new Sequelize(
+  SQLAZURECONNSTR_DB_NAME,
+  SQLAZURECONNSTR_DB_USER,
+  SQLAZURECONNSTR_DB_PW,
+  {
+    host: SQLAZURECONNSTR_DB_HOST,
+    dialect: "mysql"
+  }
+);
 
 db.User = sequelize.import("./user.model");
 

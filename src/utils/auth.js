@@ -2,8 +2,6 @@ import { useContext } from "react";
 import { ContextState } from "../context";
 import axios from "axios";
 
-const { API_URL } = process.env;
-
 const authUtils = () => {
   const { handleUserLogin, handleUserSignup, handleError } = useContext(
     ContextState
@@ -12,8 +10,7 @@ const authUtils = () => {
   const userLogin = user => {
     axios({
       method: "get",
-      url: "user",
-      baseURL: API_URL,
+      url: "/api/user",
       params: user
     })
       .then(response => {
@@ -32,8 +29,7 @@ const authUtils = () => {
   const userSignup = user => {
     axios({
       method: "post",
-      url: "user",
-      baseURL: API_URL,
+      url: "/api/user",
       data: user
     })
       .then(response => {
