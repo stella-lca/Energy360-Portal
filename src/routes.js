@@ -11,9 +11,11 @@ import Terms from "./hooks/Terms";
 import Scope from "./hooks/Scope";
 import PasswordReset from "./hooks/PasswordReset";
 
+// import "tabler-react/dist/Tabler.css";
 import "./assets/css/bootstrap.min.css";
 import "./assets/scss/paper-kit.scss";
 import "./assets/css/demo.css";
+
 
 const MainLayout = props => {
   return (

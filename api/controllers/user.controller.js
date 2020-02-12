@@ -10,8 +10,8 @@ exports.signup = async (req, res) => {
 
   // Request Params Validation
   if (!email && password) {
-    res.status(400).send({
-      message: "User name or password can not be empty!"
+    res.status(202).send({
+      message: "User Email or Password can not be empty!"
     });
     return;
   }
@@ -23,7 +23,7 @@ exports.signup = async (req, res) => {
     }
   }).then(user => {
     if (user) {
-      return res.status(400).send({ message: "User already Exist!" });
+      return res.status(202).send({ message: "User already Exist!" });
     } else {
       User.create({ ...params, password: bcrypt.hashSync(password, 8) })
         .then(user => {
@@ -48,14 +48,14 @@ exports.signin = (req, res) => {
     .then(user => {
       // Email validation
       if (!user) {
-        return res.status(404).send({ message: "User Not found." });
+        return res.status(202).send({ message: "User Not found." });
       }
 
       // Password Validation
       const passwordIsValid = bcrypt.compareSync(password, user.password);
       if (!passwordIsValid) {
-        return res.status(401).send({
-          message: "Invalid Password!"
+        return res.status(202).send({
+          message: "Password is wrong!"
         });
       }
 

@@ -1,49 +1,59 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { ContextState } from "../context";
-import axios from "axios"
+import axios from "axios";
 
 const { API_URL } = process.env;
 
 const authUtils = () => {
-  // const [handleUserLogin, handleUserLogout, handleSignup] = useContext(
-  //   ContextState
-  // );
+  const { handleUserLogin, handleUserSignup, handleError } = useContext(
+    ContextState
+  );
 
- function userLogin(user) {
-    console.log("request user login ===>", user);
+  const userLogin = user => {
     axios({
       method: "get",
-      url: `${API_URL}/user`,
-      param: user
+      url: "user",
+      baseURL: API_URL,
+      params: user
     })
       .then(response => {
-        console.log(response);
+        const { status, data } = response;
+        if (status === 200) {
+          handleUserLogin(data);
+        } else {
+          handleError(data.message);
+        }
       })
       .catch(error => {
-        console.log(error);
+        handleError("Request Error, Please try it later!");
       });
   };
 
-  // const userSignup = () => {
-  //   if (state.isPlaying) {
-  //     state.audioPlayer.pause();
-  //   } else {
-  //     state.audioPlayer.play();
-  //   }
-  //   setState(state => ({ ...state, isPlaying: !state.isPlaying }));
-  // };
+  const userSignup = user => {
+    axios({
+      method: "post",
+      url: "user",
+      baseURL: API_URL,
+      data: user
+    })
+      .then(response => {
+        const { status, data } = response;
 
-  // const register = () => {
-  //   const newIndex =
-  //     (((state.currentTrackIndex + -1) % state.tracks.length) +
-  //       state.tracks.length) %
-  //     state.tracks.length;
-  //   playTrack(newIndex);
-  // };
+        if (status === 200) {
+          handleUserSignup(data);
+        } else {
+          handleError(data.message);
+        }
+      })
+      .catch(error => {
+        handleError("Request Error, Please try it later!");
+      });
+  };
 
   return {
-    userLogin
-  }
+    userLogin,
+    userSignup
+  };
 };
 
 export default authUtils;

@@ -22,14 +22,26 @@ const ContextProvider = props => {
     dispatchAuthReducer(ACTIONS.signup_success(user));
   };
 
+  const handleError = error => {
+    dispatchAuthReducer(ACTIONS.request_error(error));
+  };
+
+  const {
+    is_authenticated: authState,
+    profile: profileState,
+    error: errorState
+  } = stateAuthReducer;
+
   return (
     <ContextState.Provider
       value={{
-        authState: stateAuthReducer.is_authenticated,
-        profileState: stateAuthReducer.profile,
+        authState,
+        profileState,
+        errorState,
         handleUserLogin: user => handleLogin(user),
         handleUserLogout: () => handleLogout(),
-        handleUserSignup: user => handleSignup(user)
+        handleUserSignup: user => handleSignup(user),
+        handleError: error => handleError(error)
       }}
     >
       {props.children}

@@ -338,6 +338,11 @@
       font-size: 0.805rem;
     }
   }
+  .login-form {
+    .form-group {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .register {
@@ -467,15 +472,20 @@
   }
 
   .utility-block {
-    .form-check-label {
-      margin-top: 0;
-    }
-    .form-check {
-      margin-bottom: 0;
+    .form-group {
+      margin-top: 1rem;
+      margin-bottom: 0.15rem;
+      label {
+        display: block;
+        margin-top: 0em;
+      }
     }
   }
   .button-group {
     margin-top: 40px;
+  }
+  .form-group{
+    margin-bottom: 0;
   }
 }
 
@@ -523,4 +533,10 @@
             margin-top: 2em;
         }
     }
+}
+
+.alert{
+  margin-bottom: 15px;
+  font-size: 15px;
+  padding: 10px
 }

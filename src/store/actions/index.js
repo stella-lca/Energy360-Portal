@@ -1,8 +1,9 @@
-import * as ACTION_TYPES from "./action_types";
+import * as ACTION_TYPES from "./actionTypes";
 
-export const login_success = () => {
+export const login_success = (user) => {
   return {
-    type: ACTION_TYPES.LOGIN_SUCCESS
+    type: ACTION_TYPES.LOGIN_SUCCESS,
+    payload: user
   };
 };
 
@@ -19,8 +20,9 @@ export const signup_success = profile => {
   };
 };
 
-export const signup_failure = () => {
+export const request_error = (error) => {
   return {
-    type: ACTION_TYPES.SIGNUP_FAILURE
+    type: ACTION_TYPES.REQUEST_ERROR,
+    payload: error
   };
 };

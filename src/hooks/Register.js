@@ -1,22 +1,49 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Redirect } from "react-router-dom";
-import {
-  Container,
-  Button,
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Label,
-  FormGroup,
-  FormText
-} from "reactstrap";
+import { Container, Button, Row, Col, Card, Alert, FormText } from "reactstrap";
+import { Form } from "tabler-react";
 import { ContextState } from "../context";
 import authUtils from "../utils/auth";
+import { isEmpty } from "lodash";
+
 const Register = () => {
   const { userSignup } = authUtils();
-  const { authState } = useContext(ContextState);
+  const { authState, errorState } = useContext(ContextState);
+  const [errors, setError] = useState({});
+
+  const errorMsg = type => {
+    const msg = errors[type];
+    if (!isEmpty(msg))
+      return {
+        invalid: true,
+        feedback: msg
+      };
+  };
+
+  const formValidate = values => {
+    let errorFields = {};
+    const emailRegex = /[^]+@[^]+[.][a-z]/;
+
+    if (!values.password) {
+      errorFields.password = "Required";
+    } else if (values.password.length < 6) {
+      errorFields.password = "Required Min. 6 characters!";
+    }
+    if (!values.email) {
+      errorFields.email = "Required";
+    } else if (!emailRegex.test(values.email)) {
+      errorFields.email = "Invalid email address!";
+    }
+
+    if (!values.firstName) errorFields.firstName = "Required";
+    if (!values.lastName) errorFields.lastName = "Required";
+    if (!values.streetAddress1) errorFields.streetAddress1 = "Required";
+    if (!values.city) errorFields.city = "Required";
+    if (!values.zipCode) errorFields.zipCode = "Required";
+    if (!values.phone) errorFields.phone = "Required";
+
+    return errorFields;
+  };
 
   const onSignupSubmit = e => {
     e.preventDefault();
@@ -26,7 +53,13 @@ const Register = () => {
     for (let entry of formData.entries()) {
       user[entry[0]] = entry[1];
     }
-    userSignup(user);
+    const errorMsgs = formValidate(user);
+    console.log(errorMsgs);
+    if (isEmpty(errorMsgs)) {
+      userSignup(user);
+    } else {
+      setError(errorMsgs);
+    }
   };
 
   if (authState) return <Redirect to="/" />;
@@ -47,113 +80,162 @@ const Register = () => {
 
             <Form className="register-formd" onSubmit={onSignupSubmit}>
               <Row md="12">
+                {errorState ? (
+                  <Col md="12">
+                    <Alert color="danger">{errorState}</Alert>
+                  </Col>
+                ) : (
+                  ""
+                )}
                 <Col md="6">
-                  <label>First Name</label>
-                  <Input
-                    placeholder="First Name"
-                    name="firstName"
-                    type="text"
-                  />
-                </Col>
-                <Col md="6">
-                  <label>Last Name</label>
-                  <Input placeholder="Last Name" name="lastName" type="text" />
-                </Col>
-                <Col md="12">
-                  <label>Street Address 1</label>
-                  <Input
-                    placeholder="Street Address 1"
-                    name="streetAddress1"
-                    type="text"
-                  />
-                </Col>
-                <Col md="12">
-                  <label>House or Suite #</label>
-                  <Input
-                    placeholder="House or Suite #"
-                    name="streetAddress2"
-                    type="text"
-                  />
+                  <Form.Group label="First Name">
+                    <Form.Input
+                      name="firstName"
+                      type="text"
+                      placeholder="First Name"
+                      {...errorMsg("firstName")}
+                    />
+                  </Form.Group>
                 </Col>
                 <Col md="6">
-                  <label>City</label>
-                  <Input placeholder="City" name="city" type="text" />
+                  <Form.Group label="Last Name">
+                    <Form.Input
+                      name="lastName"
+                      type="text"
+                      placeholder="Last Name"
+                      {...errorMsg("lastName")}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md="12">
+                  <Form.Group label="Street Address 1">
+                    <Form.Input
+                      name="streetAddress1"
+                      type="text"
+                      placeholder="Street Address 1"
+                      {...errorMsg("streetAddress1")}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md="12">
+                  <Form.Group label="House or Suite #">
+                    <Form.Input
+                      name="streetAddress2"
+                      type="text"
+                      placeholder="House or Suite #"
+                      {...errorMsg("streetAddress2")}
+                    />
+                  </Form.Group>
                 </Col>
                 <Col md="6">
-                  <label>Zip Code</label>
-                  <Input
-                    placeholder="Zip Code"
-                    type="number"
-                    mask={[/\d/, /\d/, /\d/, /\d/, /\d/]}
-                    name="zipCode"
-                  />
-                  <FormText color="muted">(Format: 00000)</FormText>
+                  <Form.Group label="City">
+                    <Form.Input
+                      name="city"
+                      type="text"
+                      placeholder="City"
+                      {...errorMsg("city")}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md="6">
+                  <Form.Group label="Zip Code">
+                    <Form.MaskedInput
+                      placeholder="91210"
+                      mask={[/\d/, /\d/, /\d/, /\d/, /\d/]}
+                      name="zipCode"
+                      {...errorMsg("zipCode")}
+                    />
+                    <FormText color="muted">(Format: 00000)</FormText>
+                  </Form.Group>
                 </Col>
                 <Col md="12">
-                  <label>Select State</label>
-                  <Input type="select" name="state" id="stateSelect">
-                    <option>New York</option>
-                    <option>Log Angeles</option>
-                  </Input>
+                  <Form.Group label="Select State">
+                    <Form.Select name="state">
+                      <option>New York</option>
+                    </Form.Select>
+                  </Form.Group>
                 </Col>
                 <Col md="12">
-                  <label>Select Country</label>
-                  <Input type="select" name="country" id="stateCountry">
-                    <option>United States</option>
-                    <option>United Kingdom</option>
-                  </Input>
+                  <Form.Group label="Select Country">
+                    <Form.Select name="country">
+                      <option>United Kingdom</option>
+                    </Form.Select>
+                  </Form.Group>
                 </Col>
                 <Col md="12">
-                  <label>Email address</label>
-                  <Input
-                    placeholder="Email address"
-                    name="email"
-                    type="email"
-                  />
+                  <Form.Group label="Email address">
+                    <Form.Input
+                      name="email"
+                      type="text"
+                      placeholder="Email address"
+                      {...errorMsg("email")}
+                    />
+                  </Form.Group>
                 </Col>
                 <Col md="12">
-                  <label>Phone</label>
-                  <Input placeholder="Phone" name="phone" type="phone" />
-                  <FormText color="muted">(Format: 000-000-0000)</FormText>
+                  <Form.Group label="Phone">
+                    <Form.MaskedInput
+                      placeholder="+1 (555) 495-3947"
+                      name="phone"
+                      type="text"
+                      mask={[
+                        "+",
+                        "1",
+                        " ",
+                        "(",
+                        /[1-9]/,
+                        /\d/,
+                        /\d/,
+                        ")",
+                        " ",
+                        /\d/,
+                        /\d/,
+                        /\d/,
+                        "-",
+                        /\d/,
+                        /\d/,
+                        /\d/,
+                        /\d/
+                      ]}
+                      {...errorMsg("phone")}
+                    />
+                  </Form.Group>
                 </Col>
                 <Col md="12">
-                  <label>Password (Min. 6 characters)</label>
-                  <Input
-                    placeholder="Password"
-                    name="password"
-                    type="password"
-                  />
+                  <Form.Group label="Password (Min. 6 characters)">
+                    <Form.Input
+                      name="password"
+                      type="password"
+                      placeholder="Password..."
+                      {...errorMsg("password")}
+                    />
+                  </Form.Group>
                 </Col>
                 <Col md="12" className="utility-block">
-                  <label className="col-form-label">
-                    Select Your Utility Company
-                  </label>
-                  <FormGroup check>
-                    <Label check>
-                      <Input type="radio" name="accountTypeDetail" /> CECONY
-                    </Label>
-                  </FormGroup>
-                  <FormGroup check>
-                    <Label check>
-                      <Input type="radio" name="accountTypeDetail" /> ORU
-                    </Label>
-                  </FormGroup>
+                  <Form.Group label="Select Your Utility Company">
+                    <Form.Radio
+                      label="CECONY"
+                      name="accountTypeDetail"
+                      value="CECONY"
+                    />
+                    <Form.Radio
+                      label="ORU"
+                      name="accountTypeDetail"
+                      value="ORU"
+                    />
+                  </Form.Group>
                 </Col>
                 <Col md="6"></Col>
               </Row>
-              <FormGroup className="button-group">
-                <Button block className="btn-round" color="danger">
+
+              <Form.Group className="button-group">
+                <Button block className="btn-round" color="info">
                   Register
                 </Button>
-                <Button
-                  href="/login"
-                  block
-                  className="btn-round"
-                  color="danger"
-                >
+                <Button href="/login" block className="btn-round" color="info">
                   Go to Login
                 </Button>
-              </FormGroup>
+              </Form.Group>
             </Form>
             <div className="forgot">
               <Button
