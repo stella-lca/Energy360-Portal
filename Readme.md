@@ -1,4 +1,4 @@
-#Energy360-Portal
+## Energy360-Portal
 
 #### - Prerequests
     Please setup application configuration in env file.
