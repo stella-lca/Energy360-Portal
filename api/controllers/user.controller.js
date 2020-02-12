@@ -40,7 +40,6 @@ exports.signup = async (req, res) => {
 // User Signin
 exports.signin = (req, res) => {
   const { email, password } = req.query;
-  console.log(email)
 
   User.findOne({
     where: {
@@ -65,7 +64,6 @@ exports.signin = (req, res) => {
       res.status(200).send({ firstName, lastName, email, accountTypeDetail });
     })
     .catch(err => {
-      console.log(err)
       res.status(500).send({ message: err.message });
     });
 };

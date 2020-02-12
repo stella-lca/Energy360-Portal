@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         field: "city"
       },
       zipCode: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         field: "zipCode"
       },
       state: {
@@ -53,7 +53,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         field: "accountTypeDetail"
       }
-    }
+    }, {
+    timestamps: true,
+    createdAt: "createdDate",
+    updatedAt: "modifiedDate"
+  }
   );
 
   return User;

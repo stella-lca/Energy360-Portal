@@ -16,9 +16,14 @@ const sequelize = new Sequelize(
   SQLAZURECONNSTR_DB_PW,
   {
     host: SQLAZURECONNSTR_DB_HOST,
-    dialect: "mysql"
+    dialect: "mssql",  //"mysql"
+    dialectOptions: { options: { encrypt: true } }
   }
 );
+
+Sequelize.DATE.prototype._stringify = function _stringify(date, options) {
+  return this._applyTimezone(date, options).format('YYYY-MM-DD HH:mm:ss.SSS');
+};
 
 db.User = sequelize.import("./user.model");
 

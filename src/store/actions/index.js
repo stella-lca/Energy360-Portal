@@ -14,7 +14,6 @@ export const login_failure = () => {
 };
 
 export const signup_success = profile => {
-  console.log(profile)
   return {
     type: ACTION_TYPES.SIGNUP_SUCCESS,
     payload: profile

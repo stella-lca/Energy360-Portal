@@ -27,10 +27,10 @@ const db = require('./api/models');
 
 db.sequelize.sync().then((msg) => {
   console.log('DB connected successfully!')
-  http.createServer(app).listen(port, () => {
-    console.log(`Server running at http://localhost:${port}/`);
+  http.createServer(app).listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}/`);
   });
-}).catch(err=>console.log(err));
+}).catch(err => console.log(err));
 
 
 module.exports = app;
