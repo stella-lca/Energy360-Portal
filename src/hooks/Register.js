@@ -54,7 +54,6 @@ const Register = () => {
       user[entry[0]] = entry[1];
     }
     const errorMsgs = formValidate(user);
-    console.log(errorMsgs);
     if (isEmpty(errorMsgs)) {
       userSignup(user);
     } else {

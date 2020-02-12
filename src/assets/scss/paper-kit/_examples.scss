@@ -349,19 +349,6 @@
   max-width: 500px;
 }
 
-// .btn-facebook {
-//     color: white !important;
-//     background-color: $social-facebook !important;
-// }
-// .btn-google {
-//     color: white !important;
-//     background-color: $social-facebook !important;
-// }
-// .btn-twetter {
-//     color: white !important;
-//     background-color: $social-facebook !important;
-// }
-
 .middle-container {
   display: flex;
   height: 95vh !important;
@@ -372,7 +359,7 @@
   .content-header {
     height: 27em;
     position: relative;
-    background-image: url(https://energy360.us/wp-content/uploads/2016/11/entry-header-bg-image.jpg);
+    // background-image: url(https://energy360.us/wp-content/uploads/2016/11/entry-header-bg-image.jpg);
     h1 {
       position: absolute;
       bottom: 1em;
@@ -411,6 +398,9 @@
   padding-left: 5em;
   padding-right: 5em;
   background-color: darkcyan;
+  .nav-link {
+    color: white !important;
+  }
 
   @media screen and (max-width: 800px) {
     padding-left: unset;
@@ -484,7 +474,7 @@
   .button-group {
     margin-top: 40px;
   }
-  .form-group{
+  .form-group {
     margin-bottom: 0;
   }
 }
@@ -514,29 +504,37 @@
 }
 
 .scrope-select {
-    max-width: 550px;
-    color: black;
-    h3{
-        text-align: center;
-        font-weight: 700;
+  max-width: 550px;
+  color: black;
+  h3 {
+    text-align: center;
+    font-weight: 700;
+  }
+  form {
+    margin-top: 2em;
+    label {
+      font-size: 20px;
+      font-weight: 300;
     }
-    form {
-        margin-top: 2em;
-        label {
-            font-size: 20px;
-            font-weight: 300;
-        }
-        input {
-            font-size: larger;
-        }
-        .button-group {
-            margin-top: 2em;
-        }
+    input {
+      font-size: larger;
     }
+    .button-group {
+      margin-top: 2em;
+    }
+  }
 }
 
-.alert{
+.alert {
   margin-bottom: 15px;
   font-size: 15px;
-  padding: 10px
+  padding: 10px;
+}
+
+.nav-link {
+  font-size: 20px;
+  &:hover {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff,
+      0 0 20px #49ff18, -39px -7px 5px rgba(201, 206, 175, 0.06);
+  }
 }

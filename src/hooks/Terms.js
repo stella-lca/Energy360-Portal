@@ -1,13 +1,10 @@
 import React from "react";
 import { Container } from "reactstrap";
-import Header from './Header';
-
+import Header from "./Header"
 const Policy = props => (
   <>
   <div className="page-content">
-    <div className="content-header">
-      <h1><span>Terms Of Service</span></h1>
-    </div>
+    <Header title={"Privacy Policy"} />
     <div className="content-center">
       <Container>
         <div>

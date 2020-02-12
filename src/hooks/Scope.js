@@ -7,17 +7,13 @@ import {
   FormGroup,
   Label,
   Input,
-  FormText,
   Row
 } from "reactstrap";
+import Header from "./Header";
 
 const Scope = props => (
   <div className="page-content">
-    <div className="content-header">
-      <h1>
-        <span>Scope Section</span>
-      </h1>
-    </div>
+    <Header title={"Scope Section"} />
     <Container>
       <Row>
         <Col className="mx-auto scrope-select" md="7">

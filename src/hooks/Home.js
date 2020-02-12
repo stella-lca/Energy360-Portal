@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { Container } from "reactstrap";
 import BkImg from "../assets/img/antoine-barres.jpg";
 import CloudImg from "../assets/img/clouds.png";
-import Header from './Header';
-
 
 const Home = props => (
   <>

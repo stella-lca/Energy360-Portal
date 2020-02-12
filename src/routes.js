@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Router, Route, Switch, Redirect } from "react-router";
 import { createBrowserHistory } from "history";
 import { ContextState } from "./context";
-import Header from "./hooks/Header";
+import Menu from "./hooks/Menu";
 import Home from "./hooks/Home";
 import Login from "./hooks/Login";
 import Register from "./hooks/Register";
@@ -11,7 +11,6 @@ import Terms from "./hooks/Terms";
 import Scope from "./hooks/Scope";
 import PasswordReset from "./hooks/PasswordReset";
 
-// import "tabler-react/dist/Tabler.css";
 import "./assets/css/bootstrap.min.css";
 import "./assets/scss/paper-kit.scss";
 import "./assets/css/demo.css";
@@ -20,7 +19,7 @@ import "./assets/css/demo.css";
 const MainLayout = props => {
   return (
     <>
-      <Header />
+      <Menu />
       {props.children}
     </>
   );
