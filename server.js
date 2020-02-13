@@ -30,7 +30,7 @@ db.sequelize.sync().then((msg) => {
   http.createServer(app).listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);
   });
-}).catch(err => console.log(err));
+}).catch(err => console.log("Datbase connection error!!!!"));
 
 
 module.exports = app;
