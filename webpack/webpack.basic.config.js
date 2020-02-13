@@ -1,19 +1,9 @@
-const webpack = require('webpack');
 const path = require('path')
-const dotenv = require('dotenv');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const WebpackShellPlugin = require('webpack-shell-plugin');
 
 const REACT_PATH = path.resolve(__dirname, '../src')
 const BUILD_PATH = path.resolve(__dirname, '../dist')
-
-const env = dotenv.config().parsed;
-  
-// reduce it to a nice object, the same as before
-const envKeys = Object.keys(env).reduce((prev, next) => {
-  prev[`process.env.${next}`] = JSON.stringify(env[next]);
-  return prev;
-}, {});
 
 module.exports = {
   entry: {
@@ -121,7 +111,6 @@ module.exports = {
     }),
     new WebpackShellPlugin({
       onBuildEnd: ['npm run server']
-    }),
-    new webpack.DefinePlugin(envKeys)
+    })
   ]
 }
