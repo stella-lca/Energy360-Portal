@@ -109,8 +109,8 @@ module.exports = {
       favicon: './src/assets/img/favicon.png',
       filename: "./index.html"
     }),
-    new WebpackShellPlugin({
-      onBuildEnd: ['npm run server']
-    })
+    // new WebpackShellPlugin({
+    //   onBuildEnd: ['npm run server']
+    // })
   ]
 }

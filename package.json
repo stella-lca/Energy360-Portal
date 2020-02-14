@@ -57,8 +57,9 @@
     "webpack-shell-plugin": "^0.5.0"
   },
   "scripts": {
-    "start:dev": "webpack --env dev --progress",
-    "start": "webpack --env prod",
-    "server": "nodemon server.js"
-  }
+		"start:dev": "webpack --env dev --progress",
+		"start": "node server.js",
+		"postinstall": "webpack --env prod",
+		"server": "nodemon server.js"
+	}
 }
