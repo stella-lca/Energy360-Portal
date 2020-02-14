@@ -25,12 +25,17 @@ app.get("*", (req, res) => {
 
 const db = require('./api/models');
 
-db.sequelize.sync().then((msg) => {
-  console.log('DB connected successfully!')
-  http.createServer(app).listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
-  });
-}).catch(err => console.log("Datbase connection error!!!!"));
+// db.sequelize.sync().then((msg) => {
+//   console.log('DB connected successfully!')
+  
+// }).catch(err => {
+//   console.log("Datbase connection error!!!!")
+//   console.log(err)
+//   }
+// );
 
+http.createServer(app).listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}/`);
+});
 
 module.exports = app;
