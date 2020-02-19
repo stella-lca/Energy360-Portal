@@ -16,7 +16,7 @@ const sequelize = new Sequelize(
 	SQLAZURECONNSTR_DB_PW,
 	{
 		host: SQLAZURECONNSTR_DB_HOST,
-		dialect: "mysql", //"mysql" "mssql"
+		dialect: "mssql", //"mysql" "mssql"
 		dialectOptions: { options: { encrypt: true } }
 	}
 );
