@@ -11,25 +11,14 @@ const {
 const db = {};
 
 const sequelize = new Sequelize(
-<<<<<<< HEAD
 	SQLAZURECONNSTR_DB_NAME,
 	SQLAZURECONNSTR_DB_USER,
 	SQLAZURECONNSTR_DB_PW,
 	{
 		host: SQLAZURECONNSTR_DB_HOST,
-		dialect: "mssql", //"mysql" "mssql"
+		dialect: "mssql",
 		dialectOptions: { options: { encrypt: true } }
 	}
-=======
-  SQLAZURECONNSTR_DB_NAME,
-  SQLAZURECONNSTR_DB_USER,
-  SQLAZURECONNSTR_DB_PW,
-  {
-    host: SQLAZURECONNSTR_DB_HOST,
-    dialect: "mssql",  //"mysql" mssql
-    dialectOptions: { options: { encrypt: true } }
-  }
->>>>>>> test
 );
 
 Sequelize.DATE.prototype._stringify = function _stringify(date, options) {
@@ -37,6 +26,7 @@ Sequelize.DATE.prototype._stringify = function _stringify(date, options) {
 };
 
 db.User = sequelize.import("./user.model");
+db.Token = sequelize.import("./token.model");
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
