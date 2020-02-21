@@ -10,6 +10,7 @@ import Policy from "./hooks/Policy";
 import Terms from "./hooks/Terms";
 import Scope from "./hooks/Scope";
 import PasswordReset from "./hooks/PasswordReset";
+import authUtils from "./utils/auth";
 
 import "./assets/css/bootstrap.min.css";
 import "./assets/scss/paper-kit.scss";
@@ -34,56 +35,49 @@ const routes = [
 		component: Home,
 		className: "home-component",
 		layout: MainLayout,
-		exact: false,
-		private: false
+		exact: false
 	},
 	{
 		path: "/policy",
 		component: Policy,
 		className: "policy-component",
 		layout: MainLayout,
-		exact: false,
-		private: false
+		exact: false
 	},
 	{
 		path: "/terms-of-service",
 		component: Terms,
 		className: "terms-component",
 		layout: MainLayout,
-		exact: false,
-		private: false
+		exact: false
 	},
 	{
 		path: "/scope",
 		component: Scope,
 		className: "scope-component",
 		layout: MainLayout,
-		exact: false,
-		private: false
+		exact: false
 	},
 	{
 		path: "/",
 		component: Login,
 		className: "login-component",
 		layout: SingleLayout,
-		exact: true,
-		private: false
+		exact: true
 	},
 	{
 		path: "/register",
 		component: Register,
 		className: "login-component",
 		layout: SingleLayout,
-		exact: false,
-		private: false
+		exact: false
 	},
 	{
 		path: "/resetpass",
 		component: PasswordReset,
 		className: "resetpass-component",
 		layout: SingleLayout,
-		exact: false,
-		private: false
+		exact: false
 	}
 ];
 
@@ -113,7 +107,10 @@ const AppRoute = ({
 const Routes = () => {
 	const history = createBrowserHistory();
 	const { authState } = useContext(ContextState);
+	const { checkAuthState } = authUtils();
+
 	return useMemo(() => {
+		checkAuthState();
 		return (
 			<div>
 				<Router history={history}>

@@ -2,14 +2,15 @@ import React, { useContext } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { ContextState } from "../context";
 import { Collapse, NavbarBrand, Navbar, NavItem, Nav } from "reactstrap";
+import authUtils from "../utils/auth";
 import classnames from "classnames";
 import Logo from "../assets/img/GC-logo.png";
 
 const Menu = () => {
 	const [navbarColor, setNavbarColor] = React.useState("navbar-transparent");
 	const [navbarCollapse, setNavbarCollapse] = React.useState(false);
-	const { authState, handleUserLogout } = useContext(ContextState);
-
+	const { authState } = useContext(ContextState);
+	const { userLogout } = authUtils();
 	const toggleNavbarCollapse = () => {
 		setNavbarCollapse(!navbarCollapse);
 		document.documentElement.classList.toggle("nav-open");
@@ -39,7 +40,7 @@ const Menu = () => {
 	});
 
 	const logoutAction = () => {
-		handleUserLogout();
+		userLogout();
 		return <Redirect to="/" />;
 	};
 

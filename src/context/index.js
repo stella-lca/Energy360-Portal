@@ -5,48 +5,53 @@ import * as AuthReducer from "../store/reducers/authReducer";
 const ContextState = React.createContext([{}, () => {}]);
 
 const ContextProvider = props => {
-  const [stateAuthReducer, dispatchAuthReducer] = useReducer(
-    AuthReducer.AuthReducer,
-    AuthReducer.initialState
-  );
+	const [stateAuthReducer, dispatchAuthReducer] = useReducer(
+		AuthReducer.AuthReducer,
+		AuthReducer.initialState
+	);
 
-  const handleLogin = user => {
-    dispatchAuthReducer(ACTIONS.login_success(user));
-  };
+	const checkAuth = data => {
+		dispatchAuthReducer(ACTIONS.check_authState(data));
+	};
 
-  const handleLogout = () => {
-    dispatchAuthReducer(ACTIONS.login_failure());
-  };
+	const handleLogin = user => {
+		dispatchAuthReducer(ACTIONS.login_success(user));
+	};
 
-  const handleSignup = user => {
-    dispatchAuthReducer(ACTIONS.signup_success(user));
-  };
+	const handleLogout = () => {
+		dispatchAuthReducer(ACTIONS.login_failure());
+	};
 
-  const handleError = error => {
-    dispatchAuthReducer(ACTIONS.request_error(error));
-  };
+	const handleSignup = user => {
+		dispatchAuthReducer(ACTIONS.signup_success(user));
+	};
 
-  const {
-    is_authenticated: authState,
-    profile: profileState,
-    error: errorState
-  } = stateAuthReducer;
+	const handleError = error => {
+		dispatchAuthReducer(ACTIONS.request_error(error));
+	};
 
-  return (
-    <ContextState.Provider
-      value={{
-        authState,
-        profileState,
-        errorState,
-        handleUserLogin: user => handleLogin(user),
-        handleUserLogout: () => handleLogout(),
-        handleUserSignup: user => handleSignup(user),
-        handleError: error => handleError(error)
-      }}
-    >
-      {props.children}
-    </ContextState.Provider>
-  );
+	const {
+		is_authenticated: authState,
+		profile: profileState,
+		error: errorState
+	} = stateAuthReducer;
+
+	return (
+		<ContextState.Provider
+			value={{
+				authState,
+				profileState,
+				errorState,
+				handleUserLogin: user => handleLogin(user),
+				handleUserLogout: () => handleLogout(),
+				handleUserSignup: user => handleSignup(user),
+				handleError: error => handleError(error),
+				checkAuth: data => checkAuth(data)
+			}}
+		>
+			{props.children}
+		</ContextState.Provider>
+	);
 };
 
 export { ContextProvider, ContextState };
