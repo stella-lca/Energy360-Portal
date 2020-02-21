@@ -1,11 +1,12 @@
 'use strict';
 const express = require('express');
+const verify = require('../middleware/auth')
 const Router = express.Router();
 const { UsersController } = require('../controllers');
 
 Router.post("/", UsersController.signup);
 Router.get("/", UsersController.signin);
-Router.get("/:id", UsersController.findOne);
-Router.delete("/:id", UsersController.delete);
+Router.get("/:id", verify, UsersController.findOne);
+Router.delete("/:id", verify, UsersController.delete);
 
 module.exports = Router;

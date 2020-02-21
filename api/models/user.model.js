@@ -53,12 +53,39 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         field: "accountTypeDetail"
       }
-    }, {
-    timestamps: true,
-    createdAt: "createdDate",
-    updatedAt: "modifiedDate"
-  }
+    },
+    {
+      timestamps: true,
+      createdAt: "createdDate",
+      updatedAt: "modifiedDate"
+    }
   );
+
+  User.findByID = async (id) => {
+    return await User.findByPk(id)
+    .then(user => user? user : undefined)
+    .catch(err => undefined);
+  }
+
+  User.findUser = async (email) => {
+    return await User.findOne({where: {email}})
+    .then(user => user? user : undefined)
+    .catch(err => undefined);
+  }
+
+  User.createUser = async(user) => {
+    return await User.create(user)
+    .then(user => user)
+    .catch(err => undefined)
+  }
+
+  User.deleteUser = async id => {
+    return await User.destroy({
+      where: { id: id }
+    })
+      .then(num => (num == 1 ? true : false))
+      .catch(err => false);
+  };
 
   return User;
 };

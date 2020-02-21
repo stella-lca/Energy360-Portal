@@ -1,5 +1,12 @@
+const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 const { User } = require("../models");
+
+const {
+  APPSETTING_JWT_SECRET,
+  APPSETTING_JWT_EXPIRED,
+  APPSETTING_REFTOKEN_EXPIRED
+} = process.env;
 
 // User Signup
 exports.signup = async (req, res) => {
@@ -60,8 +67,10 @@ exports.signin = (req, res) => {
         });
       }
 
-      const { firstName, lastName, email, accountTypeDetail } = user;
-      res.status(200).send({ firstName, lastName, email, accountTypeDetail });
+      delete user.password;
+      const token = jwt.sign(user, APPSETTING_JWT_SECRET, { expiresIn: APPSETTING_JWT_EXPIRED})
+      const refreshToken = jwt.sign(user, config.refreshTokenSecret, { expiresIn: APPSETTING_REFTOKEN_EXPIRED})
+      res.status(200).send({ token, refreshToken });
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
