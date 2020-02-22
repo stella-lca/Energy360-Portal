@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const {
-	User: { findByID, findUser, createUser, deleteUser }
+	User: { findByID, findUser, createUser, deleteUser, updateUser }
 } = require("../models");
-
+const { sendEmail } = require("../utils/email");
 const { APPSETTING_JWT_SECRET, APPSETTING_JWT_EXPIRED } = process.env;
 
 const createJwtToken = async user => {
@@ -109,5 +109,60 @@ exports.checkToken = async (req, res) => {
 		return res.send({ user });
 	} else {
 		return res.status(404).send({ message: "User Not found." });
+	}
+};
+
+// Send Forgot password Email
+exports.sendForgotEmail = async (req, res) => {
+	const { email } = req.body;
+	let user = await findUser(email);
+	if (user !== undefined) {
+		delete user.password;
+		const token = await createJwtToken({ userId: user.id, email: user.email });
+		user.update({ password: token });
+		sendEmail(email, token, res);
+	} else {
+		return res.status(202).send({ message: "User Email Not found." });
+	}
+};
+
+// Forgot password
+exports.forgotPassword = async (req, res) => {
+	const { token, password } = req.body;
+	if (!token) {
+		return res.status(401).json({ message: "Token required" });
+	} else {
+		try {
+			const { email } = jwt.verify(token, APPSETTING_JWT_SECRET);
+			let user = await findUser(email);
+			if (user !== undefined && user.password === token) {
+				user.update({ password: bcrypt.hashSync(password, 8) });
+				return res
+					.status(200)
+					.json({ message: "Password updated succesfully" });
+			} else {
+				return res.status(202).json({ message: "This link is already used" });
+			}
+		} catch (e) {
+			res.status(401).send({ message: "Invalid Token" });
+		}
+	}
+};
+
+// Reset password
+exports.resetPassword = async (req, res) => {
+	const { email, password } = req.body;
+	if (!email && !password) {
+		return res
+			.status(202)
+			.json({ message: "Email and Passsword should be exist." });
+	} else {
+		let user = await findUser(email);
+		if (user !== undefined) {
+			user.update({ password: bcrypt.hashSync(password, 8) });
+			return res.status(200).json({ message: "Password updated succesfully" });
+		} else {
+			return res.status(202).json({ message: "User Not Found!" });
+		}
 	}
 };

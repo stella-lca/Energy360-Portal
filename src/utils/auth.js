@@ -8,7 +8,9 @@ const authUtils = () => {
 		handleUserSignup,
 		handleUserLogout,
 		handleError,
-		checkAuth
+		handleSuccess,
+		checkAuth,
+		loadingStart
 	} = useContext(ContextState);
 
 	const saveToken = token => {
@@ -91,11 +93,82 @@ const authUtils = () => {
 		handleUserLogout();
 	};
 
+	const forgotPassword = email => {
+		loadingStart();
+		axios({
+			method: "post",
+			url: "/api/user/forgot-password",
+			data: { email }
+		})
+			.then(response => {
+				const { status, data } = response;
+				if (status === 200 && data) {
+					handleSuccess({ status: true, msg: data.message });
+				} else {
+					handleSuccess({ status: false, msg: data.message });
+				}
+			})
+			.catch(error => {
+				handleSuccess({
+					status: false,
+					msg: "Request Error, Please try it later!"
+				});
+			});
+	};
+
+	const resetPasswordCallback = ({ password, token }) => {
+		axios({
+			method: "post",
+			url: "/api/user/forgotpass-callback",
+			data: { password, token }
+		})
+			.then(response => {
+				const { status, data } = response;
+				if (status === 200 && data) {
+					handleSuccess({ status: true, msg: data.message });
+				} else {
+					handleSuccess({ status: false, msg: data.message });
+				}
+			})
+			.catch(error => {
+				handleSuccess({
+					status: false,
+					msg: "Request Error, Please try it later!"
+				});
+			});
+	};
+
+	const resetPassword = ({ email, password }) => {
+		axios({
+			method: "post",
+			url: "/api/user/reset-password",
+			data: { email, password },
+			headers: headers()
+		})
+			.then(response => {
+				const { status, data } = response;
+				if (status === 200 && data) {
+					handleSuccess({ status: true, msg: data.message });
+				} else {
+					handleSuccess({ status: false, msg: data.message });
+				}
+			})
+			.catch(error => {
+				handleSuccess({
+					status: false,
+					msg: "Request Error, Please try it later!"
+				});
+			});
+	};
+
 	return {
 		userLogin,
 		userSignup,
 		checkAuthState,
-		userLogout
+		userLogout,
+		forgotPassword,
+		resetPasswordCallback,
+		resetPassword
 	};
 };
 

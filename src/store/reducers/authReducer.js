@@ -4,7 +4,8 @@ export const initialState = {
 	is_authenticated: false,
 	profile: null,
 	loading: true,
-	error: null
+	error: null,
+	message: {}
 };
 
 export const AuthReducer = (state = initialState, action) => {
@@ -45,6 +46,17 @@ export const AuthReducer = (state = initialState, action) => {
 				is_authenticated: false,
 				profile: null,
 				error: action.payload
+			};
+		case ACTION_TYPES.REQUEST_SUCCESS:
+			return {
+				...state,
+				loading: false,
+				message: action.payload
+			};
+		case ACTION_TYPES.LOADING_START:
+			return {
+				...state,
+				loading: true
 			};
 		default:
 			return state;

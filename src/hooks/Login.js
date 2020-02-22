@@ -109,8 +109,8 @@ const Login = () => {
 								<Button
 									className="btn-link"
 									color="danger"
-									href="#pablo"
-									onClick={e => e.preventDefault()}
+									href="/forgot-password"
+									// onClick={e => e.preventDefault()}
 								>
 									Forgot password?
 								</Button>

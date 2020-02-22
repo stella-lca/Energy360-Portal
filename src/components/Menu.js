@@ -69,11 +69,15 @@ const Menu = () => {
 							Home
 						</Link>
 					</NavItem>
-					{/* <NavItem>
-						<Link to="/scope" className="nav-link">
-							Scopes
-						</Link>
-					</NavItem> */}
+					{authState ? (
+						<NavItem>
+							<Link to="/profile" className="nav-link">
+								Profile
+							</Link>
+						</NavItem>
+					) : (
+						""
+					)}
 					<NavItem>
 						<Link to="/policy" className="nav-link">
 							Policy

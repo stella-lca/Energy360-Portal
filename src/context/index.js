@@ -30,10 +30,20 @@ const ContextProvider = props => {
 		dispatchAuthReducer(ACTIONS.request_error(error));
 	};
 
+	const handleSuccess = data => {
+		dispatchAuthReducer(ACTIONS.request_success(data));
+	};
+
+	const loadingStart = data => {
+		dispatchAuthReducer(ACTIONS.loading_start(data));
+	};
+
 	const {
 		is_authenticated: authState,
 		profile: profileState,
-		error: errorState
+		error: errorState,
+		message,
+		loading: isloading
 	} = stateAuthReducer;
 
 	return (
@@ -42,11 +52,15 @@ const ContextProvider = props => {
 				authState,
 				profileState,
 				errorState,
+				message,
+				isloading,
 				handleUserLogin: user => handleLogin(user),
 				handleUserLogout: () => handleLogout(),
 				handleUserSignup: user => handleSignup(user),
 				handleError: error => handleError(error),
-				checkAuth: data => checkAuth(data)
+				handleSuccess: data => handleSuccess(data),
+				checkAuth: data => checkAuth(data),
+				loadingStart: () => loadingStart()
 			}}
 		>
 			{props.children}

@@ -6,10 +6,12 @@ import Menu from "./components/Menu";
 import Home from "./hooks/Home";
 import Login from "./hooks/Login";
 import Register from "./hooks/Register";
+import Profile from "./hooks/Profile";
 import Policy from "./hooks/Policy";
 import Terms from "./hooks/Terms";
 import Scope from "./hooks/Scope";
-import PasswordReset from "./hooks/PasswordReset";
+import ForgotPassword from "./hooks/ForgotPassword";
+import ResetPassword from "./hooks/ResetPassword";
 import authUtils from "./utils/auth";
 
 import "./assets/css/bootstrap.min.css";
@@ -73,9 +75,23 @@ const routes = [
 		exact: false
 	},
 	{
-		path: "/resetpass",
-		component: PasswordReset,
-		className: "resetpass-component",
+		path: "/profile",
+		component: Profile,
+		className: "profile-component",
+		layout: MainLayout,
+		exact: false
+	},
+	{
+		path: "/forgot-password",
+		component: ForgotPassword,
+		className: "forgotpassword-component",
+		layout: SingleLayout,
+		exact: false
+	},
+	{
+		path: "/reset-password",
+		component: ResetPassword,
+		className: "resetpassword-component",
 		layout: SingleLayout,
 		exact: false
 	}

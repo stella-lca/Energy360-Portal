@@ -33,3 +33,16 @@ export const request_error = error => {
 		payload: error
 	};
 };
+
+export const request_success = data => {
+	return {
+		type: ACTION_TYPES.REQUEST_SUCCESS,
+		payload: data
+	};
+};
+
+export const loading_start = () => {
+	return {
+		type: ACTION_TYPES.LOADING_START
+	};
+};
