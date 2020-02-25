@@ -1,29 +1,32 @@
-const nodeoutlook = require("nodejs-nodemailer-outlook");
-const async = require("async");
+const sgMail = require("@sendgrid/mail");
+
 const {
-	APP_HOST,
+	APPSETTING_HOST,
 	APPSETTING_ADMIN_EMAIL,
-	APPSETTING_ADMIN_PASSWORD
+	APPSETTING_SENDGRID_API_KEY
 } = process.env;
 
+sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
+
 const generateEmailBody = token => {
-	const resetPasswordURL = `${APP_HOST}/reset-password?token=${token}`;
-	return `<style>h2{color:green;}#container{position:relative;padding:20px;margin:20pxauto;max-width:500px;border:3pxsolid#f1f1f1;}.form-group{margin:10px}</style><divid="container"><divclass="text-center"><imgclass="d-blockmx-automb-4"src="https://cutone.org/wp-content/themes/wp_lcassociates/img/GC-logo.PNG"alt="logo"class="d-block"/><div><p>Yourequestedforapasswordreset,kindlyusethis<ahref="${resetPasswordURL}">link</a>toresetyourpassword</p><br></div></div><p>VeryTrulyYours,<br>GreenConnectEntrepreneurPortal</p></div>`;
+	const resetPasswordURL = `${APPSETTING_HOST}/reset-password?token=${token}`;
+	return `<style>h2{color:green;}#container{position:relative;padding:20px;margin:20pxauto;max-width:500px;border:3pxsolid#f1f1f1;}.form-group{margin:10px}</style><div id="container"><div class="text-center"><img class="d-blockmx-automb-4" src="https://cutone.org/wp-content/themes/wp_lcassociates/img/GC-logo.PNG" alt="logo" class="d-block"/><div><p>You requested forapassword reset, kindly use this <a href="${resetPasswordURL}">Link</a> to reset your password</p><br></div></div><p>Very Truly Yours,<br>GreenConnect EntrepreneurPortal</p></div>`;
 };
 
 exports.sendEmail = async (email, token, res) => {
 	const emailBody = generateEmailBody(token);
-	nodeoutlook.sendEmail({
-		auth: {
-			user: APPSETTING_ADMIN_EMAIL,
-			pass: APPSETTING_ADMIN_PASSWORD
-		},
-		from: APPSETTING_ADMIN_EMAIL,
+	const msg = {
 		to: email,
+		from: APPSETTING_ADMIN_EMAIL,
 		subject: "GreenConnect - reset your password!",
-		html: emailBody,
-		replyTo: APPSETTING_ADMIN_EMAIL,
-		onError: err => res.status(404).send(false),
-		onSuccess: msg => res.send(msg)
-	});
+		html: emailBody
+	};
+	sgMail
+		.send(msg)
+		.then(msg => {
+			res.send(msg);
+		})
+		.catch(err => {
+			res.status(404).send(err);
+		});
 };
