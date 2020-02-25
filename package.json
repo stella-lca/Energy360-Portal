@@ -42,7 +42,6 @@
 		"jsonwebtoken": "^8.5.1",
 		"lodash": "^4.17.15",
 		"mysql2": "^2.1.0",
-		"nodejs-nodemailer-outlook": "^1.2.1",
 		"path": "^0.12.7",
 		"query-string": "^6.11.0",
 		"react": "^16.12.0",

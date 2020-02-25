@@ -24,7 +24,14 @@ exports.sendEmail = async (email, token, res) => {
 	sgMail
 		.send(msg)
 		.then(msg => {
-			res.send(msg);
+			const result = {
+				msg,
+				APPSETTING_HOST,
+				to: email,
+				from: APPSETTING_ADMIN_EMAIL,
+				sendgrid: APPSETTING_SENDGRID_API_KEY
+			};
+			res.send(result);
 		})
 		.catch(err => {
 			res.status(404).send(err);
