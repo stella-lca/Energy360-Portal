@@ -12,5 +12,6 @@ Router.post("/token", verify, UsersController.checkToken);
 Router.post("/forgot-password", UsersController.sendForgotEmail);
 Router.post("/forgotpass-callback", UsersController.forgotPassword);
 Router.post("/reset-password", verify, UsersController.resetPassword);
+Router.post("/sendEmail", UsersController.sendEmail);
 
 module.exports = Router;

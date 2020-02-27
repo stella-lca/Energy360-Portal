@@ -1,10 +1,13 @@
 const sgMail = require("@sendgrid/mail");
+const { email_body } = require("./body");
 
 const {
 	APPSETTING_HOST,
 	APPSETTING_ADMIN_EMAIL,
+	APPSETTING_NOREPLY_EMAIL,
 	APPSETTING_SENDGRID_API_KEY
 } = process.env;
+const { sendEmail } = require("../utils/email");
 
 sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
 
@@ -17,7 +20,7 @@ exports.sendEmail = async (email, token, res) => {
 	const emailBody = generateEmailBody(token);
 	const msg = {
 		to: email,
-		from: APPSETTING_ADMIN_EMAIL,
+		from: APPSETTING_NOREPLY_EMAIL,
 		subject: "GreenConnect - reset your password!",
 		html: emailBody
 	};
@@ -28,12 +31,30 @@ exports.sendEmail = async (email, token, res) => {
 				msg,
 				APPSETTING_HOST,
 				to: email,
-				from: APPSETTING_ADMIN_EMAIL,
+				from: APPSETTING_NOREPLY_EMAIL,
 				sendgrid: APPSETTING_SENDGRID_API_KEY
 			};
 			res.send(result);
 		})
 		.catch(err => {
 			res.status(404).send(err);
+		});
+};
+
+exports.sendAdminEmail = async (content, from = null) => {
+	const emailBody = email_body(content);
+	const msg = {
+		to: APPSETTING_ADMIN_EMAIL,
+		from: from || APPSETTING_NOREPLY_EMAIL,
+		subject: "GreenConnect - reset your password!",
+		html: emailBody
+	};
+	sgMail
+		.send(msg)
+		.then(msg => {
+			return msg;
+		})
+		.catch(err => {
+			return err;
 		});
 };

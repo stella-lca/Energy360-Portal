@@ -161,6 +161,29 @@ const authUtils = () => {
 			});
 	};
 
+	const sendEmail = ({ name, email, content }) => {
+		axios({
+			method: "post",
+			url: "/api/user/sendEmail",
+			data: { name, email, content },
+			headers: headers()
+		})
+			.then(response => {
+				const { status, data } = response;
+				if (status === 200 && data) {
+					handleSuccess({ status: true, msg: data.message });
+				} else {
+					handleSuccess({ status: false, msg: data.message });
+				}
+			})
+			.catch(error => {
+				handleSuccess({
+					status: false,
+					msg: "Request Error, Please try it later!"
+				});
+			});
+	};
+
 	return {
 		userLogin,
 		userSignup,
@@ -168,7 +191,8 @@ const authUtils = () => {
 		userLogout,
 		forgotPassword,
 		resetPasswordCallback,
-		resetPassword
+		resetPassword,
+		sendEmail
 	};
 };
 

@@ -12,6 +12,7 @@ import Terms from "./hooks/Terms";
 import Scope from "./hooks/Scope";
 import ForgotPassword from "./hooks/ForgotPassword";
 import ResetPassword from "./hooks/ResetPassword";
+import ContactUS from "./hooks/ContactUS";
 import authUtils from "./utils/auth";
 
 import "./assets/css/bootstrap.min.css";
@@ -92,6 +93,13 @@ const routes = [
 		path: "/reset-password",
 		component: ResetPassword,
 		className: "resetpassword-component",
+		layout: SingleLayout,
+		exact: false
+	},
+	{
+		path: "/contactus",
+		component: ContactUS,
+		className: "contactus-component",
 		layout: SingleLayout,
 		exact: false
 	}

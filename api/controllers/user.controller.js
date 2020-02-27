@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const {
 	User: { findByID, findUser, createUser, deleteUser, updateUser }
 } = require("../models");
-const { sendEmail } = require("../utils/email");
+const { sendEmail, sendAdminEmail } = require("../utils/email");
 const { APPSETTING_JWT_SECRET, APPSETTING_JWT_EXPIRED } = process.env;
 
 const createJwtToken = async user => {
@@ -43,6 +43,11 @@ exports.signup = async (req, res) => {
 		if (user !== undefined) {
 			delete user.password;
 			const token = await createJwtToken(user);
+			const userName = `${user.firstName} ${user.lastName}`;
+			sendAdminEmail(
+				`${userName.charAt(0).toUpperCase() +
+					userName.slice(1)} just joined to Greenconnect. <br/>`
+			);
 			res.status(200).send({ user, token });
 		} else {
 			res.status(500).send({ message: err.message });
@@ -164,5 +169,21 @@ exports.resetPassword = async (req, res) => {
 		} else {
 			return res.status(202).json({ message: "User Not Found!" });
 		}
+	}
+};
+
+// SEND EMAIL
+exports.sendEmail = async (req, res) => {
+	console.log("fwefwfwfwefwfe", req.body);
+	try {
+		const { name, email, content } = req.body;
+		const user_name = name.charAt(0).toUpperCase() + name.slice(1);
+		sendAdminEmail(
+			`${user_name} just sent a new message. <br/><br/><b>Contents:</b>${content}</br>`,
+			email
+		);
+		res.send(true);
+	} catch (e) {
+		res.status(404).send(false);
 	}
 };

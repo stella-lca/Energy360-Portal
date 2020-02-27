@@ -88,6 +88,11 @@ const Menu = () => {
 							Terms Of Service
 						</Link>
 					</NavItem>
+					<NavItem>
+						<Link to="/contactus" className="nav-link">
+							Contact Us
+						</Link>
+					</NavItem>
 					{!authState ? (
 						<NavItem>
 							<Link to="/" className="nav-link">
