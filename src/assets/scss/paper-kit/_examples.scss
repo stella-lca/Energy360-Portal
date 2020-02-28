@@ -673,3 +673,37 @@
 		}
 	}
 }
+
+.profile-action-area {
+	margin-top: 30px;
+	border-top: solid 1px darkgrey;
+	padding-top: 21px;
+	div {
+		text-align: right;
+		button {
+			width: 195px;
+		}
+	}
+	button.hidden {
+		display: none;
+	}
+}
+
+.loading-container {
+	width: 100%;
+	height: 100vh;
+	position: relative;
+	background-color: white;
+	z-index: 9999;
+	div {
+		height: 10%;
+		width: 10%;
+		margin: 0;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin-right: -50%;
+		transform: translate(-50%, -50%);
+		background-color: white;
+	}
+}

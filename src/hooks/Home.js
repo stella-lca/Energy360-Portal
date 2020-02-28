@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Container, Button } from "reactstrap";
 import { ContextState } from "../context";
 import BkImg from "../assets/img/antoine-barres.jpg";
-import CloudImg from "../assets/img/clouds.png";
 
 const Home = () => {
 	const { authState, profileState } = useContext(ContextState);
@@ -15,9 +14,9 @@ const Home = () => {
 		redirectURL =
 			profileState.accountTypeDetail === "CECONY" ? CECONY_redir : ORU_redir;
 	}
-	console.log("---------------------");
-	console.log(CECONY_redir, ORU_redir);
-	console.log(APPSETTING_GREENCONNECT_ID);
+	// console.log("---------------------");
+	// console.log(CECONY_redir, ORU_redir);
+	// console.log(APPSETTING_GREENCONNECT_ID);
 
 	return (
 		<>

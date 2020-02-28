@@ -2,31 +2,102 @@ import React, { useContext, useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import {
 	Container,
-	Input,
-	Label,
 	Button,
-	FormGroup,
 	Row,
 	Col,
 	Card,
-	Alert,
-	FormText,
 	CardImg,
-	CardText,
 	CardBody,
-	CardTitle,
-	CardSubtitle
+	CardTitle
 } from "reactstrap";
 import { Form } from "tabler-react";
 import Header from "../components/Header";
+import Loading from "../components/Loading";
+import Toast from "light-toast";
 import { ContextState } from "../context";
 import authUtils from "../utils/auth";
 import { isEmpty } from "lodash";
-import CheckIcon from "../components/CheckIcon";
 import ProfileCardImg from "../assets/img/profile-backgorund.jpg";
 
 const Profile = () => {
-	const { authState, profileState, isloading } = useContext(ContextState);
+	const { userUpdate } = authUtils();
+	const { authState, profileState, isloading, errorState } = useContext(
+		ContextState
+	);
+	const [disabled, setEditable] = useState(true);
+	const [errors, setError] = useState({});
+	const [user, setUser] = useState({});
+
+	useEffect(() => {
+		setUser(profileState);
+		if (!disabled && !errorState) {
+			Toast.success("Your profile updated!");
+		}
+		if (errorState) {
+			Toast.fail("Request error!");
+		}
+		setEditable(true);
+	}, [profileState]);
+
+	const camelCase = str => {
+		if (!str) return "";
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
+	};
+
+	const errorMsg = type => {
+		const msg = errors[type];
+		if (!isEmpty(msg)) {
+			return {
+				invalid: "true",
+				feedback: msg
+			};
+		}
+	};
+
+	const formValidate = values => {
+		let errorFields = {};
+
+		if (!values.firstName) errorFields.firstName = "Required";
+		if (!values.lastName) errorFields.lastName = "Required";
+		if (!values.streetAddress1) errorFields.streetAddress1 = "Required";
+		if (!values.city) errorFields.city = "Required";
+
+		if (values.zipCode.length < 1) {
+			errorFields.zipCode = "Required";
+		} else if (values.zipCode.replace(/_/g, "").length < 5) {
+			errorFields.zipCode = "Invalid Zip Code";
+		}
+
+		if (!values.phone) {
+			errorFields.phone = "Required";
+		} else if (values.phone.replace(/[^0-9]/g, "").length < 11) {
+			errorFields.phone = "Phone number is invalid";
+		}
+
+		return errorFields;
+	};
+
+	const onChange = e => {
+		const el = e.target;
+		setUser({ ...user, [el.name]: el.value });
+	};
+
+	const onSignupSubmit = e => {
+		e.preventDefault();
+		const formData = new FormData(e.target);
+		const tem_user = {};
+
+		for (let entry of formData.entries()) {
+			tem_user[entry[0]] = entry[1];
+		}
+		const errorMsgs = formValidate(tem_user);
+		if (isEmpty(errorMsgs)) {
+			setError({});
+			userUpdate(user);
+		} else {
+			setError(errorMsgs);
+		}
+	};
 
 	const {
 		firstName,
@@ -38,15 +109,11 @@ const Profile = () => {
 		state,
 		country,
 		phone,
-		email,
-		accountTypeDetail
-	} = profileState || {};
+		email = "",
+		accountTypeDetail = ""
+	} = user || {};
 
-	const camelCase = str => {
-		if (!str) return "";
-		return str.substring(0, 1).toUpperCase() + str.substring(1);
-	};
-
+	// if (isloading) return <Loading />;
 	if (!authState && !isloading) return <Redirect to="/home" />;
 	return (
 		<div className="page-content profile-page">
@@ -81,380 +148,179 @@ const Profile = () => {
 					<Col xs="8">
 						<Card className="profile-detail">
 							<CardTitle className="card-title">Profile Detail</CardTitle>
-							<Row md="12">
-								<Col md="6">
-									<Form.Group label="First Name">
-										<Form.Input
-											name="firstName"
-											type="text"
-											disabled
-											value={camelCase(firstName)}
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="6">
-									<Form.Group label="Last Name">
-										<Form.Input
-											name="lastName"
-											type="text"
-											disabled
-											value={camelCase(lastName)}
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="12">
-									<Form.Group label="Street Address 1">
-										<Form.Input
-											name="streetAddress1"
-											type="text"
-											disabled
-											value={camelCase(streetAddress1)}
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="8">
-									<Form.Group label="House or Suite #">
-										<Form.Input
-											name="streetAddress2"
-											type="text"
-											disabled
-											value={camelCase(streetAddress2)}
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="4">
-									<Form.Group label="City">
-										<Form.Input
-											name="city"
-											type="text"
-											disabled
-											value={camelCase(city)}
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="4">
-									<Form.Group label="Zip Code">
-										<Form.MaskedInput
-											placeholder="91210"
-											mask={[/\d/, /\d/, /\d/, /\d/, /\d/]}
-											name="zipCode"
-											disabled
-											value={zipCode}
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="4">
-									<Form.Group label="State">
-										<Form.Input
-											name="state"
-											type="text"
-											disabled
-											value={state}
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="4">
-									<Form.Group label="Country">
-										<Form.Input
-											name="country"
-											type="text"
-											disabled
-											value={country}
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="6">
-									<Form.Group label="Email address">
-										<Form.Input
-											name="email"
-											type="text"
-											disabled
-											value={email}
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="6">
-									<Form.Group label="Phone">
-										<Form.MaskedInput
-											placeholder="+1 (555) 495-3947"
-											name="phone"
-											type="text"
-											value={phone}
-											mask={[
-												"+",
-												"1",
-												" ",
-												"(",
-												/[1-9]/,
-												/\d/,
-												/\d/,
-												")",
-												" ",
-												/\d/,
-												/\d/,
-												/\d/,
-												"-",
-												/\d/,
-												/\d/,
-												/\d/,
-												/\d/
-											]}
-											disabled
-										/>
-									</Form.Group>
-								</Col>
-								<Col md="6">
-									<Form.Group label="Company">
-										<Form.Input
-											name="company"
-											type="text"
-											disabled
-											value={accountTypeDetail}
-										/>
-									</Form.Group>
-								</Col>
-							</Row>
+							<Form className="register-formd" onSubmit={onSignupSubmit}>
+								<Row md="12">
+									<Col md="6">
+										<Form.Group label="First Name">
+											<Form.Input
+												name="firstName"
+												type="text"
+												disabled={disabled}
+												value={camelCase(firstName)}
+												onChange={onChange}
+												{...errorMsg("firstName")}
+											/>
+										</Form.Group>
+									</Col>
+									<Col md="6">
+										<Form.Group label="Last Name">
+											<Form.Input
+												name="lastName"
+												type="text"
+												disabled={disabled}
+												value={camelCase(lastName)}
+												onChange={onChange}
+												{...errorMsg("lastName")}
+											/>
+										</Form.Group>
+									</Col>
+									<Col md="12">
+										<Form.Group label="Street Address 1">
+											<Form.Input
+												name="streetAddress1"
+												type="text"
+												disabled={disabled}
+												value={camelCase(streetAddress1)}
+												onChange={onChange}
+												{...errorMsg("streetAddress1")}
+											/>
+										</Form.Group>
+									</Col>
+									<Col md="8">
+										<Form.Group label="House or Suite #">
+											<Form.Input
+												name="streetAddress2"
+												type="text"
+												disabled={disabled}
+												value={camelCase(streetAddress2)}
+												onChange={onChange}
+												{...errorMsg("streetAddress2")}
+											/>
+										</Form.Group>
+									</Col>
+									<Col md="4">
+										<Form.Group label="City">
+											<Form.Input
+												name="city"
+												type="text"
+												disabled={disabled}
+												value={camelCase(city)}
+												onChange={onChange}
+												{...errorMsg("city")}
+											/>
+										</Form.Group>
+									</Col>
+									<Col md="4">
+										<Form.Group label="Zip Code">
+											<Form.MaskedInput
+												placeholder="91210"
+												mask={[/\d/, /\d/, /\d/, /\d/, /\d/]}
+												name="zipCode"
+												disabled={disabled}
+												value={zipCode}
+												onChange={onChange}
+												{...errorMsg("zipCode")}
+											/>
+										</Form.Group>
+									</Col>
+									<Col md="4">
+										<Form.Group label="Select State">
+											<Form.Select
+												name="state"
+												disabled={disabled}
+												value={state}
+												onChange={onChange}
+												{...errorMsg("state")}
+											>
+												<option>New York</option>
+											</Form.Select>
+										</Form.Group>
+									</Col>
+									<Col md="4">
+										<Form.Group label="Select Country">
+											<Form.Select
+												name="country"
+												disabled={disabled}
+												value={country}
+												onChange={onChange}
+												{...errorMsg("country")}
+											>
+												<option>United States</option>
+											</Form.Select>
+										</Form.Group>
+									</Col>
+									<Col md="6">
+										<Form.Group label="Email address">
+											<Form.Input
+												name="email"
+												type="text"
+												disabled
+												value={email}
+											/>
+										</Form.Group>
+									</Col>
+									<Col md="6">
+										<Form.Group label="Phone">
+											<Form.MaskedInput
+												placeholder="+1 (555) 495-3947"
+												name="phone"
+												type="text"
+												value={phone}
+												mask={[
+													"+",
+													"1",
+													" ",
+													"(",
+													/[1-9]/,
+													/\d/,
+													/\d/,
+													")",
+													" ",
+													/\d/,
+													/\d/,
+													/\d/,
+													"-",
+													/\d/,
+													/\d/,
+													/\d/,
+													/\d/
+												]}
+												disabled={disabled}
+												onChange={onChange}
+												{...errorMsg("phone")}
+											/>
+										</Form.Group>
+									</Col>
+									<Col md="6">
+										<Form.Group label="Utility Company">
+											<Form.Input
+												name="company"
+												type="text"
+												disabled
+												value={accountTypeDetail}
+											/>
+										</Form.Group>
+									</Col>
+								</Row>
+								<Row className="profile-action-area">
+									<Col>
+										{disabled ? (
+											<Button
+												color="info"
+												type="button"
+												onClick={e => (e.preventDefault(), setEditable(false))}
+											>
+												Edit Profile
+											</Button>
+										) : (
+											<Button color="info">Save Profile</Button>
+										)}
+									</Col>
+								</Row>
+							</Form>
 						</Card>
 					</Col>
 				</Row>
-				{/* <Row>
-						<Col className="middle-container ml-auto mr-auto" lg="6">
-							<Card className="ml-auto mr-auto my-auto">
-								<Form className="register-formd" onSubmit={onSignupSubmit}>
-									<Row md="12">
-										{errorState ? (
-											<Col md="12">
-												<Alert color="danger">{errorState}</Alert>
-											</Col>
-										) : (
-											""
-										)}
-										<Col md="6">
-											<Form.Group label="First Name">
-												<Form.Input
-													name="firstName"
-													type="text"
-													placeholder="First Name"
-													{...errorMsg("firstName")}
-												/>
-											</Form.Group>
-										</Col>
-										<Col md="6">
-											<Form.Group label="Last Name">
-												<Form.Input
-													name="lastName"
-													type="text"
-													placeholder="Last Name"
-													{...errorMsg("lastName")}
-												/>
-											</Form.Group>
-										</Col>
-										<Col md="12">
-											<Form.Group label="Street Address 1">
-												<Form.Input
-													name="streetAddress1"
-													type="text"
-													placeholder="Street Address 1"
-													{...errorMsg("streetAddress1")}
-												/>
-											</Form.Group>
-										</Col>
-										<Col md="12">
-											<Form.Group label="House or Suite #">
-												<Form.Input
-													name="streetAddress2"
-													type="text"
-													placeholder="House or Suite #"
-													{...errorMsg("streetAddress2")}
-												/>
-											</Form.Group>
-										</Col>
-										<Col md="6">
-											<Form.Group label="City">
-												<Form.Input
-													name="city"
-													type="text"
-													placeholder="City"
-													{...errorMsg("city")}
-												/>
-											</Form.Group>
-										</Col>
-										<Col md="6">
-											<Form.Group label="Zip Code">
-												<Form.MaskedInput
-													placeholder="91210"
-													mask={[/\d/, /\d/, /\d/, /\d/, /\d/]}
-													name="zipCode"
-													{...errorMsg("zipCode")}
-												/>
-												<FormText color="muted">(Format: 00000)</FormText>
-											</Form.Group>
-										</Col>
-										<Col md="12">
-											<Form.Group label="Select State">
-												<Form.Select name="state">
-													<option>New York</option>
-												</Form.Select>
-											</Form.Group>
-										</Col>
-										<Col md="12">
-											<Form.Group label="Select Country">
-												<Form.Select name="country">
-													<option>United States</option>
-												</Form.Select>
-											</Form.Group>
-										</Col>
-										<Col md="12">
-											<Form.Group label="Email address">
-												<Form.Input
-													name="email"
-													type="text"
-													placeholder="Email address"
-													{...errorMsg("email")}
-												/>
-											</Form.Group>
-										</Col>
-										<Col md="12">
-											<Form.Group label="Phone">
-												<Form.MaskedInput
-													placeholder="+1 (555) 495-3947"
-													name="phone"
-													type="text"
-													mask={[
-														"+",
-														"1",
-														" ",
-														"(",
-														/[1-9]/,
-														/\d/,
-														/\d/,
-														")",
-														" ",
-														/\d/,
-														/\d/,
-														/\d/,
-														"-",
-														/\d/,
-														/\d/,
-														/\d/,
-														/\d/
-													]}
-													{...errorMsg("phone")}
-												/>
-											</Form.Group>
-										</Col>
-										<Col md="12">
-											<Form.Group label="Password (Min. 6 characters)">
-												<Form.Input
-													name="password"
-													type="password"
-													placeholder="Password..."
-													{...errorMsg("password")}
-												/>
-												<FormText color="muted">
-													<CheckIcon
-														invalid={
-															errorMsg("password") &&
-															errorMsg("password")["errorType"].includes(
-																"length"
-															)
-														}
-													/>
-													MUST contains at least 6 characters
-												</FormText>
-												<FormText color="muted">
-													<CheckIcon
-														invalid={
-															errorMsg("password") &&
-															errorMsg("password")["errorType"].includes(
-																"uppercase"
-															)
-														}
-													/>
-													MUST contains at least one uppercase letter
-												</FormText>
-												<FormText color="muted">
-													<CheckIcon
-														invalid={
-															errorMsg("password") &&
-															errorMsg("password")["errorType"].includes(
-																"lowercase"
-															)
-														}
-													/>
-													MUST contains at least one lowercase letter
-												</FormText>
-												<FormText color="muted">
-													<CheckIcon
-														invalid={
-															errorMsg("password") &&
-															errorMsg("password")["errorType"].includes(
-																"number"
-															)
-														}
-													/>
-													MUST contains at least one number
-												</FormText>
-												<FormText color="muted">
-													<CheckIcon
-														invalid={
-															errorMsg("password") &&
-															errorMsg("password")["errorType"].includes("name")
-														}
-													/>
-													MAY NOT contains first name
-												</FormText>
-											</Form.Group>
-										</Col>
-										<Col md="12" className="utility-block">
-											<label>Radio Buttons</label>
-											<FormGroup check>
-												<Label check>
-													<Input
-														type="radio"
-														name="accountTypeDetail"
-														value="CECONY"
-														defaultChecked
-													/>
-													CECONY
-												</Label>
-											</FormGroup>
-											<FormGroup check>
-												<Label check>
-													<Input
-														type="radio"
-														name="accountTypeDetail"
-														value="ORU"
-													/>
-													ORU
-												</Label>
-											</FormGroup>
-										</Col>
-										<Col md="6"></Col>
-									</Row>
-
-									<Form.Group className="button-group">
-										<Button block className="btn-round" color="info">
-											Register
-										</Button>
-										<Button href="/" block className="btn-round" color="info">
-											Go to Login
-										</Button>
-									</Form.Group>
-								</Form>
-								<div className="forgot">
-									<Button
-										className="btn-link"
-										color="danger"
-										href="#pablo"
-										onClick={e => e.preventDefault()}
-									>
-										Forgot password?
-									</Button>
-								</div>
-							</Card>
-						</Col>
-					</Row> */}
 			</Container>
 		</div>
 	);

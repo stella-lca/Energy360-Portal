@@ -233,7 +233,20 @@ const Policy = props => (
 							<div className="jssocials-share jssocials-share-email">
 								<a
 									target="_self"
-									href="mailto:?subject=Privacy%20Policy%20%7C%20LC%20Associates%20-%20Energy%20Services&amp;body=https%3A%2F%2Fcutone.org%2Fprivacy-policy%2F"
+									href="https://cutone.org/"
+									className="jssocials-share-link"
+								>
+									<i
+										className="fa fa-share-alt-square jssocials-share-log"
+										aria-hidden="true"
+									></i>
+									<span className="jssocials-share-label">Website</span>
+								</a>
+							</div>
+							<div className="jssocials-share jssocials-share-email">
+								<a
+									target="_self"
+									href="mailto:info@cutone.org"
 									className="jssocials-share-link"
 								>
 									<i className="fa fa-at jssocials-share-logo"></i>
@@ -253,7 +266,10 @@ const Policy = props => (
 								</a>
 							</div>
 							<div className="jssocials-share jssocials-share-linkedin">
-								<a href="#" className="jssocials-share-link">
+								<a
+									href="https://www.linkedin.com/company/lcassociates/"
+									className="jssocials-share-link"
+								>
 									<i className="fa fa-linkedin jssocials-share-logo"></i>
 									<span className="jssocials-share-label">Share</span>
 								</a>

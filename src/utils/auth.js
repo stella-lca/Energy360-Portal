@@ -93,6 +93,25 @@ const authUtils = () => {
 		handleUserLogout();
 	};
 
+	const userUpdate = user => {
+		axios({
+			method: "PATCH",
+			url: "/api/user",
+			data: user
+		})
+			.then(response => {
+				const { status, data } = response;
+				if (status === 200) {
+					handleUserLogin(data.user);
+				} else {
+					handleError(data.message);
+				}
+			})
+			.catch(error => {
+				handleError("Request Error, Please try it later!");
+			});
+	};
+
 	const forgotPassword = email => {
 		loadingStart();
 		axios({
@@ -187,6 +206,7 @@ const authUtils = () => {
 	return {
 		userLogin,
 		userSignup,
+		userUpdate,
 		checkAuthState,
 		userLogout,
 		forgotPassword,

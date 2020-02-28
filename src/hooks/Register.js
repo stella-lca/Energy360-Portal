@@ -83,6 +83,9 @@ const Register = () => {
 				type: passwordType
 			};
 		}
+		if (values.password !== values.confirmpassword) {
+			errorFields.confirmpassword = "It shold be matched with!";
+		}
 
 		if (!values.email) {
 			errorFields.email = "Required";
@@ -274,6 +277,13 @@ const Register = () => {
 											type="password"
 											placeholder="Password..."
 											{...errorMsg("password")}
+										/>
+										<br />
+										<Form.Input
+											name="confirmpassword"
+											type="password"
+											placeholder="Confirm Password..."
+											{...errorMsg("confirmpassword")}
 										/>
 										<FormText color="muted">
 											<CheckIcon

@@ -78,6 +78,23 @@ exports.signin = async (req, res) => {
 	}
 };
 
+exports.update = async (req, res) => {
+	const { email } = req.body;
+	let user = await updateUser(email, req.body);
+
+	if (user !== undefined) {
+		user = await findUser(email);
+		if (user !== undefined) {
+			delete user.password;
+			res.status(200).send({ user });
+		} else {
+			res.status(500).send({ message: "Server error" });
+		}
+	} else {
+		return res.status(500).send({ message: "Profile updates was failt" });
+	}
+};
+
 // Find a single User with an id
 exports.findOne = async (req, res) => {
 	const { id } = req.params;

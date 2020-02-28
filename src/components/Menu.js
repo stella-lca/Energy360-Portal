@@ -4,12 +4,13 @@ import { ContextState } from "../context";
 import { Collapse, NavbarBrand, Navbar, NavItem, Nav } from "reactstrap";
 import authUtils from "../utils/auth";
 import classnames from "classnames";
+import Loading from "./Loading";
 import Logo from "../assets/img/GC-logo.png";
 
 const Menu = () => {
 	const [navbarColor, setNavbarColor] = React.useState("navbar-transparent");
 	const [navbarCollapse, setNavbarCollapse] = React.useState(false);
-	const { authState } = useContext(ContextState);
+	const { authState, isloading } = useContext(ContextState);
 	const { userLogout } = authUtils();
 	const toggleNavbarCollapse = () => {
 		setNavbarCollapse(!navbarCollapse);
@@ -44,6 +45,7 @@ const Menu = () => {
 		return <Redirect to="/" />;
 	};
 
+	if (isloading) return <Loading />;
 	return (
 		<Navbar className={classnames("fixed-top", navbarColor)} expand="lg">
 			<div className="navbar-translate">
