@@ -7,7 +7,6 @@ const {
 	APPSETTING_NOREPLY_EMAIL,
 	APPSETTING_SENDGRID_API_KEY
 } = process.env;
-const { sendEmail } = require("../utils/email");
 
 sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
 
