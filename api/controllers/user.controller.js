@@ -86,6 +86,8 @@ exports.update = async (req, res) => {
 		user = await findUser(email);
 		if (user !== undefined) {
 			delete user.password;
+			const user_name = user.firstName + user.lastName;
+			sendAdminEmail(`${user_name} profile was updated!`);
 			res.status(200).send({ user });
 		} else {
 			res.status(500).send({ message: "Server error" });
@@ -191,7 +193,6 @@ exports.resetPassword = async (req, res) => {
 
 // SEND EMAIL
 exports.sendEmail = async (req, res) => {
-	console.log("fwefwfwfwefwfe", req.body);
 	try {
 		const { name, email, content } = req.body;
 		const user_name = name.charAt(0).toUpperCase() + name.slice(1);
