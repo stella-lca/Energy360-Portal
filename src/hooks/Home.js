@@ -14,7 +14,7 @@ const Home = () => {
 		redirectURL =
 			profileState.accountTypeDetail === "CECONY" ? CECONY_redir : ORU_redir;
 	}
-	// console.log("---------------------");
+	// console.log("---------------------", authState);
 	// console.log(CECONY_redir, ORU_redir);
 	// console.log(APPSETTING_GREENCONNECT_ID);
 

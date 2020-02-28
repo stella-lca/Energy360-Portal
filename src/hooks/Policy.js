@@ -228,64 +228,6 @@ const Policy = props => (
 							ConEdison, the New York Independent System Operator
 						</p>
 					</div>
-					<div id="share" className="share-single jssocials">
-						<div className="jssocials-shares">
-							<div className="jssocials-share jssocials-share-email">
-								<a
-									target="_self"
-									href="https://cutone.org/"
-									className="jssocials-share-link"
-								>
-									<i
-										className="fa fa-share-alt-square jssocials-share-log"
-										aria-hidden="true"
-									></i>
-									<span className="jssocials-share-label">Website</span>
-								</a>
-							</div>
-							<div className="jssocials-share jssocials-share-email">
-								<a
-									target="_self"
-									href="mailto:info@cutone.org"
-									className="jssocials-share-link"
-								>
-									<i className="fa fa-at jssocials-share-logo"></i>
-									<span className="jssocials-share-label">E-mail</span>
-								</a>
-							</div>
-							<div className="jssocials-share jssocials-share-twitter">
-								<a href="#" className="jssocials-share-link">
-									<i className="fa fa-twitter jssocials-share-logo"></i>
-									<span className="jssocials-share-label">Tweet</span>
-								</a>
-							</div>
-							<div className="jssocials-share jssocials-share-facebook">
-								<a href="#" className="jssocials-share-link">
-									<i className="fa fa-facebook jssocials-share-logo"></i>
-									<span className="jssocials-share-label">Like</span>
-								</a>
-							</div>
-							<div className="jssocials-share jssocials-share-linkedin">
-								<a
-									href="https://www.linkedin.com/company/lcassociates/"
-									className="jssocials-share-link"
-								>
-									<i className="fa fa-linkedin jssocials-share-logo"></i>
-									<span className="jssocials-share-label">Share</span>
-								</a>
-							</div>
-							<div className="jssocials-share jssocials-share-whatsapp">
-								<a
-									target="_self"
-									href="whatsapp://send?text=https%3A%2F%2Fcutone.org%2Fprivacy-policy%2F Privacy%20Policy%20%7C%20LC%20Associates%20-%20Energy%20Services"
-									className="jssocials-share-link"
-								>
-									<i className="fa fa-whatsapp jssocials-share-logo"></i>
-									<span className="jssocials-share-label">WhatsApp</span>
-								</a>
-							</div>
-						</div>
-					</div>
 				</div>
 			</Container>
 		</div>

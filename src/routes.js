@@ -100,7 +100,7 @@ const routes = [
 		path: "/contactus",
 		component: ContactUS,
 		className: "contactus-component",
-		layout: SingleLayout,
+		layout: MainLayout,
 		exact: false
 	}
 ];

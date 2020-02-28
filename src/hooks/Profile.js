@@ -16,6 +16,7 @@ import Loading from "../components/Loading";
 import Toast from "light-toast";
 import { ContextState } from "../context";
 import authUtils from "../utils/auth";
+import { isMobile } from "react-device-detect";
 import { isEmpty } from "lodash";
 import ProfileCardImg from "../assets/img/profile-backgorund.jpg";
 
@@ -119,8 +120,8 @@ const Profile = () => {
 		<div className="page-content profile-page">
 			<Header title={"User Profile"} style={{ height: "20em" }} />
 			<Container className="profile-conent">
-				<Row>
-					<Col xs="4" className="side-bar">
+				<Row md="12">
+					<Col md="4" className="side-bar">
 						<Card className="user-card">
 							<CardImg
 								top
@@ -145,8 +146,12 @@ const Profile = () => {
 							</Button>
 						</Card>
 					</Col>
-					<Col xs="8">
-						<Card className="profile-detail">
+					<Col md="8">
+						<Card
+							className={`profile-detail ${
+								isMobile ? "mobile-view" : "desktop-view"
+							}`}
+						>
 							<CardTitle className="card-title">Profile Detail</CardTitle>
 							<Form className="register-formd" onSubmit={onSignupSubmit}>
 								<Row md="12">

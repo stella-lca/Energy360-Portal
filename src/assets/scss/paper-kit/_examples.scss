@@ -618,6 +618,9 @@
 				margin-bottom: 0.5rem;
 				font-weight: 600;
 			}
+			&.mobile-view {
+				padding: 0;
+			}
 		}
 	}
 }
@@ -706,4 +709,8 @@
 		transform: translate(-50%, -50%);
 		background-color: white;
 	}
+}
+
+.share-single {
+	margin-top: 10px;
 }

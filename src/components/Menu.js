@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { ContextState } from "../context";
 import { Collapse, NavbarBrand, Navbar, NavItem, Nav } from "reactstrap";
+import { isMobile } from "react-device-detect";
 import authUtils from "../utils/auth";
 import classnames from "classnames";
 import Loading from "./Loading";
@@ -31,7 +32,7 @@ const Menu = () => {
 				setNavbarColor("navbar-transparent");
 			}
 		};
-		setNavbarCollapse(false);
+		// setNavbarCollapse(false);
 
 		window.addEventListener("scroll", updateNavbarColor);
 
@@ -42,7 +43,10 @@ const Menu = () => {
 
 	const logoutAction = () => {
 		userLogout();
-		return <Redirect to="/" />;
+		if (isMobile) {
+			document.querySelector(".navbar-toggler").click();
+		}
+		if (window && window !== "undefined") window.location.href = "/";
 	};
 
 	if (isloading) return <Loading />;
