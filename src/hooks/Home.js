@@ -5,18 +5,14 @@ import { ContextState } from "../context";
 import BkImg from "../assets/img/antoine-barres.jpg";
 
 const Home = () => {
-	const { authState, profileState } = useContext(ContextState);
-	const { APPSETTING_GREENCONNECT_ID } = process.env;
-	const CECONY_redir = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
-	const ORU_redir = `https://www.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
+	const { authState, profileState} = useContext(ContextState);
 	let redirectURL = "/";
 	if (authState) {
-		redirectURL =
-			profileState.accountTypeDetail === "CECONY" ? CECONY_redir : ORU_redir;
+		const { accountTypeDetail, APPSETTING_GREENCONNECT_ID } = profileState;
+		const CECONY_redir = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
+		const ORU_redir = `https://www.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
+		redirectURL = accountTypeDetail === "CECONY" ? CECONY_redir : ORU_redir;
 	}
-	// console.log("---------------------", authState);
-	// console.log(CECONY_redir, ORU_redir);
-	// console.log(APPSETTING_GREENCONNECT_ID);
 
 	return (
 		<>

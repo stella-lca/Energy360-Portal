@@ -4,7 +4,7 @@ const {
 	User: { findByID, findUser, createUser, deleteUser, updateUser }
 } = require("../models");
 const { sendEmail, sendAdminEmail } = require("../utils/email");
-const { APPSETTING_JWT_SECRET, APPSETTING_JWT_EXPIRED } = process.env;
+const { APPSETTING_JWT_SECRET, APPSETTING_JWT_EXPIRED, APPSETTING_GREENCONNECT_ID, APPSETTING_CLIENT_ID} = process.env;
 
 const createJwtToken = async user => {
 	const payload = {
@@ -16,6 +16,12 @@ const createJwtToken = async user => {
 		expiresIn: APPSETTING_JWT_EXPIRED
 	});
 };
+
+const userData = (user) => {
+	user = {...user.dataValues, APPSETTING_GREENCONNECT_ID, APPSETTING_CLIENT_ID}
+	delete user.password;
+	return user
+}
 
 // User Signup
 exports.signup = async (req, res) => {
@@ -41,9 +47,9 @@ exports.signup = async (req, res) => {
 			password: bcrypt.hashSync(password, 8)
 		});
 		if (user !== undefined) {
-			delete user.password;
 			const token = await createJwtToken(user);
 			const userName = `${user.firstName} ${user.lastName}`;
+			user = userData(user)
 			sendAdminEmail(
 				`${userName.charAt(0).toUpperCase() +
 					userName.slice(1)} just joined to Greenconnect. <br/>`
@@ -69,7 +75,7 @@ exports.signin = async (req, res) => {
 			});
 		}
 
-		delete user.password;
+		user = userData(user)
 		const token = await createJwtToken(user);
 
 		res.status(200).send({ token, user });
@@ -85,7 +91,7 @@ exports.update = async (req, res) => {
 	if (user !== undefined) {
 		user = await findUser(email);
 		if (user !== undefined) {
-			delete user.password;
+			user = userData(user)
 			const user_name = user.firstName + user.lastName;
 			sendAdminEmail(`${user_name} profile was updated!`);
 			res.status(200).send({ user });
@@ -102,7 +108,7 @@ exports.findOne = async (req, res) => {
 	const { id } = req.params;
 	let user = await findByID(id);
 	if (user !== undefined) {
-		delete user.password;
+		user = userData(user)
 		return res.send({ user });
 	} else {
 		return res.status(404).send({ message: "User Not found." });
@@ -129,7 +135,7 @@ exports.checkToken = async (req, res) => {
 	const { id } = req.user;
 	let user = await findByID(id);
 	if (user !== undefined) {
-		delete user.password;
+		user = userData(user)
 		return res.send({ user });
 	} else {
 		return res.status(404).send({ message: "User Not found." });
@@ -141,7 +147,7 @@ exports.sendForgotEmail = async (req, res) => {
 	const { email } = req.body;
 	let user = await findUser(email);
 	if (user !== undefined) {
-		delete user.password;
+		user = userData(user)
 		const token = await createJwtToken({ userId: user.id, email: user.email });
 		user.update({ password: token });
 		sendEmail(email, token, res);

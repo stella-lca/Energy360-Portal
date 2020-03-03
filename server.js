@@ -25,17 +25,17 @@ const db_sync = () => {
 		});
 };
 
-// db_sync();
+db_sync()
 
-// app.use((req, res, next) => {
-// 	console.log("Check db state here", dbState);
-// 	// if (!dbState || dbState.status) {
-// 	// 	next();
-// 	// } else {
-// 	// 	db_sync();
-// 	// 	res.status(500).send(dbState);
-// 	// }
-// });
+app.use((req, res, next) => {
+	console.log("Check db state here", dbState);
+	if (dbState && dbState.status) {
+		next();
+	} else {
+		db_sync();
+		res.status(500).send(dbState);
+	}
+});
 
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, "dist")));
