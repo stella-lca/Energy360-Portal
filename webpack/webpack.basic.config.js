@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const Dotenv = require('dotenv-webpack');
 
 const REACT_PATH = path.resolve(__dirname, "../src");
 const BUILD_PATH = path.resolve(__dirname, "../dist");
@@ -101,7 +102,8 @@ module.exports = {
 		new HtmlWebPackPlugin({
 			template: "./src/index.html",
 			favicon: "./src/assets/img/favicon.png",
-			filename: "./index.html"
-		})
+			filename: "./index.html",
+		}),
+		new Dotenv()
 	]
 };
