@@ -36,7 +36,7 @@ const ForgotPassword = () => {
 					<Card className="card-signup reset-password ml-auto mr-auto my-auto">
 						{isloading ? (
 							<div className="loading-image">
-								<img src={Loading} width="100" height="100" />
+								<img src={`/${Loading}`} width="100" height="100" />
 							</div>
 						) : (
 							<>

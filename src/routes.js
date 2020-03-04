@@ -55,7 +55,7 @@ const routes = [
 		exact: false
 	},
 	{
-		path: "/scope",
+		path: "/scope-selection",
 		component: Scope,
 		className: "scope-component",
 		layout: MainLayout,

@@ -54,7 +54,7 @@ const Menu = () => {
 		<Navbar className={classnames("fixed-top", navbarColor)} expand="lg">
 			<div className="navbar-translate">
 				<NavbarBrand data-placement="bottom" href="/home" title="Energy360">
-					<img className="d-block logo" src={Logo} alt="logo" />
+					<img className="d-block logo" src={`/${Logo}`} alt="logo" />
 				</NavbarBrand>
 				<button
 					aria-expanded={navbarCollapse}

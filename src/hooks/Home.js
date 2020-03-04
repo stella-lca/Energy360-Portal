@@ -18,7 +18,7 @@ const Home = () => {
 		<>
 			<div
 				className="page-header section-dark home-layout"
-				style={{ backgroundImage: `url(${BkImg})` }}
+				style={{ backgroundImage: `url(/${BkImg})` }}
 			>
 				<div className="filter" />
 				<div className="content-center">
@@ -31,7 +31,7 @@ const Home = () => {
 								<Button href={redirectURL} className="btn btn-outline-neutral">
 									Go to My Utility Provider
 								</Button>
-								<Link to="/scope" className="btn btn-outline-neutral">
+								<Link to="/scope-selection" className="btn btn-outline-neutral">
 									Go to Scope Selection
 								</Link>
 							</div>

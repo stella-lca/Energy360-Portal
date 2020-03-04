@@ -17,7 +17,7 @@ import { isEmpty } from "lodash";
 import { ContextState } from "../context";
 import CheckIcon from "../components/CheckIcon";
 
-const ForgotPassword = props => {
+const ResetPassword = props => {
 	const { resetPasswordCallback, resetPassword } = authUtils();
 	const [errors, setError] = useState({ password: [] });
 	const { message, isloading, profileState, authState } = useContext(
@@ -150,4 +150,4 @@ const ForgotPassword = props => {
 	);
 };
 
-export default ForgotPassword;
+export default ResetPassword;
