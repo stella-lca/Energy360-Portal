@@ -17,11 +17,9 @@ const Scope = () => {
 	const { authState, profileState, isloading } = useContext(ContextState);
 	const getCallbackURL = scope => {
 		const { accountTypeDetail, APPSETTING_CLIENT_ID } = profileState;
-		const ceconyBackURL = `https://wem-cm-t1.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?client_id=${APPSETTING_CLIENT_ID}&scope=${scope}`;
-		const oruBackURL = `https://wem-cm-t1.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?client_id=${APPSETTING_CLIENT_ID}&scope=${scope}`;
-		return accountTypeDetail === "CECONY"
-			? ceconyBackURL
-			: oruBackURL;
+		const ceconyBackURL = `https://wem-cm-t1.coned.com/en/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?client_id=${APPSETTING_CLIENT_ID}&scope=${scope}`;
+		const oruBackURL = `https://wem-cm-t1.oru.com/en/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?client_id=${APPSETTING_CLIENT_ID}&scope=${scope}`;
+		return accountTypeDetail === "CECONY" ? ceconyBackURL : oruBackURL;
 	};
 
 	const onSigninSubmit = e => {

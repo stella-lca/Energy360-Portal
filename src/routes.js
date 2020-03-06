@@ -19,11 +19,11 @@ import "./assets/css/bootstrap.min.css";
 import "./assets/scss/paper-kit.scss";
 import "./assets/css/demo.css";
 
-const MainLayout = props => {
+const MainLayout = ({ className, children }) => {
 	return (
 		<>
-			<Menu />
-			{props.children}
+			<Menu className={className} />
+			{children}
 		</>
 	);
 };
@@ -37,6 +37,7 @@ const routes = [
 		path: "/home",
 		component: Home,
 		className: "home-component",
+		container: "home-layout",
 		layout: MainLayout,
 		exact: false
 	},
@@ -44,6 +45,7 @@ const routes = [
 		path: "/policy",
 		component: Policy,
 		className: "policy-component",
+		container: "single-layout",
 		layout: MainLayout,
 		exact: false
 	},
@@ -51,6 +53,7 @@ const routes = [
 		path: "/terms-of-service",
 		component: Terms,
 		className: "terms-component",
+		container: "single-layout",
 		layout: MainLayout,
 		exact: false
 	},
@@ -58,6 +61,7 @@ const routes = [
 		path: "/scope-selection",
 		component: Scope,
 		className: "scope-component",
+		container: "single-layout",
 		layout: MainLayout,
 		exact: false
 	},
@@ -79,6 +83,7 @@ const routes = [
 		path: "/profile",
 		component: Profile,
 		className: "profile-component",
+		container: "single-layout",
 		layout: MainLayout,
 		exact: false
 	},
@@ -100,6 +105,7 @@ const routes = [
 		path: "/contactus",
 		component: ContactUS,
 		className: "contactus-component",
+		container: "single-layout",
 		layout: MainLayout,
 		exact: false
 	}
@@ -110,8 +116,10 @@ const AppRoute = ({
 	layout: Layout,
 	authenticate,
 	private: AuthType,
+	container,
 	...rest
 }) => {
+	console.log(rest);
 	return (
 		<Route
 			{...rest}
@@ -119,7 +127,7 @@ const AppRoute = ({
 				AuthType && !authenticate ? (
 					<Redirect to={{ pathname: "/" }} />
 				) : (
-					<Layout>
+					<Layout className={container}>
 						<Component {...props} />
 					</Layout>
 				)

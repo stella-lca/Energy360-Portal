@@ -8,7 +8,7 @@ import classnames from "classnames";
 import Loading from "./Loading";
 import Logo from "../assets/img/GC-logo.png";
 
-const Menu = () => {
+const Menu = ({ className }) => {
 	const [navbarColor, setNavbarColor] = React.useState("navbar-transparent");
 	const [navbarCollapse, setNavbarCollapse] = React.useState(false);
 	const { authState, isloading } = useContext(ContextState);
@@ -51,7 +51,10 @@ const Menu = () => {
 
 	if (isloading) return <Loading />;
 	return (
-		<Navbar className={classnames("fixed-top", navbarColor)} expand="lg">
+		<Navbar
+			className={classnames("fixed-top", navbarColor, className)}
+			expand="lg"
+		>
 			<div className="navbar-translate">
 				<NavbarBrand data-placement="bottom" href="/home" title="Energy360">
 					<img className="d-block logo" src={`/${Logo}`} alt="logo" />

@@ -25,7 +25,7 @@ const db_sync = () => {
 		});
 };
 
-db_sync()
+db_sync();
 
 app.use((req, res, next) => {
 	console.log("Check db state here", dbState);
