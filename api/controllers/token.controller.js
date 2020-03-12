@@ -32,7 +32,7 @@ const handleToken = async function(authCode, tokenData) {
 
 	try {
 		if (token !== undefined) {
-			if (token.expiry_date < moment().format("YYYY-MM-DD HH:MM:SS")) {
+			if (moment(token.expiry_date) < moment()) {
 				//expired. update the record
 				await updateToken(authCode, {
 					access_token,
@@ -43,7 +43,7 @@ const handleToken = async function(authCode, tokenData) {
 			}
 		} else {
 			//save new token.
-			await createToken([
+			await createToken({
 				authCode,
 				access_token,
 				refresh_token,
@@ -53,7 +53,7 @@ const handleToken = async function(authCode, tokenData) {
 				resourceURI,
 				authorizationURI,
 				accountNumber
-			]);
+			});
 		}
 		return tokenData;
 	} catch (error) {
@@ -63,18 +63,18 @@ const handleToken = async function(authCode, tokenData) {
 
 exports.authenticateToken = async function(req, res) {
 	//authorization code generated & sent by Utility
-	const { code: authCode } = req.query;
+	const { code } = req.query;
 	const headers = {
 		"content-type": "application/json",
 		"ocp-apim-subscription-key": APPSETTING_SUBSCRIPTION_KEY
 	};
+
 	const data = {
-		grantType: "client_credentials",
+		grantType: "authorization_code",
 		clientId: APPSETTING_CLIENT_ID,
 		clientSecret: APPSETTING_CLIENT_SECRET,
 		redirectUri: `${APPSETTING_HOST}/api/auth/token-data`,
-		authCode
-		// "scope": session.user.scope
+		authCode: code
 	};
 
 	axios
@@ -89,10 +89,10 @@ exports.authenticateToken = async function(req, res) {
 			});
 		})
 		// .then(tokenData => req.session.shareMyDataToken = tokenData)
-		.catch(error =>
+		.catch(err => {
 			res.json({
 				status: false,
-				message: error.message
-			})
-		);
+				message: err.response.data
+			});
+		});
 };
