@@ -73,7 +73,8 @@ exports.authenticateToken = async function(req, res) {
 		grantType: "authorization_code",
 		clientId: APPSETTING_CLIENT_ID,
 		clientSecret: APPSETTING_CLIENT_SECRET,
-		redirectUri: `${APPSETTING_HOST}/api/auth/token-data`,
+		// redirectUri: `${APPSETTING_HOST}/api/auth/token-data`,
+		redirectUri: `${APPSETTING_HOST}/auth/callback`,
 		authCode: code
 	};
 
@@ -94,6 +95,7 @@ exports.authenticateToken = async function(req, res) {
 		})
 		// .then(tokenData => req.session.shareMyDataToken = tokenData)
 		.catch(err => {
+			console.log(err);
 			res.json({
 				status: false,
 				message: err.response.data,
