@@ -77,7 +77,8 @@ exports.authenticateToken = async function(req, res) {
 		authCode: code
 	};
 
-	console.log(headers, data);
+	const testResult = { headers, data };
+	console.log(testResult);
 
 	axios
 		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, { headers })
@@ -87,14 +88,16 @@ exports.authenticateToken = async function(req, res) {
 			res.json({
 				status: 200,
 				message: "Successful. Token data has saved",
-				data: tokenData
+				data: tokenData,
+				testResult
 			});
 		})
 		// .then(tokenData => req.session.shareMyDataToken = tokenData)
 		.catch(err => {
 			res.json({
 				status: false,
-				message: err.response.data
+				message: err.response.data,
+				testResult
 			});
 		});
 };
