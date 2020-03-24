@@ -77,6 +77,8 @@ exports.authenticateToken = async function(req, res) {
 		authCode: code
 	};
 
+	console.log(headers, data);
+
 	axios
 		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, { headers })
 		.then(response => response.data)
