@@ -1,5 +1,8 @@
 const axios = require("axios");
 const moment = require("moment");
+const AWS = require("aws-sdk");
+const fs = require("fs");
+
 const {
 	Token: { findByToken, createToken, updateToken }
 } = require("../models");
@@ -10,6 +13,15 @@ const {
 	APPSETTING_CLIENT_SECRET,
 	APPSETTING_SUBSCRIPTION_KEY
 } = process.env;
+
+const config = {
+	bucketName: "greenconnect-logs",
+	region: "us-east-1",
+	accessKeyId: "AKIAJYI6ZE6ZJLUHEKDQ",
+	secretAccessKey: "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"
+};
+
+const s3bucket = new AWS.S3(config);
 
 const handleToken = async function(authCode, tokenData) {
 	const token = await findByToken(authCode);
@@ -64,6 +76,7 @@ const handleToken = async function(authCode, tokenData) {
 exports.authenticateToken = async function(req, res) {
 	//authorization code generated & sent by Utility
 	const { code } = req.query;
+
 	const headers = {
 		"content-type": "application/json",
 		"ocp-apim-subscription-key": APPSETTING_SUBSCRIPTION_KEY
@@ -101,4 +114,54 @@ exports.authenticateToken = async function(req, res) {
 				requestBody: data
 			});
 		});
+};
+
+exports.errorTracker = (req, res, next) => {
+	const { headers, query, body, originalUrl } = req;
+	const data = moment().format("MMM-Do-YYYY-h-mm");
+	const logDir = `log/${data}`;
+	const fileNameName = originalUrl.replace(/\//g, "-").substring(1) + ".json";
+	const newFileName = `${data}/${fileNameName}`;
+
+	var jsonContent = { query, body, url: originalUrl, headers };
+
+	if (/\.jpg|\.png|\.js/.exec(originalUrl)) {
+		return false;
+	}
+
+	if (!fs.existsSync(logDir)) {
+		fs.mkdirSync(logDir);
+	}
+
+	var jsonContent = { query, body, url: originalUrl };
+
+	fs.writeFile(
+		`log/${newFileName}`,
+		JSON.stringify(jsonContent),
+		"utf8",
+		function(err) {
+			if (err) {
+				console.log("An error occured while writing JSON Object to File.");
+				return console.log(err);
+			}
+			const fileContent = fs.readFileSync(`log/${newFileName}`);
+
+			var params = {
+				Bucket: "greenconnect-logs",
+				Key: `${newFileName}`, //file.name doesn't exist as a property
+				Body: fileContent
+			};
+
+			s3bucket.upload(params, function(err, { Location }) {
+				if (err) {
+					console.log(err);
+					// res.status(500).send(err);
+				} else {
+					console.log(Location);
+					// res.status(200).end();
+				}
+			});
+			console.log("JSON file has been saved.");
+		}
+	);
 };

@@ -4,6 +4,7 @@ const {
 	User: { findByID, findUser, createUser, deleteUser, updateUser }
 } = require("../models");
 const { sendEmail, sendAdminEmail } = require("../utils/email");
+
 const {
 	APPSETTING_JWT_SECRET,
 	APPSETTING_JWT_EXPIRED,

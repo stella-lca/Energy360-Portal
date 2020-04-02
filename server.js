@@ -5,9 +5,12 @@ const path = require("path");
 const cors = require("cors");
 const app = express();
 require("dotenv").config();
+const moment = require("moment");
+const { errorTracker } = require("./api/controllers/token.controller");
 
 const PORT = process.env.PORT || 3000;
 const router = require("./api/routes");
+
 let dbState = {};
 
 const db = require("./api/models");
@@ -28,6 +31,7 @@ const db_sync = () => {
 db_sync();
 
 app.use((req, res, next) => {
+	errorTracker(req, res);
 	console.log("Check db state here", dbState);
 	if (dbState && dbState.status) {
 		next();
