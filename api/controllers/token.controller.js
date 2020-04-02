@@ -118,7 +118,8 @@ exports.authenticateToken = async function(req, res) {
 
 exports.errorTracker = (req, res, next) => {
 	const { headers, query, body, originalUrl } = req;
-	const date = moment().format("MMM-Do-YYYY-h-mm-ss");
+	const date = moment().format("MM-DD-YYYY-h:mm:ss");
+	const data1 = moment().format("YYYY-MM-DD");
 	const logDir = `log/`;
 	const fileName =
 		originalUrl.replace(/\//g, "-").substring(1) + "=>" + date + ".json";
@@ -149,7 +150,7 @@ exports.errorTracker = (req, res, next) => {
 
 		var params = {
 			Bucket: "greenconnect-logs",
-			Key: `${fileName}`, //file.name doesn't exist as a property
+			Key: `${data1}/${fileName}`, //file.name doesn't exist as a property
 			Body: fileContent
 		};
 
