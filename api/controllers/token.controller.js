@@ -118,12 +118,10 @@ exports.authenticateToken = async function(req, res) {
 
 exports.errorTracker = (req, res, next) => {
 	const { headers, query, body, originalUrl } = req;
-	const data = moment().format("MMM-Do-YYYY-h-mm");
-	const logDir = `log/${data}`;
-	const fileNameName = originalUrl.replace(/\//g, "-").substring(1) + ".json";
-	const newFileName = `${data}/${fileNameName}`;
-
-	var jsonContent = { query, body, url: originalUrl, headers };
+	const date = moment().format("MMM-Do-YYYY-h-mm-ss");
+	const logDir = `log/`;
+	const fileName =
+		originalUrl.replace(/\//g, "-").substring(1) + "=>" + date + ".json";
 
 	if (/\.jpg|\.png|\.js/.exec(originalUrl)) {
 		return false;
@@ -133,35 +131,37 @@ exports.errorTracker = (req, res, next) => {
 		fs.mkdirSync(logDir);
 	}
 
-	var jsonContent = { query, body, url: originalUrl };
+	var jsonContent = {
+		query,
+		body,
+		url: originalUrl,
+		headers
+	};
 
-	fs.writeFile(
-		`log/${newFileName}`,
-		JSON.stringify(jsonContent),
-		"utf8",
-		function(err) {
-			if (err) {
-				console.log("An error occured while writing JSON Object to File.");
-				return console.log(err);
-			}
-			const fileContent = fs.readFileSync(`log/${newFileName}`);
-
-			var params = {
-				Bucket: "greenconnect-logs",
-				Key: `${newFileName}`, //file.name doesn't exist as a property
-				Body: fileContent
-			};
-
-			s3bucket.upload(params, function(err, { Location }) {
-				if (err) {
-					console.log(err);
-					// res.status(500).send(err);
-				} else {
-					console.log(Location);
-					// res.status(200).end();
-				}
-			});
-			console.log("JSON file has been saved.");
+	fs.writeFile(`log/${fileName}`, JSON.stringify(jsonContent), "utf8", function(
+		err
+	) {
+		if (err) {
+			console.log("An error occured while writing JSON Object to File.");
+			return console.log(err);
 		}
-	);
+		const fileContent = fs.readFileSync(`log/${fileName}`);
+
+		var params = {
+			Bucket: "greenconnect-logs",
+			Key: `${fileName}`, //file.name doesn't exist as a property
+			Body: fileContent
+		};
+
+		s3bucket.upload(params, function(err, { Location }) {
+			if (err) {
+				console.log(err);
+				// res.status(500).send(err);
+			} else {
+				console.log(Location);
+				// res.status(200).end();
+			}
+		});
+		console.log("JSON file has been saved.");
+	});
 };

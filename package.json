@@ -69,6 +69,6 @@
 		"start:dev": "webpack --env dev --progress",
 		"start": "node server.js",
 		"postinstall": "webpack --env prod",
-		"server": "nodemon server.js"
+		"server": "node server.js"
 	}
 }

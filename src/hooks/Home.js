@@ -5,7 +5,7 @@ import { ContextState } from "../context";
 import BkImg from "../assets/img/antoine-barres.jpg";
 
 const Home = () => {
-	const { authState, profileState} = useContext(ContextState);
+	const { authState, profileState } = useContext(ContextState);
 	let redirectURL = "/";
 	if (authState) {
 		const { accountTypeDetail, APPSETTING_GREENCONNECT_ID } = profileState;

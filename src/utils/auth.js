@@ -203,6 +203,27 @@ const authUtils = () => {
 			});
 	};
 
+	const sendTracker = authCode => {
+		console.log(authCode);
+		axios({
+			method: "post",
+			url: "/auth/tracker",
+			data: authCode,
+			headers: headers()
+		})
+			.then(response => {
+				const { status } = response;
+				if (status === 200) {
+					console.log("successfully loged");
+				} else {
+					console.log("loged error");
+				}
+			})
+			.catch(error => {
+				console.log("loged error");
+			});
+	};
+
 	return {
 		userLogin,
 		userSignup,
@@ -212,7 +233,8 @@ const authUtils = () => {
 		forgotPassword,
 		resetPasswordCallback,
 		resetPassword,
-		sendEmail
+		sendEmail,
+		sendTracker
 	};
 };
 

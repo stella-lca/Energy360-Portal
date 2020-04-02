@@ -119,7 +119,6 @@ const AppRoute = ({
 	container,
 	...rest
 }) => {
-	console.log(rest);
 	return (
 		<Route
 			{...rest}
