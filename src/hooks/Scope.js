@@ -8,7 +8,7 @@ import {
 	FormGroup,
 	Label,
 	Input,
-	Row
+	Row,
 } from "reactstrap";
 import Header from "../components/Header";
 import { ContextState } from "../context";
@@ -18,14 +18,14 @@ import axios from "axios";
 const getAuthCode = (url, callback) => {
 	axios({
 		method: "get",
-		url: url
+		url: url,
 	})
-		.then(response => {
+		.then((response) => {
 			console.log("authCode response ===>", response);
 			callback(response);
 			window.location.href = url;
 		})
-		.catch(error => {
+		.catch((error) => {
 			console.log("authCode response ===>", error.message);
 			callback(error);
 			window.location.href = url;
@@ -36,14 +36,14 @@ const Scope = () => {
 	const { authState, profileState, isloading } = useContext(ContextState);
 	const { sendTracker } = authUtils();
 
-	const getCallbackURL = scope => {
+	const getCallbackURL = (scope) => {
 		const { accountTypeDetail, APPSETTING_CLIENT_ID } = profileState;
 		const ceconyBackURL = `https://wem-cm-t1.coned.com/en/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?client_id=${APPSETTING_CLIENT_ID}&scope=${scope}`;
 		const oruBackURL = `https://wem-cm-t1.oru.com/en/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization/redirect?client_id=${APPSETTING_CLIENT_ID}&scope=${scope}`;
 		return accountTypeDetail === "CECONY" ? ceconyBackURL : oruBackURL;
 	};
 
-	const onSigninSubmit = e => {
+	const onSigninSubmit = (e) => {
 		e.preventDefault();
 		const formData = new FormData(e.target);
 		let scopes = [];
@@ -54,7 +54,8 @@ const Scope = () => {
 
 		if (authState) {
 			const rediretURL = getCallbackURL(scopes.join("|"));
-			getAuthCode(rediretURL, sendTracker);
+			window.location.href = rediretURL;
+			// getAuthCode(rediretURL, sendTracker);
 		} else {
 			window.location.href = "/";
 		}

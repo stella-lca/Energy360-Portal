@@ -4,30 +4,28 @@ const AWS = require("aws-sdk");
 const fs = require("fs");
 
 const {
-	Token: { findByToken, createToken, updateToken }
+	Token: { findByToken, createToken, updateToken },
 } = require("../models");
 
 const {
 	APPSETTING_HOST,
 	APPSETTING_CLIENT_ID,
 	APPSETTING_CLIENT_SECRET,
-	APPSETTING_SUBSCRIPTION_KEY
+	APPSETTING_SUBSCRIPTION_KEY,
 } = process.env;
 
 const config = {
 	bucketName: "greenconnect-logs",
 	region: "us-east-1",
 	accessKeyId: "AKIAJYI6ZE6ZJLUHEKDQ",
-	secretAccessKey: "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"
+	secretAccessKey: "cP0lSKjgmkdn+mBepmUxldvGliKFSh8V4XnMreG2",
 };
 
 const s3bucket = new AWS.S3(config);
 
-const handleToken = async function(authCode, tokenData) {
+const handleToken = async function (authCode, tokenData) {
 	const token = await findByToken(authCode);
-	const expiryDate = moment()
-		.add(1, "hours")
-		.format("YYYY-MM-DD HH:MM:SS");
+	const expiryDate = moment().add(1, "hours").format("YYYY-MM-DD HH:MM:SS");
 
 	tokenData.expiry_date = expiryDate;
 
@@ -39,7 +37,7 @@ const handleToken = async function(authCode, tokenData) {
 		scope,
 		resourceURI,
 		authorizationURI,
-		accountNumber
+		accountNumber,
 	} = tokenData;
 
 	try {
@@ -50,7 +48,7 @@ const handleToken = async function(authCode, tokenData) {
 					access_token,
 					refresh_token,
 					expires_in,
-					expiry_date
+					expiry_date,
 				});
 			}
 		} else {
@@ -64,7 +62,7 @@ const handleToken = async function(authCode, tokenData) {
 				scope,
 				resourceURI,
 				authorizationURI,
-				accountNumber
+				accountNumber,
 			});
 		}
 		return tokenData;
@@ -73,58 +71,75 @@ const handleToken = async function(authCode, tokenData) {
 	}
 };
 
-exports.authenticateToken = async function(req, res) {
+exports.authenticateToken = async function (req, res) {
 	//authorization code generated & sent by Utility
 	const { code } = req.query;
 
 	const headers = {
 		"content-type": "application/json",
-		"ocp-apim-subscription-key": APPSETTING_SUBSCRIPTION_KEY
+		"ocp-apim-subscription-key": APPSETTING_SUBSCRIPTION_KEY,
 	};
 
 	const data = {
 		grantType: "authorization_code",
 		clientId: APPSETTING_CLIENT_ID,
 		clientSecret: APPSETTING_CLIENT_SECRET,
-		// redirectUri: `${APPSETTING_HOST}/api/auth/token-data`,
 		redirectUri: `${APPSETTING_HOST}/auth/callback`,
-		authCode: code
+		authCode: code,
 	};
+	// redirectUri: `${APPSETTING_HOST}/api/auth/token-data`,
+
+	module.exports.errorTracker({
+		...req,
+		body: data,
+		state_point: "request_action",
+	});
 
 	axios
 		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, { headers })
-		.then(response => response.data)
-		.then(async tokenData => await handleToken(authCode, tokenData))
-		.then(tokenData => {
-			res.json({
-				status: 200,
-				message: "Successful. Token data has saved",
-				data: tokenData,
-				requestHeaders: headers,
-				requestBody: data
+		.then((response) => {
+			module.exports.errorTracker({
+				...req,
+				body: response,
+				state_point: "response_action_success",
 			});
+			res.send("successfully");
 		})
+		// .then(async (tokenData) => await handleToken(authCode, tokenData))
+		// .then((tokenData) => {
+		// 	res.send({
+		// 		status: 200,
+		// 		message: "Successful. Token data has saved",
+		// 		data: tokenData,
+		// 		requestHeaders: headers,
+		// 		requestBody: data,
+		// 	});
+		// })
 		// .then(tokenData => req.session.shareMyDataToken = tokenData)
-		.catch(err => {
-			console.log(err);
-			res.json({
+		.catch((err) => {
+			module.exports.errorTracker({
+				...req,
+				body: err,
+				state_point: "response_action_fail",
+			});
+			res.send({
 				status: false,
 				message: err.response.data,
 				requestHeaders: headers,
-				requestBody: data
+				requestBody: data,
 			});
 		});
 };
 
 exports.errorTracker = (req, res, next) => {
-	const { headers, query, body, originalUrl } = req;
+	const { state_point, query, body, originalUrl } = req;
 	const date = moment().format("MM-DD-YYYY-h:mm:ss");
 	const data1 = moment().format("YYYY-MM-DD");
 	const logDir = `log/`;
 	const fileName =
 		originalUrl.replace(/\//g, "-").substring(1) + "=>" + date + ".json";
 
-	if (/\.jpg|\.png|\.js/.exec(originalUrl)) {
+	if (/\.jpg|\.png|\.ico|\.js/.exec(originalUrl)) {
 		return false;
 	}
 
@@ -136,33 +151,36 @@ exports.errorTracker = (req, res, next) => {
 		query,
 		body,
 		url: originalUrl,
-		headers
+		state_point,
 	};
 
-	fs.writeFile(`log/${fileName}`, JSON.stringify(jsonContent), "utf8", function(
-		err
-	) {
-		if (err) {
-			console.log("An error occured while writing JSON Object to File.");
-			return console.log(err);
-		}
-		const fileContent = fs.readFileSync(`log/${fileName}`);
-
-		var params = {
-			Bucket: "greenconnect-logs",
-			Key: `${data1}/${fileName}`, //file.name doesn't exist as a property
-			Body: fileContent
-		};
-
-		s3bucket.upload(params, function(err, { Location }) {
+	fs.writeFile(
+		`log/${fileName}`,
+		JSON.stringify(jsonContent),
+		"utf8",
+		function (err) {
 			if (err) {
-				console.log(err);
-				// res.status(500).send(err);
-			} else {
-				console.log(Location);
-				// res.status(200).end();
+				console.log("An error occured while writing JSON Object to File.");
+				return console.log(err);
 			}
-		});
-		console.log("JSON file has been saved.");
-	});
+			const fileContent = fs.readFileSync(`log/${fileName}`);
+
+			var params = {
+				Bucket: "greenconnect-logs",
+				Key: `${data1}/${fileName}`, //file.name doesn't exist as a property
+				Body: fileContent,
+			};
+
+			s3bucket.upload(params, function (err, { Location }) {
+				if (err) {
+					console.log(err);
+					// res.status(500).send(err);
+				} else {
+					console.log(Location);
+					// res.status(200).end();
+				}
+			});
+			console.log("JSON file has been saved.");
+		}
+	);
 };
