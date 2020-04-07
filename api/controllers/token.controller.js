@@ -71,7 +71,7 @@ const handleToken = async function (authCode, tokenData) {
 	}
 };
 
-exports.authenticateToken = async function (req, res) {
+exports.authenticateToken = function (req, res) {
 	//authorization code generated & sent by Utility
 	const { code } = req.query;
 
@@ -89,21 +89,21 @@ exports.authenticateToken = async function (req, res) {
 	};
 	// redirectUri: `${APPSETTING_HOST}/api/auth/token-data`,
 
-	module.exports.errorTracker({
-		...req,
-		body: data,
-		state_point: "request_action",
-	});
+	// module.exports.errorTracker({
+	// 	...req,
+	// 	body: data,
+	// 	state_point: "request_action",
+	// });
 
 	axios
 		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, { headers })
 		.then((response) => {
 			module.exports.errorTracker({
 				...req,
-				body: response,
-				state_point: "response_action_success",
+				body: data,
+				response: response,
 			});
-			res.send("successfully");
+			res.send({ msg: `got the access token successfully` });
 		})
 		// .then(async (tokenData) => await handleToken(authCode, tokenData))
 		// .then((tokenData) => {
@@ -119,20 +119,23 @@ exports.authenticateToken = async function (req, res) {
 		.catch((err) => {
 			module.exports.errorTracker({
 				...req,
-				body: err,
-				state_point: "response_action_fail",
+				body: data,
+				error: err,
 			});
-			res.send({
-				status: false,
-				message: err.response.data,
-				requestHeaders: headers,
-				requestBody: data,
-			});
+			// res.send("successfully");
+			res.send({ msg: `token api api ==>, ${err.stack}` });
+
+			// res.send({
+			// 	status: false,
+			// 	message: err.response.data,
+			// 	requestHeaders: headers,
+			// 	requestBody: data,
+			// });
 		});
 };
 
 exports.errorTracker = (req, res, next) => {
-	const { state_point, query, body, originalUrl } = req;
+	const { query, body, originalUrl, response, error } = req;
 	const date = moment().format("MM-DD-YYYY-h:mm:ss");
 	const data1 = moment().format("YYYY-MM-DD");
 	const logDir = `log/`;
@@ -151,7 +154,8 @@ exports.errorTracker = (req, res, next) => {
 		query,
 		body,
 		url: originalUrl,
-		state_point,
+		response,
+		error,
 	};
 
 	fs.writeFile(
