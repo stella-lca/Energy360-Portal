@@ -91,19 +91,26 @@ exports.authenticateToken = function (req, res) {
 
 	// module.exports.errorTracker({
 	// 	...req,
-	// 	body: data,
-	// 	state_point: "request_action",
+	// 	body: { ...data, state_point: "request_action" },
 	// });
+	console.log("data =====>", data);
 
 	axios
 		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, { headers })
 		.then((response) => {
+			res.send({
+				msg: `got the access token successfully`,
+				response: JSON.stringify(response.data),
+			});
+
+			console.log("response =====>", "response");
+
 			module.exports.errorTracker({
 				...req,
-				body: data,
-				response: response,
+				body: { ...data, state_point: "token api working correctly" },
+				result: JSON.stringify(response.data),
 			});
-			res.send({ msg: `got the access token successfully` });
+			return true;
 		})
 		// .then(async (tokenData) => await handleToken(authCode, tokenData))
 		// .then((tokenData) => {
@@ -117,13 +124,16 @@ exports.authenticateToken = function (req, res) {
 		// })
 		// .then(tokenData => req.session.shareMyDataToken = tokenData)
 		.catch((err) => {
+			res.send({ msg: `token api api ==>, ${err.stack}` });
+
 			module.exports.errorTracker({
 				...req,
-				body: data,
+				body: { ...data, state_point: "token api error" },
 				error: err,
 			});
+			console.log(err.response);
+
 			// res.send("successfully");
-			res.send({ msg: `token api api ==>, ${err.stack}` });
 
 			// res.send({
 			// 	status: false,
@@ -131,11 +141,12 @@ exports.authenticateToken = function (req, res) {
 			// 	requestHeaders: headers,
 			// 	requestBody: data,
 			// });
+			return true;
 		});
 };
 
 exports.errorTracker = (req, res, next) => {
-	const { query, body, originalUrl, response, error } = req;
+	const { query, body, originalUrl, result, error } = req;
 	const date = moment().format("MM-DD-YYYY-h:mm:ss");
 	const data1 = moment().format("YYYY-MM-DD");
 	const logDir = `log/`;
@@ -154,7 +165,7 @@ exports.errorTracker = (req, res, next) => {
 		query,
 		body,
 		url: originalUrl,
-		response,
+		result,
 		error,
 	};
 
