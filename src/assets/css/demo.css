@@ -390,6 +390,7 @@
     height: 640px;
     overflow: hidden;
   }
+
   .parallax .parallax-image img {
     height: 100%;
     width: auto;
@@ -453,10 +454,12 @@
 }
 
 @media (max-width: 768px) {
+
   .btn,
   .btn-morphing {
     margin-bottom: 10px;
   }
+
   .parallax .motto {
     top: 170px;
     margin-top: 0;
@@ -639,5 +642,40 @@
 @media screen and (max-width: 991px) {
   .section-navbars .navbar-collapse {
     display: none !important;
+  }
+}
+
+.callback-container {
+  background: #1a2b5a;
+  height: 100vh;
+  margin: 0px;
+
+  h1 {
+    font-family: 'Helvetica', sans-serif;
+    color: white;
+  }
+
+  p {
+    font-family: 'Helvetica', sans-serif;
+    color: white;
+    font-size: 20px;
+  }
+
+  .parent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 30%;
+
+    &>* {
+      margin: 8px auto;
+    }
+  }
+
+  .fa-heart {
+    color: tomato;
+    font-size: 50px !important;
+    height: 30px;
+    animation: throb 2s;
   }
 }

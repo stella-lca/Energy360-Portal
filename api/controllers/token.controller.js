@@ -4,7 +4,11 @@ const AWS = require("aws-sdk");
 const fs = require("fs");
 
 const {
-	Token: { findByToken, createToken, updateToken },
+	Token: {
+		findByToken,
+		createToken,
+		updateToken
+	},
 } = require("../models");
 
 const {
@@ -25,10 +29,9 @@ const s3bucket = new AWS.S3(config);
 
 const handleToken = async function (authCode, tokenData) {
 	const token = await findByToken(authCode);
-	const expiryDate = moment().add(1, "hours").format("YYYY-MM-DD HH:MM:SS");
+	const expiryDate = moment().add(1, "hours").format();
 
 	tokenData.expiry_date = expiryDate;
-
 	const {
 		access_token,
 		refresh_token,
@@ -40,10 +43,10 @@ const handleToken = async function (authCode, tokenData) {
 		accountNumber,
 	} = tokenData;
 
+
 	try {
 		if (token !== undefined) {
 			if (moment(token.expiry_date) < moment()) {
-				//expired. update the record
 				await updateToken(authCode, {
 					access_token,
 					refresh_token,
@@ -58,11 +61,11 @@ const handleToken = async function (authCode, tokenData) {
 				access_token,
 				refresh_token,
 				expires_in,
-				expiry_date,
 				scope,
 				resourceURI,
 				authorizationURI,
 				accountNumber,
+				expiry_date
 			});
 		}
 		return tokenData;
@@ -73,7 +76,9 @@ const handleToken = async function (authCode, tokenData) {
 
 exports.authenticateToken = function (req, res) {
 	//authorization code generated & sent by Utility
-	const { code } = req.query;
+	const {
+		code
+	} = req.query;
 
 	const headers = {
 		"content-type": "application/json",
@@ -87,66 +92,58 @@ exports.authenticateToken = function (req, res) {
 		redirectUri: `${APPSETTING_HOST}/auth/callback`,
 		authCode: code,
 	};
-	// redirectUri: `${APPSETTING_HOST}/api/auth/token-data`,
-
-	// module.exports.errorTracker({
-	// 	...req,
-	// 	body: { ...data, state_point: "request_action" },
-	// });
-	console.log("data =====>", data);
 
 	axios
-		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, { headers })
-		.then((response) => {
-			res.send({
-				msg: `got the access token successfully`,
-				response: JSON.stringify(response.data),
-			});
+		.post("https://medopad.s3-eu-west-1.amazonaws.com/PatietDetail.json", data, {
+			headers
+		})
+		.then(async (response) => {
+			const {
+				data: tokenData
+			} = response;
 
-			console.log("response =====>", "response");
+			const resultData = await handleToken(code, tokenData)
+
+			if (resultData) {
+				res.redirect('/callback?success=true');
+			} else {
+				res.redirect('/callback?success=false');
+			}
 
 			module.exports.errorTracker({
 				...req,
-				body: { ...data, state_point: "token api working correctly" },
+				body: {
+					...data,
+					state_point: "token api working correctly"
+				},
 				result: JSON.stringify(response.data),
 			});
-			return true;
 		})
-		// .then(async (tokenData) => await handleToken(authCode, tokenData))
-		// .then((tokenData) => {
-		// 	res.send({
-		// 		status: 200,
-		// 		message: "Successful. Token data has saved",
-		// 		data: tokenData,
-		// 		requestHeaders: headers,
-		// 		requestBody: data,
-		// 	});
-		// })
-		// .then(tokenData => req.session.shareMyDataToken = tokenData)
 		.catch((err) => {
-			res.send({ msg: `token api api ==>, ${err.stack}` });
+			res.redirect('/callback?success=false');
+			// res.status(202).json({
+			// 	message: `token api api ==>, ${err.stack}`
+			// })
 
 			module.exports.errorTracker({
 				...req,
-				body: { ...data, state_point: "token api error" },
+				body: {
+					...data,
+					state_point: "token api error"
+				},
 				error: err,
 			});
-			console.log(err.response);
-
-			// res.send("successfully");
-
-			// res.send({
-			// 	status: false,
-			// 	message: err.response.data,
-			// 	requestHeaders: headers,
-			// 	requestBody: data,
-			// });
-			return true;
 		});
 };
 
 exports.errorTracker = (req, res, next) => {
-	const { query, body, originalUrl, result, error } = req;
+	const {
+		query,
+		body,
+		originalUrl,
+		result,
+		error
+	} = req;
 	const date = moment().format("MM-DD-YYYY-h:mm:ss");
 	const data1 = moment().format("YYYY-MM-DD");
 	const logDir = `log/`;
@@ -186,7 +183,9 @@ exports.errorTracker = (req, res, next) => {
 				Body: fileContent,
 			};
 
-			s3bucket.upload(params, function (err, { Location }) {
+			s3bucket.upload(params, function (err, {
+				Location
+			}) {
 				if (err) {
 					console.log(err);
 					// res.status(500).send(err);

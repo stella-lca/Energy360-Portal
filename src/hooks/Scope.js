@@ -13,28 +13,9 @@ import {
 import Header from "../components/Header";
 import { ContextState } from "../context";
 import authUtils from "../utils/auth";
-import axios from "axios";
-
-const getAuthCode = (url, callback) => {
-	axios({
-		method: "get",
-		url: url,
-	})
-		.then((response) => {
-			console.log("authCode response ===>", response);
-			callback(response);
-			window.location.href = url;
-		})
-		.catch((error) => {
-			console.log("authCode response ===>", error.message);
-			callback(error);
-			window.location.href = url;
-		});
-};
 
 const Scope = () => {
 	const { authState, profileState, isloading } = useContext(ContextState);
-	const { sendTracker } = authUtils();
 
 	const getCallbackURL = (scope) => {
 		const { accountTypeDetail, APPSETTING_CLIENT_ID } = profileState;
@@ -55,7 +36,6 @@ const Scope = () => {
 		if (authState) {
 			const rediretURL = getCallbackURL(scopes.join("|"));
 			window.location.href = rediretURL;
-			// getAuthCode(rediretURL, sendTracker);
 		} else {
 			window.location.href = "/";
 		}

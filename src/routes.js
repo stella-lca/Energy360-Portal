@@ -13,6 +13,7 @@ import Scope from "./hooks/Scope";
 import ForgotPassword from "./hooks/ForgotPassword";
 import ResetPassword from "./hooks/ResetPassword";
 import ContactUS from "./hooks/ContactUS";
+import Callback from "./hooks/Callback";
 import authUtils from "./utils/auth";
 
 import "./assets/css/bootstrap.min.css";
@@ -108,7 +109,14 @@ const routes = [
 		container: "single-layout",
 		layout: MainLayout,
 		exact: false
-	}
+	},
+	{
+		path: "/callback",
+		component: Callback,
+		className: "callback-component",
+		layout: SingleLayout,
+		exact: false
+	},
 ];
 
 const AppRoute = ({

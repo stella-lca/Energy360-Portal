@@ -2,10 +2,10 @@
 const bcrypt = require("bcrypt");
 
 module.exports = (sequelize, DataTypes) => {
-	DataTypes.DATE.prototype._stringify = function _stringify(date, options) {
-		date = this._applyTimezone(date, options);
-		return date.format("YYYY-MM-DD HH:MM:SS");
-	};
+	// DataTypes.DATE.prototype._stringify = function _stringify(date, options) {
+	// 	date = this._applyTimezone(date, options);
+	// 	return date.format("YYYY-MM-DD HH:MM:SS");
+	// };
 
 	let Token = sequelize.define("GCEP_Tokens", {
 		authCode: {
@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
 			field: "authCode"
 		},
 		access_token: {
-			type: DataTypes.STRING,
-			field: "access_token"
+			type: DataTypes.TEXT,
+			field: "access_token",
 		},
 		refresh_token: {
 			type: DataTypes.STRING,
@@ -41,17 +41,17 @@ module.exports = (sequelize, DataTypes) => {
 			field: "authorizationURI"
 		},
 		accountNumber: {
-			type: DataTypes.INTEGER,
+			type: DataTypes.STRING,
 			field: "accountNumber"
 		}
 	});
 
 	Token.findByToken = async code => {
 		return await Token.findOne({
-			where: {
-				authCode: code
-			}
-		})
+				where: {
+					authCode: code
+				}
+			})
 			.then(token => token || undefined)
 			.catch(err => undefined);
 	};
@@ -59,11 +59,15 @@ module.exports = (sequelize, DataTypes) => {
 	Token.createToken = async tokenData => {
 		return await Token.create(tokenData)
 			.then(token => token)
-			.catch(err => undefined);
+			.catch(err => err);
 	};
 
 	Token.updateToken = async (authCode, tokenData) => {
-		return await Token.update(tokenData, { where: { authCode: authCode } })
+		return await Token.update(tokenData, {
+				where: {
+					authCode: authCode
+				}
+			})
 			.then(token => token || undefined)
 			.catch(err => undefined);
 	};
