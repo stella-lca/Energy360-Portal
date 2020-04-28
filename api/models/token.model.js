@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
 			field: "expiry_date"
 		},
 		scope: {
-			type: DataTypes.STRING,
+			type: DataTypes.TEXT,
 			field: "scope"
 		},
 		resourceURI: {
@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
 				}
 			})
 			.then(token => token || undefined)
-			.catch(err => undefined);
+			.catch(err => err);
 	};
 
 	Token.createToken = async tokenData => {
@@ -69,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
 				}
 			})
 			.then(token => token || undefined)
-			.catch(err => undefined);
+			.catch(err => err);
 	};
 
 	return Token;
