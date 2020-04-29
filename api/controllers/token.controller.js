@@ -89,7 +89,7 @@ const handleToken = async function (authCode, tokenData) {
 
 			module.exports.errorTracker({
 				body: {
-					state_point: "token created successfully"
+					state_point: createdToken && createdToken.access_token? "token created successfully" : "Query Error"
 				},
 				result: JSON.stringify(createdToken),
 			});
@@ -142,7 +142,7 @@ exports.authenticateToken = function (req, res) {
 
 			const resultData = await handleToken(code, tokenData)
 
-			if (resultData) {
+			if (resultData && resultData.access_token) {
 				res.redirect('/callback?success=true');
 			} else {
 				res.redirect('/callback?success=false');
