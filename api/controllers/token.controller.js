@@ -55,7 +55,7 @@ const handleToken = async function (authCode, tokenData) {
 	try {
 		if (token !== undefined && token.access_token) {
 			// if (moment(token.expiry_date) < moment()) {
-			token = await updateToken(authCode, {
+			const updatedStatus = await updateToken(authCode, {
 				access_token,
 				refresh_token,
 				expires_in,
@@ -66,7 +66,7 @@ const handleToken = async function (authCode, tokenData) {
 
 			module.exports.errorTracker({
 				body: {
-					state_point: token? "token updated successfully" : "token updating error"
+					state_point: updatedStatus? "token updated successfully" : "token updating error"
 				},
 				result: JSON.stringify(token),
 			});
