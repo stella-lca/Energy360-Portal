@@ -120,21 +120,21 @@ exports.authenticateToken = function (req, res) {
 	};
 
 	axios
-		// .post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, {
-		.get("https://medopad.s3-eu-west-1.amazonaws.com/PatietDetail.json", data, {
+		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, {
 			headers
 		})
 		.then(async (response) => {
-			response.data = {
-				"access_token": "eyJrawQiOdJDTAREZGFFOFLOV3NPY1dQSGFoT1EsTLhOSIFIVIFFTCLObEwtsUxoQds4IiwivwxnIjoiUlMyNTVifQ.eyIJZZxTiOjEsImpaasIGIkFULKLIM@hfNHNpRISECVVIUDY422FJMWSMUDdNVMVzyNFN@ZmNNSnZXdG8uaJREMIdUZnBgektqviipjZ1hFTTNOQktidnRHaGVVWWEJjYm]jaGQINlgzdz@iLCIpc3Mi0iJodHRwezovL2NvbmVkLmordGFwemV2aWv3LeaNvbSovYXV@aDIvYXVZ0TJ2eDVnMzFRaHLyWWYwaDciLCJhdWQi0dJodHAwezovL2FwaxQuY29uZWQuY29tliwiaWFOljoxNTg3NTUxNJMZLCI1eHALOJELODCINTUyMzMsImNpZCI61jBvYWluZHpqZGZRTIVES1pLMGg3IiwidwlkIjoiMDB1b2s3bwhaZ250RnFPc2@waDciLCJzY3AiOlsiZGN4éLmdivySyZWFkX2NvbmS1lY3RNeURHdGELLCIKY3guZ2)jLnILYWRbwWruYWdlbWVudFJFULRTZXI2aWNlcy1sIm9mZmxpbmVFfYWNjZXNzliwZGN4LmdivySyZWFkX3B1dER1bGVOZUFIdGhvcml6YXRpb24iLCIkY3guZ2)LalYRfemvzb3Vy¥2VMZxZ1bFJFUIQILCIKY3guZ2]jLnILYWRECHVORGVSZXR1QXBwbG1JYXRpb25JbmZvemihdGlvbljle291emNlLiwiZGn4LmdivySyZWFkKX1IFULRmb3ICdbxrl1@sInN1Vil6éImhhbWFAY29uZWQuY29tIiwiYWNjb3VudHMiOlsiMTAwMDAxMzE4MjcxOzsxI119.PdéITzZ4T2on_3nbU@LOEavGu9LBnEwsnjQI]z6F_dEh3GbBZPqbTSdWLGSUTEGp1xhYHpU@G6xPOnBrs_lcpux2SNTuM@-1kH3aakLNouj8-BZ6GBNdx-acR3]]qpd3We@naz4eGhsBecsvTCIUHVO_ZgdPeB7HAG7_gs-NU@aEL8uYCfI7ozG7715gAi-xkSbdHAdiospvR-cdSsO@Lyaxnt2u7TFmFXo__OXY2mNplmgSvoOkBtlyRiAGENN]tWOExxzudaSuTSgrMxoDcal46éxiOSEptusrqjyxrOgenpgegOWvADFRYInYpPyMOTdTPcjia4RaOsmgnDz3scoaA",
-				"refresh_token": "_imiaWocizAzXB1ItVQOMFFtznxXvM2flalTHavuQTése",
-				"token_type": "Bearer",
-				"expires_in": "3600",
-				"scope": "FS=1_3_4_5_7_10_13_14_16_18_32_33_35_37_38_41_44;IntervalDurationstion=Monthly_3500_900_300;BlockDuration=Monthly_Daily;HistoryLength=63112904;FB=1_3_4_5_7_10_13_14_18_32_33_35_37_38_41_44;IntervelDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904;FB=1_3_4_5_7_10_13_14_18_32_33_35_37_38_41_44;IntervalDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904;",
-				"resourceURI": "https://apit.coned.com/gbc/v1/resource/Batch/Subscription/610",
-				"authorizationURI": "https://apit.coned.com/gbe/v1/resource/Authorization/874",
-				"accountNumber": "NTg40DA3HDQSMDAWMDI3"
-			}
+			// .get("https://medopad.s3-eu-west-1.amazonaws.com/PatietDetail.json", data, {
+			// response.data = {
+			// 	"access_token": "eyJrawQiOdJDTAREZGFFOFLOV3NPY1dQSGFoT1EsTLhOSIFIVIFFTCLObEwtsUxoQds4IiwivwxnIjoiUlMyNTVifQ.eyIJZZxTiOjEsImpaasIGIkFULKLIM@hfNHNpRISECVVIUDY422FJMWSMUDdNVMVzyNFN@ZmNNSnZXdG8uaJREMIdUZnBgektqviipjZ1hFTTNOQktidnRHaGVVWWEJjYm]jaGQINlgzdz@iLCIpc3Mi0iJodHRwezovL2NvbmVkLmordGFwemV2aWv3LeaNvbSovYXV@aDIvYXVZ0TJ2eDVnMzFRaHLyWWYwaDciLCJhdWQi0dJodHAwezovL2FwaxQuY29uZWQuY29tliwiaWFOljoxNTg3NTUxNJMZLCI1eHALOJELODCINTUyMzMsImNpZCI61jBvYWluZHpqZGZRTIVES1pLMGg3IiwidwlkIjoiMDB1b2s3bwhaZ250RnFPc2@waDciLCJzY3AiOlsiZGN4éLmdivySyZWFkX2NvbmS1lY3RNeURHdGELLCIKY3guZ2)jLnILYWRbwWruYWdlbWVudFJFULRTZXI2aWNlcy1sIm9mZmxpbmVFfYWNjZXNzliwZGN4LmdivySyZWFkX3B1dER1bGVOZUFIdGhvcml6YXRpb24iLCIkY3guZ2)LalYRfemvzb3Vy¥2VMZxZ1bFJFUIQILCIKY3guZ2]jLnILYWRECHVORGVSZXR1QXBwbG1JYXRpb25JbmZvemihdGlvbljle291emNlLiwiZGn4LmdivySyZWFkKX1IFULRmb3ICdbxrl1@sInN1Vil6éImhhbWFAY29uZWQuY29tIiwiYWNjb3VudHMiOlsiMTAwMDAxMzE4MjcxOzsxI119.PdéITzZ4T2on_3nbU@LOEavGu9LBnEwsnjQI]z6F_dEh3GbBZPqbTSdWLGSUTEGp1xhYHpU@G6xPOnBrs_lcpux2SNTuM@-1kH3aakLNouj8-BZ6GBNdx-acR3]]qpd3We@naz4eGhsBecsvTCIUHVO_ZgdPeB7HAG7_gs-NU@aEL8uYCfI7ozG7715gAi-xkSbdHAdiospvR-cdSsO@Lyaxnt2u7TFmFXo__OXY2mNplmgSvoOkBtlyRiAGENN]tWOExxzudaSuTSgrMxoDcal46éxiOSEptusrqjyxrOgenpgegOWvADFRYInYpPyMOTdTPcjia4RaOsmgnDz3scoaA",
+			// 	"refresh_token": "_imiaWocizAzXB1ItVQOMFFtznxXvM2flalTHavuQTése",
+			// 	"token_type": "Bearer",
+			// 	"expires_in": "3600",
+			// 	"scope": "FS=1_3_4_5_7_10_13_14_16_18_32_33_35_37_38_41_44;IntervalDurationstion=Monthly_3500_900_300;BlockDuration=Monthly_Daily;HistoryLength=63112904;FB=1_3_4_5_7_10_13_14_18_32_33_35_37_38_41_44;IntervelDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904;FB=1_3_4_5_7_10_13_14_18_32_33_35_37_38_41_44;IntervalDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904;",
+			// 	"resourceURI": "https://apit.coned.com/gbc/v1/resource/Batch/Subscription/610",
+			// 	"authorizationURI": "https://apit.coned.com/gbe/v1/resource/Authorization/874",
+			// 	"accountNumber": "NTg40DA3HDQSMDAWMDI3"
+			// }
 
 			const {
 				data: tokenData
