@@ -28,7 +28,7 @@ const config = {
 const s3bucket = new AWS.S3(config);
 
 const handleToken = async function (authCode, tokenData) {
-	const token = await findByToken(authCode);
+	let token = await findByToken(authCode);
 	const expiryDate = moment().add(1, "hours").format();
 
 	// console.log('existing token ===>', token)
@@ -55,25 +55,25 @@ const handleToken = async function (authCode, tokenData) {
 	try {
 		if (token !== undefined && token.access_token) {
 			// if (moment(token.expiry_date) < moment()) {
-			const updatedToken = await updateToken(authCode, {
+			token = await updateToken(authCode, {
 				access_token,
 				refresh_token,
 				expires_in,
 				expiry_date,
 			});
 
-			// console.log("updated token ===>", updatedToken)
+			// console.log("updated token ===>", token)
 
 			module.exports.errorTracker({
 				body: {
-					state_point: "token updated successfully"
+					state_point: token? "token updated successfully" : "token updating error"
 				},
-				result: JSON.stringify(updatedToken),
+				result: JSON.stringify(token),
 			});
 			// }
 		} else {
 			//save new token.
-			const createdToken = await createToken({
+			token = await createToken({
 				authCode,
 				access_token,
 				refresh_token,
@@ -85,16 +85,16 @@ const handleToken = async function (authCode, tokenData) {
 				expiry_date
 			});
 
-			// console.log("created token ===>", createdToken)
+			// console.log("created token ===>", token)
 
 			module.exports.errorTracker({
 				body: {
-					state_point: createdToken && createdToken.access_token? "token created successfully" : "Query Error"
+					state_point: token && token.access_token? "token created successfully" : "token createing - Query Error"
 				},
-				result: JSON.stringify(createdToken),
+				result: JSON.stringify(token),
 			});
 		}
-		return tokenData;
+		return token;
 	} catch (error) {
 		throw error;
 	}

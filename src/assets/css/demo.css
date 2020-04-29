@@ -665,7 +665,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-top: 30%;
+    padding-top: 20%;
 
     &>* {
       margin: 8px auto;

@@ -44,6 +44,11 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			field: "accountNumber"
 		}
+	},
+	{
+		timestamps: true,
+		createdAt: "createdDate",
+		updatedAt: "modifiedDate"
 	});
 
 	Token.findByToken = async code => {
