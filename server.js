@@ -18,7 +18,8 @@ let dbState = {};
 const db = require("./api/models");
 const db_sync = () => {
 	db.sequelize
-		.sync({ alter: true })
+		.sync()
+		// .sync({ alter: true })
 		.then(msg => {
 			console.log("DB connected successfully!");
 			dbState.status = true;
