@@ -66,7 +66,7 @@ const handleToken = async function (authCode, tokenData) {
 
 			module.exports.errorTracker({
 				body: {
-					state_point: updatedStatus? "token updated successfully" : "token updating error"
+					state_point: updatedStatus ? "token updated successfully" : "token updating error"
 				},
 				result: JSON.stringify(token),
 			});
@@ -89,7 +89,7 @@ const handleToken = async function (authCode, tokenData) {
 
 			module.exports.errorTracker({
 				body: {
-					state_point: token && token.access_token? "token created successfully" : "token createing - Query Error"
+					state_point: token && token.access_token ? "token created successfully" : "token createing - Query Error"
 				},
 				result: JSON.stringify(token),
 			});
@@ -177,10 +177,10 @@ exports.authenticateToken = function (req, res) {
 exports.errorTracker = (req, res, next) => {
 	const {
 		query = {},
-		body = {},
-		originalUrl = '/test-action',
-		result,
-		error
+			body = {},
+			originalUrl = '/test-action',
+			result,
+			error
 	} = req;
 	const date = moment().format("MM-DD-YYYY-h:mm:ss");
 	const data1 = moment().format("YYYY-MM-DD");

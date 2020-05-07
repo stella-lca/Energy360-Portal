@@ -1,5 +1,4 @@
 {
-    "editor.formatOnSave": true,
     "prettier.useTabs": true,
     "appService.defaultWebAppToDeploy": "/subscriptions/6c30a4e2-9dfa-43bb-851b-6fc61c5c59a5/resourceGroups/GreenConnectApp/providers/Microsoft.Web/sites/greenconnect-entrepreneur-portal",
     "appService.deploySubpath": ""
