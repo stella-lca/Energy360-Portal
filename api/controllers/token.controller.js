@@ -189,8 +189,10 @@ exports.errorTracker = (req, res, next) => {
 	const date = moment().format("MM-DD-YYYY-h:mm:ss");
 	const data1 = moment().format("YYYY-MM-DD");
 	const logDir = `log/`;
-	const fileName =
-		originalUrl.replace(/\//g, "-").substring(1) + "=>" + date + ".json";
+
+	const actionName = originalUrl.replace(/\//g, "-").substring(1)
+	const fileName = actionName + "=>" + date + ".json";
+	if (!actionName) return false
 
 	if (/\.jpg|\.png|\.ico|\.js/.exec(originalUrl)) {
 		return false;
