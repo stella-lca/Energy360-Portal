@@ -337,7 +337,7 @@ const Register = () => {
 									</Form.Group>
 								</Col>
 								<Col md="12" className="utility-block">
-									<label>Radio Buttons</label>
+									<label>Utility company</label>
 									<FormGroup check>
 										<Label check>
 											<Input

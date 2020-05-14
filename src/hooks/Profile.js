@@ -114,6 +114,7 @@ const Profile = () => {
     accountTypeDetail = ""
   } = user || {};
 
+
   if (isloading) return <Loading />;
   if (!authState && !isloading) return <Redirect to="/" />;
   return (
@@ -298,12 +299,15 @@ const Profile = () => {
                   </Col>
                   <Col md="6">
                     <Form.Group label="Utility Company">
-                      <Form.Input
-                        name="company"
-                        type="text"
-                        disabled
+                      <Form.Select
+                        name="accountTypeDetail"
+                        disabled={disabled}
                         value={accountTypeDetail}
-                      />
+                        onChange={onChange}
+                      >
+                        <option value="CECONY">CECONY</option>
+                        <option value="ORU">ORU</option>
+                      </Form.Select>
                     </Form.Group>
                   </Col>
                 </Row>

@@ -4,11 +4,7 @@ const AWS = require("aws-sdk");
 const fs = require("fs");
 
 const {
-	Token: {
-		findByToken,
-		createToken,
-		updateToken
-	},
+	Token: { findByToken, createToken, updateToken },
 } = require("../models");
 
 const {
@@ -34,7 +30,7 @@ const handleToken = async function (authCode, tokenData) {
 	// console.log('existing token ===>', token)
 	module.exports.errorTracker({
 		body: {
-			state_point: "token already existed"
+			state_point: "token already existed",
 		},
 		result: JSON.stringify(token),
 	});
@@ -51,7 +47,6 @@ const handleToken = async function (authCode, tokenData) {
 		accountNumber,
 	} = tokenData;
 
-
 	try {
 		if (token !== undefined && token.access_token) {
 			// if (moment(token.expiry_date) < moment()) {
@@ -66,7 +61,9 @@ const handleToken = async function (authCode, tokenData) {
 
 			module.exports.errorTracker({
 				body: {
-					state_point: updatedStatus ? "token updated successfully" : "token updating error"
+					state_point: updatedStatus
+						? "token updated successfully"
+						: "token updating error",
 				},
 				result: JSON.stringify(token),
 			});
@@ -82,14 +79,17 @@ const handleToken = async function (authCode, tokenData) {
 				resourceURI,
 				authorizationURI,
 				accountNumber,
-				expiry_date
+				expiry_date,
 			});
 
 			// console.log("created token ===>", token)
 
 			module.exports.errorTracker({
 				body: {
-					state_point: token && token.access_token ? "token created successfully" : "token createing - Query Error"
+					state_point:
+						token && token.access_token
+							? "token created successfully"
+							: "token createing - Query Error",
 				},
 				result: JSON.stringify(token),
 			});
@@ -102,9 +102,7 @@ const handleToken = async function (authCode, tokenData) {
 
 exports.authenticateToken = function (req, res) {
 	//authorization code generated & sent by Utility
-	const {
-		code
-	} = req.query;
+	const { code } = req.query;
 
 	const headers = {
 		"content-type": "application/json",
@@ -121,57 +119,36 @@ exports.authenticateToken = function (req, res) {
 
 	axios
 		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, {
-			headers
+			headers,
 		})
 		.then(async (response) => {
-
-		// .get("https://medopad.s3-eu-west-1.amazonaws.com/PatietDetail.json", data, {
-		// 	headers
-		// })
-		// .then(async (response) => {
-		// 	response.data = {
-		// 		"access_token": "eyJrawQiOdJDTAREZGFFOFLOV3NPY1dQSGFoT1EsTLhOSIFIVIFFTCLObEwtsUxoQds4IiwivwxnIjoiUlMyNTVifQ.eyIJZZxTiOjEsImpaasIGIkFULKLIM@hfNHNpRISECVVIUDY422FJMWSMUDdNVMVzyNFN@ZmNNSnZXdG8uaJREMIdUZnBgektqviipjZ1hFTTNOQktidnRHaGVVWWEJjYm]jaGQINlgzdz@iLCIpc3Mi0iJodHRwezovL2NvbmVkLmordGFwemV2aWv3LeaNvbSovYXV@aDIvYXVZ0TJ2eDVnMzFRaHLyWWYwaDciLCJhdWQi0dJodHAwezovL2FwaxQuY29uZWQuY29tliwiaWFOljoxNTg3NTUxNJMZLCI1eHALOJELODCINTUyMzMsImNpZCI61jBvYWluZHpqZGZRTIVES1pLMGg3IiwidwlkIjoiMDB1b2s3bwhaZ250RnFPc2@waDciLCJzY3AiOlsiZGN4éLmdivySyZWFkX2NvbmS1lY3RNeURHdGELLCIKY3guZ2)jLnILYWRbwWruYWdlbWVudFJFULRTZXI2aWNlcy1sIm9mZmxpbmVFfYWNjZXNzliwZGN4LmdivySyZWFkX3B1dER1bGVOZUFIdGhvcml6YXRpb24iLCIkY3guZ2)LalYRfemvzb3Vy¥2VMZxZ1bFJFUIQILCIKY3guZ2]jLnILYWRECHVORGVSZXR1QXBwbG1JYXRpb25JbmZvemihdGlvbljle291emNlLiwiZGn4LmdivySyZWFkKX1IFULRmb3ICdbxrl1@sInN1Vil6éImhhbWFAY29uZWQuY29tIiwiYWNjb3VudHMiOlsiMTAwMDAxMzE4MjcxOzsxI119.PdéITzZ4T2on_3nbU@LOEavGu9LBnEwsnjQI]z6F_dEh3GbBZPqbTSdWLGSUTEGp1xhYHpU@G6xPOnBrs_lcpux2SNTuM@-1kH3aakLNouj8-BZ6GBNdx-acR3]]qpd3We@naz4eGhsBecsvTCIUHVO_ZgdPeB7HAG7_gs-NU@aEL8uYCfI7ozG7715gAi-xkSbdHAdiospvR-cdSsO@Lyaxnt2u7TFmFXo__OXY2mNplmgSvoOkBtlyRiAGENN]tWOExxzudaSuTSgrMxoDcal46éxiOSEptusrqjyxrOgenpgegOWvADFRYInYpPyMOTdTPcjia4RaOsmgnDz3scoaA",
-		// 		"refresh_token": "_imiaWocizAzXB1ItVQOMFFtznxXvM2flalTHavuQTése",
-		// 		"token_type": "Bearer",
-		// 		"expires_in": "3600",
-		// 		"scope": "FS=1_3_4_5_7_10_13_14_16_18_32_33_35_37_38_41_44;IntervalDurationstion=Monthly_3500_900_300;BlockDuration=Monthly_Daily;HistoryLength=63112904;FB=1_3_4_5_7_10_13_14_18_32_33_35_37_38_41_44;IntervelDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904;FB=1_3_4_5_7_10_13_14_18_32_33_35_37_38_41_44;IntervalDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904;",
-		// 		"resourceURI": "https://apit.coned.com/gbc/v1/resource/Batch/Subscription/610",
-		// 		"authorizationURI": "https://apit.coned.com/gbe/v1/resource/Authorization/874",
-		// 		"accountNumber": "NTg40DA3HDQSMDAWMDI3"
-		// 	}
-
-			const {
-				data: tokenData
-			} = response;
+			const { data: tokenData } = response;
 
 			module.exports.errorTracker({
 				...req,
 				body: {
 					...data,
-					state_point: "token api working correctly"
+					state_point: "token api working correctly",
 				},
 				result: JSON.stringify(response.data),
 			});
 
-			const resultData = await handleToken(code, tokenData)
+			const resultData = await handleToken(code, tokenData);
 
 			if (resultData && resultData.access_token) {
-				res.redirect('/callback?success=true');
+				res.redirect("/callback?success=true");
 			} else {
-				res.redirect('/callback?success=false');
+				res.redirect("/callback?success=false");
 			}
 		})
 		.catch((err) => {
-			res.redirect('/callback?success=false');
-			// res.status(202).json({
-			// 	message: `token api api ==>, ${err.stack}`
-			// })
+			res.redirect("/callback?success=false");
 
 			module.exports.errorTracker({
 				...req,
 				body: {
 					...data,
-					state_point: "token api process error"
+					state_point: "token api process error",
 				},
 				error: err,
 			});
@@ -181,18 +158,18 @@ exports.authenticateToken = function (req, res) {
 exports.errorTracker = (req, res, next) => {
 	const {
 		query = {},
-			body = {},
-			originalUrl = '/test-action',
-			result,
-			error
+		body = {},
+		originalUrl = "/test-action",
+		result,
+		error,
 	} = req;
 	const date = moment().format("MM-DD-YYYY-h:mm:ss");
 	const data1 = moment().format("YYYY-MM-DD");
 	const logDir = `log/`;
 
-	const actionName = originalUrl.replace(/\//g, "-").substring(1)
+	const actionName = originalUrl.replace(/\//g, "-").substring(1);
 	const fileName = actionName + "=>" + date + ".json";
-	if (!actionName) return false
+	if (!actionName) return false;
 
 	if (/\.jpg|\.png|\.ico|\.js/.exec(originalUrl)) {
 		return false;
@@ -227,9 +204,7 @@ exports.errorTracker = (req, res, next) => {
 				Body: fileContent,
 			};
 
-			s3bucket.upload(params, function (err, {
-				Location
-			}) {
+			s3bucket.upload(params, function (err, { Location }) {
 				if (err) {
 					console.log(err);
 					// res.status(500).send(err);
