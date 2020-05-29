@@ -9,7 +9,7 @@ const Home = () => {
 	let redirectURL = "/";
 	if (authState) {
 		const { accountTypeDetail, APPSETTING_GREENCONNECT_ID } = profileState;
-		const CECONY_redir = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
+		const CECONY_redir = `https://wem-cm-t1.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
 		const ORU_redir = `https://www.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
 		redirectURL = accountTypeDetail === "CECONY" ? CECONY_redir : ORU_redir;
 	}
