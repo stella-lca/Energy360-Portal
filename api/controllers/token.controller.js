@@ -155,6 +155,43 @@ exports.authenticateToken = function (req, res) {
 		});
 };
 
+exports.notifyCallback = async function (req, res) {
+	try {
+		const body = req.body;
+		let fileUrls;
+		if (body) {
+			fileUrls = body['espi:batchlist']['espi:resources'];
+		}
+
+		console.log(fileUrls)
+		// req.body.pipe(feedparser);
+
+		// console.log("updated token ===>", token)
+
+		// module.exports.errorTracker({
+		// 	body: {
+		// 		state_point: updatedStatus
+		// 			? "token updated successfully"
+		// 			: "token updating error",
+		// 	},
+		// 	result: JSON.stringify(token),
+		// });
+		// }
+		res.status(200).send("ok");
+
+	} catch (error) {
+		module.exports.errorTracker({
+			body: {
+				state_point: "notification callbark content error"
+			},
+			result: "",
+		});
+		res.status(500).end();
+	}
+};
+
+
+
 exports.errorTracker = (req, res, next) => {
 	const {
 		query = {},
