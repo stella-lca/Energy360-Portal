@@ -2,12 +2,13 @@ const axios = require("axios");
 const moment = require("moment");
 const AWS = require("aws-sdk");
 const async = require("async");
-const { sendNotifyEmail } = require('../utils/email');
+const { sendAdminEmail } = require('../utils/email');
 const { downloadFile } = require('../utils/downloadFile');
 const { addLog } = require('../utils/errorTacker');
 
 const {
 	Token: { findByToken, createToken, updateToken },
+	// Log: { findAllLog, createLog, findLog }
 } = require("../models");
 
 const {
@@ -124,8 +125,12 @@ exports.authenticateToken = function (req, res) {
 
 exports.notifyCallback = async function (req, res) {
 	try {
+
+		// const list = await findAllLog();
+		// console.log("log list ===>", list)
+
 		const body = req.body;
-		let fileUrls;
+		let fileUrls = [];
 		if (body) {
 			fileUrls = body['espi:batchlist']['espi:resources'];
 		}
@@ -137,21 +142,33 @@ exports.notifyCallback = async function (req, res) {
 				})
 			}, (err, results) => {
 				if (err || results.includes(false)) {
+					sendAdminEmail('Received the utility callback, but contents error', 'GreenConnect - Utility API Response')
 					addLog('Received the utility callback, but contents error');
 					res.status(500).send();
 				} else {
+					sendAdminEmail('Proceed the utility callback successfully', 'GreenConnect - Utility API Response')
 					addLog('Proceed the utility callback successfully', fileUrls);
 					res.status(200).send();
 				}
 			})
 		} else {
+			sendAdminEmail('Received the utility callback, content is empty', 'GreenConnect - Utility API Response')
 			addLog('Received the utility callback, content is empty', fileUrls);
 			res.status(200).send("ok");
 		}
-
+		
+		// await createLog({
+		// 	content: JSON.stringify(fileUrls),
+		// 	status: true
+		// })
 	} catch (error) {
 		console.log(error)
+		sendAdminEmail('Utility callback error', 'GreenConnect - Utility API Response')
 		addLog('Utility callback error')
+		// await createLog({
+		// 	content: JSON.stringify(fileUrls),
+		// 	status: false
+		// })
 		res.status(500).end();
 	}
 };

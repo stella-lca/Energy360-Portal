@@ -302,6 +302,7 @@ exports.sendEmail = async (req, res) => {
 		const user_name = name.charAt(0).toUpperCase() + name.slice(1);
 		sendAdminEmail(
 			`${user_name} just sent a new message. <br/><br/><b>Contents:</b>${content}</br>`,
+			"",
 			email
 		);
 		res.send(true);
