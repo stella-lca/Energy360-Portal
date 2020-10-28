@@ -1,5 +1,6 @@
 const sgMail = require("@sendgrid/mail");
 const { email_body } = require("./body");
+require("dotenv").config();
 
 const {
 	APPSETTING_HOST,
@@ -40,18 +41,36 @@ exports.sendEmail = async (email, token, res) => {
 		});
 };
 
-exports.sendAdminEmail = async (content, from = null) => {
+exports.sendAdminEmail = async (content, subject, from = null) => {
 	const emailBody = email_body(content);
 	const msg = {
 		to: APPSETTING_ADMIN_EMAIL,
 		from: from || APPSETTING_NOREPLY_EMAIL,
-		subject: "GreenConnect - reset your password!",
+		subject: subject || "GreenConnect - reset your password!",
 		html: emailBody
 	};
 	sgMail
 		.send(msg)
 		.then(msg => {
 			return msg;
+		})
+		.catch(err => {
+			return err;
+		});
+};
+
+exports.sendNotifyEmail = async (to, from, subject, content) => {
+	const msg = {
+		to: to,
+		from: from || APPSETTING_NOREPLY_EMAIL,
+		subject: subject,
+		html: content
+	};
+
+	sgMail
+		.send(msg)
+		.then(res => {
+			return res;
 		})
 		.catch(err => {
 			return err;
