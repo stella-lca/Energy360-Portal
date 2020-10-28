@@ -70,7 +70,7 @@
 	},
 	"scripts": {
 		"start:dev": "webpack --env dev --progress",
-		"start": "nodemon server.js",
+		"start": "node server.js",
 		"postinstall": "webpack --env prod",
 		"server": "node server.js"
 	}
