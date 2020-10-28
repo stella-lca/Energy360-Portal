@@ -1,7 +1,10 @@
 const axios = require("axios");
 const moment = require("moment");
 const AWS = require("aws-sdk");
-const fs = require("fs");
+const async = require("async");
+const { sendNotifyEmail } = require('../utils/email');
+const { downloadFile } = require('../utils/downloadFile');
+const { addLog } = require('../utils/errorTacker');
 
 const {
 	Token: { findByToken, createToken, updateToken },
@@ -15,10 +18,10 @@ const {
 } = process.env;
 
 const config = {
-	bucketName: "greenconnect-logs",
-	region: "us-east-1",
-	accessKeyId: "AKIAJYI6ZE6ZJLUHEKDQ",
-	secretAccessKey: "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",
+	bucketName: "increase-prod-logs",
+	region: "us-west-2",
+	accessKeyId: "dd",
+	secretAccessKey: "ad",
 };
 
 const s3bucket = new AWS.S3(config);
@@ -28,12 +31,7 @@ const handleToken = async function (authCode, tokenData) {
 	const expiryDate = moment().add(1, "hours").format();
 
 	// console.log('existing token ===>', token)
-	module.exports.errorTracker({
-		body: {
-			state_point: "token already existed",
-		},
-		result: JSON.stringify(token),
-	});
+	addLog("token already existed", token)
 
 	tokenData.expiry_date = expiryDate;
 	const {
@@ -48,9 +46,10 @@ const handleToken = async function (authCode, tokenData) {
 	} = tokenData;
 
 	try {
+		let status;
 		if (token !== undefined && token.access_token) {
 			// if (moment(token.expiry_date) < moment()) {
-			const updatedStatus = await updateToken(authCode, {
+			status = await updateToken(authCode, {
 				access_token,
 				refresh_token,
 				expires_in,
@@ -58,19 +57,11 @@ const handleToken = async function (authCode, tokenData) {
 			});
 
 			// console.log("updated token ===>", token)
-
-			module.exports.errorTracker({
-				body: {
-					state_point: updatedStatus
-						? "token updated successfully"
-						: "token updating error",
-				},
-				result: JSON.stringify(token),
-			});
-			// }
+			const msg = status ? "Token updated successfully" : "Token updating error";
+			addLog(msg, token);
 		} else {
 			//save new token.
-			token = await createToken({
+			status = await createToken({
 				authCode,
 				access_token,
 				refresh_token,
@@ -83,20 +74,13 @@ const handleToken = async function (authCode, tokenData) {
 			});
 
 			// console.log("created token ===>", token)
-
-			module.exports.errorTracker({
-				body: {
-					state_point:
-						token && token.access_token
-							? "token created successfully"
-							: "token createing - Query Error",
-				},
-				result: JSON.stringify(token),
-			});
+			const msg = status ? "Token created successfully" : "Token createing - Query Error";
+			addLog(msg, status);
 		}
-		return token;
+		status ? res.status(200).end() : res.status(205).end();
 	} catch (error) {
-		throw error;
+		console.log(error);
+		res.status(500).end()
 	}
 };
 
@@ -123,16 +107,7 @@ exports.authenticateToken = function (req, res) {
 		})
 		.then(async (response) => {
 			const { data: tokenData } = response;
-
-			module.exports.errorTracker({
-				...req,
-				body: {
-					...data,
-					state_point: "token api working correctly",
-				},
-				result: JSON.stringify(response.data),
-			});
-
+			addLog("Token api working correctly", response.data)
 			const resultData = await handleToken(code, tokenData);
 
 			if (resultData && resultData.access_token) {
@@ -143,15 +118,7 @@ exports.authenticateToken = function (req, res) {
 		})
 		.catch((err) => {
 			res.redirect("/callback?success=false");
-
-			module.exports.errorTracker({
-				...req,
-				body: {
-					...data,
-					state_point: "token api process error",
-				},
-				error: err,
-			});
+			addLog("token api process error", data, err)
 		});
 };
 
@@ -163,94 +130,30 @@ exports.notifyCallback = async function (req, res) {
 			fileUrls = body['espi:batchlist']['espi:resources'];
 		}
 
-		console.log(fileUrls)
-		// req.body.pipe(feedparser);
-
-		// console.log("updated token ===>", token)
-
-		// module.exports.errorTracker({
-		// 	body: {
-		// 		state_point: updatedStatus
-		// 			? "token updated successfully"
-		// 			: "token updating error",
-		// 	},
-		// 	result: JSON.stringify(token),
-		// });
-		// }
-		res.status(200).send("ok");
+		if (fileUrls.length > 0) {
+			async.mapLimit(fileUrls, 5, async function (url) {
+				return new Promise((resolve, reject) => {
+					downloadFile(url, resolve)
+				})
+			}, (err, results) => {
+				if (err || results.includes(false)) {
+					addLog('Received the utility callback, but contents error');
+					res.status(500).send();
+				} else {
+					addLog('Proceed the utility callback successfully', fileUrls);
+					res.status(200).send();
+				}
+			})
+		} else {
+			addLog('Received the utility callback, content is empty', fileUrls);
+			res.status(200).send("ok");
+		}
 
 	} catch (error) {
-		module.exports.errorTracker({
-			body: {
-				state_point: "notification callbark content error"
-			},
-			result: "",
-		});
+		console.log(error)
+		addLog('Utility callback error')
 		res.status(500).end();
 	}
 };
 
 
-
-exports.errorTracker = (req, res, next) => {
-	const {
-		query = {},
-		body = {},
-		originalUrl = "/test-action",
-		result,
-		error,
-	} = req;
-	const date = moment().format("MM-DD-YYYY-h:mm:ss");
-	const data1 = moment().format("YYYY-MM-DD");
-	const logDir = `log/`;
-
-	const actionName = originalUrl.replace(/\//g, "-").substring(1);
-	const fileName = actionName + "=>" + date + ".json";
-	if (!actionName) return false;
-
-	if (/\.jpg|\.png|\.ico|\.js/.exec(originalUrl)) {
-		return false;
-	}
-
-	if (!fs.existsSync(logDir)) {
-		fs.mkdirSync(logDir);
-	}
-
-	var jsonContent = {
-		query,
-		body,
-		url: originalUrl,
-		result,
-		error,
-	};
-
-	fs.writeFile(
-		`log/${fileName}`,
-		JSON.stringify(jsonContent),
-		"utf8",
-		function (err) {
-			if (err) {
-				console.log("An error occured while writing JSON Object to File.");
-				return console.log(err);
-			}
-			const fileContent = fs.readFileSync(`log/${fileName}`);
-
-			var params = {
-				Bucket: "greenconnect-logs",
-				Key: `${data1}/${fileName}`, //file.name doesn't exist as a property
-				Body: fileContent,
-			};
-
-			s3bucket.upload(params, function (err, { Location }) {
-				if (err) {
-					console.log(err);
-					// res.status(500).send(err);
-				} else {
-					console.log(Location);
-					// res.status(200).end();
-				}
-			});
-			console.log("JSON file has been saved.");
-		}
-	);
-};
