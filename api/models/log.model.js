@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 	// 	return date.format("YYYY-MM-DD HH:MM:SS");
 	// };
 
-	let Log = sequelize.define("GCEP_API_Response", {
+	let Log = sequelize.define("GCEP_API_Responses", {
 		content: {
 			type: DataTypes.TEXT,
 			field: "content",
@@ -15,9 +15,8 @@ module.exports = (sequelize, DataTypes) => {
 		status: {
 			type: DataTypes.BOOLEAN,
 			field: "status"
-		},
-	},
-	{
+		}
+	}, {
 		timestamps: true,
 		createdAt: "createdDate",
 		updatedAt: "modifiedDate"

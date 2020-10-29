@@ -8,7 +8,7 @@ const { addLog } = require('../utils/errorTacker');
 
 const {
 	Token: { findByToken, createToken, updateToken },
-	// Log: { findAllLog, createLog, findLog }
+	Log: { findAllLog, createLog, findLog }
 } = require("../models");
 
 const {
@@ -157,19 +157,18 @@ exports.notifyCallback = async function (req, res) {
 			res.status(200).send("ok");
 		}
 		
-		// await createLog({
-		// 	content: JSON.stringify(fileUrls),
-		// 	status: true
-		// })
+		await createLog({
+			content: fileUrls && fileUrls.join(','),
+			status: true
+		})
 	} catch (error) {
-		console.log(error)
 		sendAdminEmail('Utility callback error', 'GreenConnect - Utility API Response')
 		addLog('Utility callback error')
-		// await createLog({
-		// 	content: JSON.stringify(fileUrls),
-		// 	status: false
-		// })
-		res.status(500).end();
+		await createLog({
+			content: JSON.stringify(fileUrls),
+			status: false
+		})
+		res.status(500).end('internal server error');
 	}
 };
 

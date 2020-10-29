@@ -4,46 +4,44 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const cors = require("cors");
 const app = express();
+const { errorTracker } = require("./api/utils/errorTacker");
 require("dotenv").config();
-const moment = require("moment");
-const {
-	errorTracker
-} = require("./api/controllers/token.controller");
 
 const PORT = process.env.PORT || 3000;
 const router = require("./api/routes");
 
 let dbState = {};
 
-// const db = require("./api/models");
-// const db_sync = () => {
-// 	db.sequelize
-// 		.sync()
-// 		// .sync({ alter: true })
-// 		.then(msg => {
-// 			console.log("DB connected successfully!");
-// 			dbState.status = true;
-// 		})
-// 		.catch(err => {
-// 			console.log("Datbase connection error!!!!");
-// 			dbState.status = false;
-// 			dbState.message = err.message;
-// 		});
-// };
+const db = require("./api/models");
+const db_sync = () => {
+	db.sequelize
+		.sync()
+		// .sync({ alter: true })
+		.then(msg => {
+			console.log("DB connected successfully!");
+			dbState.status = true;
+		})
+		.catch(err => {
+			console.log("Datbase connection error!!!!");
+			dbState.status = false;
+			dbState.message = err.message;
+		});
+};
 
-// db_sync();
+db_sync();
 
-// app.use((req, res, next) => {
-// 	errorTracker(req, res);
-// 	console.log("Check db state here", dbState);
+app.use((req, res, next) => {
+	errorTracker(req, res);
+	console.log("Check db state here", dbState);
 
-// 	if (dbState && dbState.status) {
-// 		next();
-// 	} else {
-// 		db_sync();
-// 		res.status(500).send(dbState);
-// 	}
-// });
+	if (dbState && dbState.status) {
+		next();
+	} else {
+		db_sync();
+		res.status(500).send(dbState);
+	}
+});
+
 
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, "dist")));
@@ -51,6 +49,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: false
 }));
+
 
 // Express Routing
 app.use("/", router);

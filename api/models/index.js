@@ -21,12 +21,17 @@ const sequelize = new Sequelize(
 	}
 );
 
+// sequelize.getQueryInterface().showAllTables().then(function(tables) {
+//     console.log(tables);
+// });
+
 Sequelize.DATE.prototype._stringify = function _stringify(date, options) {
 	return this._applyTimezone(date, options).format("YYYY-MM-DD HH:mm:ss.SSS");
 };
 
 db.User = sequelize.import("./user.model");
 db.Token = sequelize.import("./token.model");
+db.Log = sequelize.import("./log.model");
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
