@@ -8,6 +8,7 @@ let {
 	APPSETTING_NOREPLY_EMAIL,
 	APPSETTING_SENDGRID_API_KEY
 } = process.env;
+
 APPSETTING_ADMIN_EMAIL = "aleksa.pesic351@gmail.com";
 sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
 
