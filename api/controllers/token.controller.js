@@ -6,13 +6,6 @@ const { sendAdminEmail, sendNotifyEmail } = require('../utils/email');
 const { downloadFile } = require('../utils/downloadFile');
 const { addLog } = require('../utils/errorTacker');
 
-let {
-	APPSETTING_HOST,
-	APPSETTING_ADMIN_EMAIL,
-	APPSETTING_NOREPLY_EMAIL,
-	APPSETTING_SENDGRID_API_KEY
-} = process.env;
-
 const {
 	Token: { findByToken, createToken, updateToken },
 	Log: { findAllLog, createLog, findLog }
