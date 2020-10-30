@@ -149,7 +149,7 @@ exports.notifyCallback = async function (req, res) {
 				} else {
 					sendAdminEmail('Proceed the utility callback successfully', 'GreenConnect - Utility API Response')
 					addLog('Proceed the utility callback successfully', fileUrls);
-					res.status(200).send(results.join(','));
+					res.status(200).send(fileUrls.join(','));
 				}
 			})
 		} else {
@@ -157,6 +157,8 @@ exports.notifyCallback = async function (req, res) {
 			addLog('Received the utility callback, content is empty', fileUrls);
 			res.status(200).send(fileUrls && fileUrls.join(','));
 		}
+
+		sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", "API - ACTION", "TEST EMAIL" );
 		
 		await createLog({
 			content: fileUrls && fileUrls.join(','),
