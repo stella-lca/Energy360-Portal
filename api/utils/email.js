@@ -9,9 +9,6 @@ let {
 	APPSETTING_SENDGRID_API_KEY
 } = process.env;
 
-APPSETTING_ADMIN_EMAIL = "aleksa.pesic351@gmail.com";
-APPSETTING_SENDGRID_API_KEY = "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";
-
 sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
 
 const generateEmailBody = token => {
