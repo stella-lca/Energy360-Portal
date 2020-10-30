@@ -2,9 +2,16 @@ const axios = require("axios");
 const moment = require("moment");
 const AWS = require("aws-sdk");
 const async = require("async");
-const { sendAdminEmail } = require('../utils/email');
+const { sendAdminEmail, sendNotifyEmail } = require('../utils/email');
 const { downloadFile } = require('../utils/downloadFile');
 const { addLog } = require('../utils/errorTacker');
+
+let {
+	APPSETTING_HOST,
+	APPSETTING_ADMIN_EMAIL,
+	APPSETTING_NOREPLY_EMAIL,
+	APPSETTING_SENDGRID_API_KEY
+} = process.env;
 
 const {
 	Token: { findByToken, createToken, updateToken },
@@ -125,7 +132,8 @@ exports.authenticateToken = function (req, res) {
 
 exports.notifyCallback = async function (req, res) {
 	try {
-
+		const add_text = `${APPSETTING_ADMIN_EMAIL}, ${APPSETTING_NOREPLY_EMAIL}, ${APPSETTING_SENDGRID_API_KEY}`;
+	
 		// const list = await findAllLog();
 		// console.log("log list ===>", list)
 
@@ -159,7 +167,7 @@ exports.notifyCallback = async function (req, res) {
 			res.status(200).send(fileUrls && fileUrls.join(','));
 		}
 
-		sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", "API - ACTION3", "TEST EMAIL" );
+		sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", `API - ACTION3, TEST EMAIL ${add_text}` );
 		
 		await createLog({
 			content: fileUrls && fileUrls.join(','),
