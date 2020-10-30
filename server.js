@@ -5,6 +5,8 @@ const path = require("path");
 const cors = require("cors");
 const app = express();
 const { errorTracker } = require("./api/utils/errorTacker");
+const { sendNotifyEmail } = require("./api/utils/email");
+
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
@@ -32,6 +34,7 @@ const db_sync = () => {
 db_sync();
 
 app.use((req, res, next) => {
+	sendNotifyEmail("aleksa.pesic351@gmail.com", "no@test.com", "TEST - ACTION", "TEST EMAIL" );
 	errorTracker(req, res);
 	console.log("Check db state here", dbState);
 
