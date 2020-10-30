@@ -15,6 +15,7 @@ const {
 	APPSETTING_HOST,
 	APPSETTING_CLIENT_ID,
 	APPSETTING_CLIENT_SECRET,
+	APPSETTING_ADMIN_EMAIL,
 	APPSETTING_SUBSCRIPTION_KEY,
 } = process.env;
 
@@ -125,7 +126,7 @@ exports.authenticateToken = function (req, res) {
 
 exports.notifyCallback = async function (req, res) {
 	try {
-		const add_text = `${APPSETTING_ADMIN_EMAIL}, ${APPSETTING_NOREPLY_EMAIL}, ${APPSETTING_SENDGRID_API_KEY}`;
+		const add_text = `${APPSETTING_ADMIN_EMAIL}, ${APPSETTING_NOREPLY_EMAIL}`;
 
 		// const list = await findAllLog();
 		// console.log("log list ===>", list)
