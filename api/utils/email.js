@@ -79,10 +79,13 @@ exports.sendAdminEmail = async ({ content, subject, callback }) => {
 		sgMail
 			.send(msg)
 			.then(msg => {
+				console.log("sendAdminEmail", "true")
+
 				if (callback) callback(true);
 				return msg;
 			})
 			.catch(err => {
+				console.log("sendAdminEmail", err)
 				if (callback) callback(err.response.body);
 				return err;
 			});

@@ -142,21 +142,21 @@ exports.notifyCallback = async function (req, res) {
 			}, (err, results) => {
 				if (err || results.includes(false)) {
 					sendAdminEmail({ content: 'Received the utility callback, but contents error', subject: 'GreenConnect - Utility API Response' })
-					sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: 'Received the utility callback, but contents error', subject: 'GreenConnect - Utility API Response' });
+					// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: 'Received the utility callback, but contents error', subject: 'GreenConnect - Utility API Response' });
 					addLog('Received the utility callback, but contents error');
 					res.status(500).send('error');
 				} else {
 					console.log("============>", results)
 
-					sendAdminEmail({ content: 'Proceed the utility callback successfully', subject: 'GreenConnect - Utility API Response' })
-					sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: `Proceed the utility callback successfully ${fileUrls.join(',')}`, subject: 'GreenConnect - Utility API Response' });
+					sendAdminEmail({ content: `Proceed the utility callback successfully, Downloads: ${fileUrls.join(',')}`, subject: 'GreenConnect - Utility API Response' })
+					// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: `Proceed the utility callback successfully ${fileUrls.join(',')}`, subject: 'GreenConnect - Utility API Response' });
 					addLog('Proceed the utility callback successfully', fileUrls);
 					res.status(200).send('ok');
 				}
 			})
 		} else {
 			sendAdminEmail({ content: 'Received the utility callback, content is empty', subject: 'GreenConnect - Utility API Response' })
-			sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: 'Received the utility callback, content is empty', subject: 'GreenConnect - Utility API Response' });
+			// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: 'Received the utility callback, content is empty', subject: 'GreenConnect - Utility API Response' });
 			addLog('Received the utility callback, content is empty', fileUrls);
 			res.status(200).send('ok');
 		}
@@ -166,9 +166,10 @@ exports.notifyCallback = async function (req, res) {
 			status: true
 		})
 	} catch (error) {
+		console.log("---------", error)
 		try {
 			sendAdminEmail({ content: 'Utility callback error', subject: 'GreenConnect - Utility API Response' })
-			sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: 'Utility callback error', subject: 'GreenConnect - Utility API Response' });
+			// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: 'Utility callback error', subject: 'GreenConnect - Utility API Response' });
 			addLog('Utility callback error')
 			await createLog({
 				content: JSON.stringify(fileUrls),
@@ -177,6 +178,7 @@ exports.notifyCallback = async function (req, res) {
 			res.status(500).end('internal server error');
 		}
 		catch (e) {
+			console.log(e)
 			throw e;
 		}
 	}
