@@ -15,7 +15,6 @@ const {
 	APPSETTING_HOST,
 	APPSETTING_CLIENT_ID,
 	APPSETTING_CLIENT_SECRET,
-	APPSETTING_ADMIN_EMAIL,
 	APPSETTING_SUBSCRIPTION_KEY,
 } = process.env;
 
@@ -126,8 +125,6 @@ exports.authenticateToken = function (req, res) {
 
 exports.notifyCallback = async function (req, res) {
 	try {
-		const add_text = `${APPSETTING_ADMIN_EMAIL}, ${APPSETTING_NOREPLY_EMAIL}`;
-
 		// const list = await findAllLog();
 		// console.log("log list ===>", list)
 
@@ -152,13 +149,13 @@ exports.notifyCallback = async function (req, res) {
 					sendAdminEmail('Proceed the utility callback successfully', 'GreenConnect - Utility API Response')
 					addLog('Proceed the utility callback successfully', fileUrls);
 					sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", "API - ACTION1", fileUrls.join(','));
-					res.status(200).send(fileUrls.join(','));
+					res.status(200).send('ok');
 				}
 			})
 		} else {
 			sendAdminEmail('Received the utility callback, content is empty', 'GreenConnect - Utility API Response')
 			addLog('Received the utility callback, content is empty', fileUrls);
-			res.status(200).send(fileUrls && fileUrls.join(','));
+			res.status(200).send('ok');
 		}
 
 		sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", `API - ACTION3, TEST EMAIL ${add_text}`);
