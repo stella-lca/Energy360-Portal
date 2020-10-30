@@ -74,14 +74,11 @@ exports.signup = async (req, res) => {
 			const token = await createJwtToken(user);
 			const userName = `${user.firstName} ${user.lastName}`;
 			user = userData(user);
-			sendAdminEmail(
-				`${userName.charAt(0).toUpperCase() +
-				userName.slice(1)} just joined to Greenconnect. <br/>`
-			);
-			res.status(200).send({
-				user,
-				token
+			sendAdminEmail({
+				content: `${userName.charAt(0).toUpperCase() + userName.slice(1)} just joined to Greenconnect. <br/>`,
+				subject: "Greenconnect - User Profile"
 			});
+			res.status(200).send({ user, token });
 		} else {
 			res.status(500).send({
 				message: "err.message "
@@ -132,19 +129,16 @@ exports.update = async (req, res) => {
 		if (user !== undefined) {
 			user = userData(user);
 			const user_name = user.firstName + user.lastName;
-			sendAdminEmail(`${user_name} profile was updated!`);
-			res.status(200).send({
-				user
+			sendAdminEmail({
+				content: `${user_name} profile was updated!`,
+				subject: "Greenconnect - User Profile"
 			});
+			res.status(200).send({ user });
 		} else {
-			res.status(500).send({
-				message: "Server error"
-			});
+			res.status(500).send({ message: "Server error" });
 		}
 	} else {
-		return res.status(500).send({
-			message: "Profile updates was failt"
-		});
+		return res.status(500).send({ message: "Profile updates was failt" });
 	}
 };
 
@@ -216,7 +210,7 @@ exports.sendForgotEmail = async (req, res) => {
 		user.update({
 			password: token
 		});
-		sendEmail(email, token, res);
+		sendEmail({ email, token, res });
 	} else {
 		return res.status(202).send({
 			message: "User Email Not found."
@@ -300,11 +294,10 @@ exports.sendEmail = async (req, res) => {
 			content
 		} = req.body;
 		const user_name = name.charAt(0).toUpperCase() + name.slice(1);
-		sendAdminEmail(
-			`${user_name} just sent a new message. <br/><br/><b>Contents:</b>${content}</br>`,
-			"",
-			email
-		);
+		sendAdminEmail({
+			content: `${user_name} just sent a new message. <br/><br/><b>Contents:</b>${content}</br> from ${email}`,
+			subject: "Greenconnect - Notification"
+		});
 		res.send(true);
 	} catch (e) {
 		res.status(404).send(false);

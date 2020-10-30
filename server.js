@@ -13,35 +13,35 @@ const router = require("./api/routes");
 let dbState = {};
 
 const db = require("./api/models");
-const db_sync = () => {
-	db.sequelize
-		.sync()
-		// .sync({ alter: true })
-		.then(msg => {
-			console.log("DB connected successfully!");
-			dbState.status = true;
-		})
-		.catch(err => {
-			console.log(err)
-			console.log("Datbase connection error!!!!");
-			dbState.status = false;
-			dbState.message = err.message;
-		});
-};
+// const db_sync = () => {
+// 	db.sequelize
+// 		.sync()
+// 		// .sync({ alter: true })
+// 		.then(msg => {
+// 			console.log("DB connected successfully!");
+// 			dbState.status = true;
+// 		})
+// 		.catch(err => {
+// 			console.log(err)
+// 			console.log("Datbase connection error!!!!");
+// 			dbState.status = false;
+// 			dbState.message = err.message;
+// 		});
+// };
 
-db_sync();
+// db_sync();
 
-app.use((req, res, next) => {
-	errorTracker(req, res);
-	console.log("Check db state here", dbState);
+// app.use((req, res, next) => {
+// 	errorTracker(req, res);
+// 	console.log("Check db state here", dbState);
 
-	if (dbState && dbState.status) {
-		next();
-	} else {
-		db_sync();
-		res.status(500).send(dbState);
-	}
-});
+// 	if (dbState && dbState.status) {
+// 		next();
+// 	} else {
+// 		db_sync();
+// 		res.status(500).send(dbState);
+// 	}
+// });
 
 
 app.use(cors());

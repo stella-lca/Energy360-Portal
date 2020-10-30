@@ -1,11 +1,10 @@
 exports.email_body = content => `<table
 	cellpadding="0"
 	cellspacing="0"
-	width="600px"
 	id="bodyTable"
 	border="0"
 	bgcolor="#ffffff"
-	style='border-collapse:collapse; color:#444; text-align:center; margin: auto; margin-top: 34px;font-family:Arial, "Helvetica Neue", Helvetica,  sans-serif; font-size:14px; line-height:1.5'
+	style='width: 100%; max-width: 600px; border-collapse:collapse; color:#444; text-align:center; margin: auto; margin-top: 34px;font-family:Arial, "Helvetica Neue", Helvetica,  sans-serif; font-size:14px; line-height:1.5'
 >
 	<tbody>
 		<tr style="border-color:transparent">
@@ -25,7 +24,6 @@ exports.email_body = content => `<table
 					<tbody>
 						<tr style="border-color:transparent">
 							<th
-								width="600"
 								style="border-color:transparent; font-weight:400; text-align:left; vertical-align:top"
 								cellpadding="0"
 								cellspacing="0"
@@ -62,7 +60,6 @@ exports.email_body = content => `<table
 														>
 															<td
 																class="content-cell"
-																width="600"
 																style="border-collapse:collapse; border-color:transparent; vertical-align:top"
 																valign="top"
 															>
@@ -76,14 +73,14 @@ exports.email_body = content => `<table
 																	<center>
 																		<img
 																			border="0"
-																			width="416"
+																			width="100%"
 																			height="auto"
 																			class="sp-img"
 																			align="center"
 																			alt="GC-logo"
 																			src="https://s7332131.sendpul.se/files/emailservice/userfiles/39e73afcc9d7c94a0df14af061911cb97332131/GC-logo.png"
 																			iout_block_4_element_0=""
-																			style="text-decoration:none; border:0; height:auto; line-height:100%; outline:0; display:block"
+																			style="max-width: 420px; text-decoration:none; border:0; height:auto; line-height:100%; outline:0; display:block"
 																		/>
 																	</center>
 																</div>
@@ -155,7 +152,6 @@ exports.email_body = content => `<table
 					<tbody>
 						<tr style="border-color:transparent">
 							<th
-								width="600"
 								style="border-color:transparent; font-weight:400; text-align:left; vertical-align:top"
 								cellpadding="0"
 								cellspacing="0"
@@ -271,7 +267,6 @@ exports.email_body = content => `<table
 					<tbody>
 						<tr style="border-color:transparent">
 							<th
-								width="600"
 								style="border-color:transparent; font-weight:400; text-align:left; vertical-align:top"
 								cellpadding="0"
 								cellspacing="0"
@@ -339,7 +334,6 @@ exports.email_body = content => `<table
 					<tbody>
 						<tr style="border-color:transparent">
 							<th
-								width="600"
 								style="border-color:transparent; font-weight:400; text-align:left; vertical-align:top"
 								cellpadding="0"
 								cellspacing="0"
