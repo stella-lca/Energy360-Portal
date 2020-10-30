@@ -10,6 +10,8 @@ let {
 } = process.env;
 
 APPSETTING_ADMIN_EMAIL = "aleksa.pesic351@gmail.com";
+APPSETTING_NOREPLY_EMAIL = "noreply@domain.com";
+
 sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
 
 const generateEmailBody = token => {

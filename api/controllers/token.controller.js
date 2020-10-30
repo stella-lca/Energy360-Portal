@@ -169,6 +169,7 @@ exports.notifyCallback = async function (req, res) {
 	} catch (error) {
 		try {
 			console.log(error)
+			sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", `Utility callback error', 'GreenConnect - Utility API Response`);
 			sendAdminEmail('Utility callback error', 'GreenConnect - Utility API Response')
 			addLog('Utility callback error')
 			await createLog({
