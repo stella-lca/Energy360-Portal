@@ -9,6 +9,7 @@ let {
 	APPSETTING_SENDGRID_API_KEY
 } = process.env;
 
+APPSETTING_SENDGRID_API_KEY = "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"
 sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
 
 try {
