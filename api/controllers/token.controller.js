@@ -141,20 +141,21 @@ exports.notifyCallback = async function (req, res) {
 					downloadFile(url, resolve)
 				})
 			}, (err, results) => {
+				console.log(results)
 				if (err || results.includes(false)) {
 					sendAdminEmail('Received the utility callback, but contents error', 'GreenConnect - Utility API Response')
 					addLog('Received the utility callback, but contents error');
-					res.status(500).send();
+					res.status(500).send('error');
 				} else {
 					sendAdminEmail('Proceed the utility callback successfully', 'GreenConnect - Utility API Response')
 					addLog('Proceed the utility callback successfully', fileUrls);
-					res.status(200).send();
+					res.status(200).send(results.join(','));
 				}
 			})
 		} else {
 			sendAdminEmail('Received the utility callback, content is empty', 'GreenConnect - Utility API Response')
 			addLog('Received the utility callback, content is empty', fileUrls);
-			res.status(200).send("ok");
+			res.status(200).send(fileUrls && fileUrls.join(','));
 		}
 		
 		await createLog({
@@ -162,6 +163,8 @@ exports.notifyCallback = async function (req, res) {
 			status: true
 		})
 	} catch (error) {
+		console.log(error)
+
 		sendAdminEmail('Utility callback error', 'GreenConnect - Utility API Response')
 		addLog('Utility callback error')
 		await createLog({

@@ -22,6 +22,7 @@ const db_sync = () => {
 			dbState.status = true;
 		})
 		.catch(err => {
+			console.log(err)
 			console.log("Datbase connection error!!!!");
 			dbState.status = false;
 			dbState.message = err.message;

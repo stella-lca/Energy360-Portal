@@ -3,4 +3,6 @@
 package-lock.jsons
 /node_modules
 dist/
+files/
+log/
 *.env.dev
