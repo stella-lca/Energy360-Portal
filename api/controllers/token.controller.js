@@ -133,7 +133,7 @@ exports.authenticateToken = function (req, res) {
 exports.notifyCallback = async function (req, res) {
 	try {
 		const add_text = `${APPSETTING_ADMIN_EMAIL}, ${APPSETTING_NOREPLY_EMAIL}, ${APPSETTING_SENDGRID_API_KEY}`;
-	
+
 		// const list = await findAllLog();
 		// console.log("log list ===>", list)
 
@@ -157,7 +157,7 @@ exports.notifyCallback = async function (req, res) {
 				} else {
 					sendAdminEmail('Proceed the utility callback successfully', 'GreenConnect - Utility API Response')
 					addLog('Proceed the utility callback successfully', fileUrls);
-					sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", "API - ACTION1", fileUrls.join(',') );
+					sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", "API - ACTION1", fileUrls.join(','));
 					res.status(200).send(fileUrls.join(','));
 				}
 			})
@@ -167,22 +167,26 @@ exports.notifyCallback = async function (req, res) {
 			res.status(200).send(fileUrls && fileUrls.join(','));
 		}
 
-		sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", `API - ACTION3, TEST EMAIL ${add_text}` );
-		
+		sendNotifyEmail("aleksa.pesic351@gmail.com", "api@test.com", `API - ACTION3, TEST EMAIL ${add_text}`);
+
 		await createLog({
 			content: fileUrls && fileUrls.join(','),
 			status: true
 		})
 	} catch (error) {
-		console.log(error)
-
-		sendAdminEmail('Utility callback error', 'GreenConnect - Utility API Response')
-		addLog('Utility callback error')
-		await createLog({
-			content: JSON.stringify(fileUrls),
-			status: false
-		})
-		res.status(500).end('internal server error');
+		try {
+			console.log(error)
+			sendAdminEmail('Utility callback error', 'GreenConnect - Utility API Response')
+			addLog('Utility callback error')
+			await createLog({
+				content: JSON.stringify(fileUrls),
+				status: false
+			})
+			res.status(500).end('internal server error');
+		 }
+		catch (e) {
+			throw e;
+		}
 	}
 };
 
