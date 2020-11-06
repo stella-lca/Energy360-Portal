@@ -2,9 +2,10 @@ const axios = require("axios");
 const moment = require("moment");
 const AWS = require("aws-sdk");
 const async = require("async");
-const { sendAdminEmail, sendNotifyEmail } = require('../utils/email');
+const { sendAdminEmail, sendNotifyEmail, sendUserEmail } = require('../utils/email');
 const { downloadFile } = require('../utils/downloadFile');
 const { addLog, createLogItem } = require('../utils/errorTacker');
+const { findNestedObj } = require('../utils/utils');
 
 const {
 	Token: { findByToken, createToken, updateToken },
@@ -164,7 +165,7 @@ exports.notifyCallback = async function (req, res) {
 					createLogItem(false, "Utility API Response", "Received the utility callback, but contents error", JSON.stringify(errorJson));
 					res.status(500).send('error');
 				} else {
-					sendAdminEmail({ content: `Proceed the utility callback successfully, Downloads: ${fileUrls.join(',')}`, subject: 'GreenConnect - Utility API Response' });
+					sendUserEmail({ content: fileUrls, subject: 'GreenConnect - Utility API Response' });
 					createLogItem(true, "Utility API Response", "Proceed the utility callback successfully", JSON.stringify(fileUrls));
 					res.status(200).send('ok');
 				}
@@ -199,14 +200,8 @@ exports.notifyCallback = async function (req, res) {
 	}
 };
 
-function findNestedObj(entireObj, keyToFind) {
-	let foundObj;
-	JSON.stringify(entireObj, (_, nestedValue) => {
-		if (nestedValue && nestedValue[keyToFind]) {
-			foundObj = nestedValue[keyToFind];
-		}
-		return nestedValue;
-	});
-	return foundObj;
-};
 
+
+downloadFile("https://apit.coned.com/gbc/v1/resource/Batch/Download?requestId=b3fa5c7f-8fad-4274-bf56-dca43e9662f0&responseId=76f19803-7888-4331-b48e-e49e1948a6ed", (res)=>{
+	console.log(res)
+})

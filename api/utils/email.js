@@ -94,6 +94,33 @@ exports.sendAdminEmail = async ({ content, subject, callback }) => {
 	}
 };
 
+exports.sendUserEmail = async ({ content, subject, callback }) => {
+	try {
+		const emailBody = user_email_body(content);
+		const msg = {
+			to: APPSETTING_ADMIN_EMAIL,
+			from: APPSETTING_NOREPLY_EMAIL,
+			subject: subject,
+			html: emailBody
+		};
+		sgMail
+			.send(msg)
+			.then(msg => {
+				console.log("sendAdminEmail", "true")
+
+				if (callback) callback(true);
+				return msg;
+			})
+			.catch(err => {
+				console.log("sendAdminEmail", err)
+				if (callback) callback(err.response.body);
+				return err;
+			});
+	} catch (e) {
+		callback(false)
+	}
+};
+
 exports.sendNotifyEmail = async ({ to, subject, content, callback }) => {
 	try {
 		const msg = {
