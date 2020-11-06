@@ -144,6 +144,7 @@ exports.notifyCallback = async function (req, res) {
 	try {
 		// const list = await findAllLog();
 		console.log("Utilify API REQUEST ===>", req.body);
+		createLogItem(true, "Utility API Response", "Got the Utility Notify Request TEST", JSON.stringify(req.body));
 		
 		const body = req.body;
 		let fileUrls = [];
@@ -186,7 +187,7 @@ exports.notifyCallback = async function (req, res) {
 		try {
 			const errorJson = (error && error.response) ? error.response.data : error;
 			sendAdminEmail({ content: 'Utility callback error', subject: 'GreenConnect - Utility API Response' })
-			createLogItem(true, "Utility API Response", "Utility Notify Callback error", JSON.stringify(errorJson));
+			createLogItem(true, "Utility API Response", "Utility Notify Callback error", JSON.stringify(error));
 
 			await createLog({
 				content: JSON.stringify(fileUrls),
