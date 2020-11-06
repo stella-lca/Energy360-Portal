@@ -98,6 +98,7 @@ exports.signin = async (req, res) => {
 	if (user !== undefined) {
 		// Password Validation
 		const passwordIsValid = bcrypt.compareSync(password, user.password);
+
 		if (!passwordIsValid) {
 			return res.status(202).send({
 				message: "Password is wrong!"

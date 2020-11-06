@@ -4,7 +4,7 @@ const AWS = require("aws-sdk");
 const async = require("async");
 const { sendAdminEmail, sendNotifyEmail } = require('../utils/email');
 const { downloadFile } = require('../utils/downloadFile');
-const { addLog } = require('../utils/errorTacker');
+const { addLog, createLogItem } = require('../utils/errorTacker');
 
 const {
 	Token: { findByToken, createToken, updateToken },
@@ -31,8 +31,9 @@ const handleToken = async function (authCode, tokenData) {
 	let token = await findByToken(authCode);
 	const expiryDate = moment().add(1, "hours").format();
 
-	// console.log('existing token ===>', token)
-	addLog("token already existed", token)
+	console.log('existing token ===>', token)
+	var msg = token !== undefined ? "Token already existed" : "Creating new token";
+	createLogItem(true, "Token Management", msg);
 
 	tokenData.expiry_date = expiryDate;
 	const {
@@ -46,6 +47,11 @@ const handleToken = async function (authCode, tokenData) {
 		accountNumber,
 	} = tokenData;
 
+	if(!access_token) {
+		createLogItem(true, "Token Management", 'Token API ERROR');
+		return false;
+	}
+
 	try {
 		let status;
 		if (token !== undefined && token.access_token) {
@@ -57,9 +63,11 @@ const handleToken = async function (authCode, tokenData) {
 				expiry_date,
 			});
 
-			// console.log("updated token ===>", token)
-			const msg = status ? "Token updated successfully" : "Token updating error";
-			addLog(msg, token);
+			console.log("updated token ===>", token)
+			msg = status ? "Token updated successfully" : "Token updating error";
+			createLogItem(true, "Token Management", msg, JSON.stringify(token));
+
+			return token;
 		} else {
 			//save new token.
 			status = await createToken({
@@ -74,18 +82,22 @@ const handleToken = async function (authCode, tokenData) {
 				expiry_date,
 			});
 
-			// console.log("created token ===>", token)
-			const msg = status ? "Token created successfully" : "Token createing - Query Error";
-			addLog(msg, status);
+			console.log("created token status ===>", status)
+			msg = status ? "Token created successfully" : "Token creating - Query Error";
+			createLogItem(true, "Token Management", msg, JSON.stringify(token));
+
+			return token;
 		}
-		status ? res.status(200).end() : res.status(205).end();
 	} catch (error) {
-		console.log(error);
-		res.status(500).end()
+		console.log("Token handling issue", error);
+		const errorJson = (error && error.response) ? error.response.data : error;
+		createLogItem(false, "Token Management", "Token handling issue", JSON.stringify(errorJson));
+
+		return false;
 	}
 };
 
-exports.authenticateToken = function (req, res) {
+exports.authenticateToken = async function (req, res) {
 	//authorization code generated & sent by Utility
 	const { code } = req.query;
 
@@ -102,13 +114,16 @@ exports.authenticateToken = function (req, res) {
 		authCode: code,
 	};
 
+
 	axios
 		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, {
 			headers,
 		})
 		.then(async (response) => {
+			console.log("Token API Response", response);
+			createLogItem(true, "TOKEN API", "Token api working correctly", JSON.stringify(tokenData));
+
 			const { data: tokenData } = response;
-			addLog("Token api working correctly", response.data)
 			const resultData = await handleToken(code, tokenData);
 
 			if (resultData && resultData.access_token) {
@@ -117,22 +132,26 @@ exports.authenticateToken = function (req, res) {
 				res.redirect("/callback?success=false");
 			}
 		})
-		.catch((err) => {
+		.catch((error) => {
+			const errorJson = (error && error.response) ? error.response.data : error;
+			console.log("Token api processing error", error.response.data)
+			createLogItem(false, "TOKEN API", "Token api processing error", JSON.stringify(errorJson));
 			res.redirect("/callback?success=false");
-			addLog("token api process error", data, err)
 		});
 };
 
 exports.notifyCallback = async function (req, res) {
 	try {
 		// const list = await findAllLog();
-		// console.log("log list ===>", list)
-
+		console.log("Utilify API REQUEST ===>", req.body);
+		
 		const body = req.body;
 		let fileUrls = [];
 		if (body) {
 			fileUrls = body['espi:batchlist']['espi:resources'];
 		}
+		
+		createLogItem(true, "Utility API Response", "Got the Utility Notify Request", JSON.stringify(fileUrls));
 
 		if (fileUrls.length > 0) {
 			async.mapLimit(fileUrls, 5, async function (url) {
@@ -140,24 +159,21 @@ exports.notifyCallback = async function (req, res) {
 					downloadFile(url, resolve)
 				})
 			}, (err, results) => {
+				console.log("Downloaded ===>", results, err);
 				if (err || results.includes(false)) {
+					const errorJson = (error && error.response) ? error.response.data : error;
 					sendAdminEmail({ content: 'Received the utility callback, but contents error', subject: 'GreenConnect - Utility API Response' })
-					// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: 'Received the utility callback, but contents error', subject: 'GreenConnect - Utility API Response' });
-					addLog('Received the utility callback, but contents error');
+					createLogItem(false, "Utility API Response", "Received the utility callback, but contents error", JSON.stringify(errorJson));
 					res.status(500).send('error');
 				} else {
-					console.log("============>", results)
-
-					sendAdminEmail({ content: `Proceed the utility callback successfully, Downloads: ${fileUrls.join(',')}`, subject: 'GreenConnect - Utility API Response' })
-					// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: `Proceed the utility callback successfully ${fileUrls.join(',')}`, subject: 'GreenConnect - Utility API Response' });
-					addLog('Proceed the utility callback successfully', fileUrls);
+					sendAdminEmail({ content: `Proceed the utility callback successfully, Downloads: ${fileUrls.join(',')}`, subject: 'GreenConnect - Utility API Response' });
+					createLogItem(true, "Utility API Response", "Proceed the utility callback successfully", JSON.stringify(fileUrls));
 					res.status(200).send('ok');
 				}
 			})
 		} else {
 			sendAdminEmail({ content: 'Received the utility callback, content is empty', subject: 'GreenConnect - Utility API Response' })
-			// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: 'Received the utility callback, content is empty', subject: 'GreenConnect - Utility API Response' });
-			addLog('Received the utility callback, content is empty', fileUrls);
+			createLogItem(true, "GreenConnect - Utility API Response", "Received the utility callback, content is empty", JSON.stringify(fileUrls));
 			res.status(200).send('ok');
 		}
 
@@ -166,11 +182,12 @@ exports.notifyCallback = async function (req, res) {
 			status: true
 		})
 	} catch (error) {
-		console.log("---------", error)
+		console.log("Utility Notify Callback Error", error)
 		try {
+			const errorJson = (error && error.response) ? error.response.data : error;
 			sendAdminEmail({ content: 'Utility callback error', subject: 'GreenConnect - Utility API Response' })
-			// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", content: 'Utility callback error', subject: 'GreenConnect - Utility API Response' });
-			addLog('Utility callback error')
+			createLogItem(true, "Utility API Response", "Utility Notify Callback error", JSON.stringify(errorJson));
+
 			await createLog({
 				content: JSON.stringify(fileUrls),
 				status: false
@@ -178,9 +195,11 @@ exports.notifyCallback = async function (req, res) {
 			res.status(500).end('internal server error');
 		}
 		catch (e) {
-			console.log(e)
+			console.log("Utility Notify Callback Error", e)
 			throw e;
 		}
 	}
 };
+
+
 

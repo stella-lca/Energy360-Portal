@@ -30,6 +30,8 @@ SQLAZURECONNSTR_DB_NAME = energy360
 $ git clone git-url
 $ cd project_root
 $ npm install
+
+
 ```
 
 #### - How to Run

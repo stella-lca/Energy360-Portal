@@ -1,4 +1,5 @@
 const fs = require('fs');
+const axios = require("axios");
 const moment = require("moment");
 const { sendNotifyEmail } = require('./email');
 
@@ -42,6 +43,7 @@ exports.errorTracker = (req, res, next) => {
 		error,
 	};
 
+	exports.createLogItem(true, originalUrl, "successfully", JSON.stringify(jsonContent))
 
 	// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", subject: fileName, content: JSON.stringify(jsonContent) });
 
@@ -52,6 +54,7 @@ exports.errorTracker = (req, res, next) => {
 		function (err) {
 			if (err) {
 				console.log("An error occured while writing JSON Object to File.");
+				// if(res) res.status(500).send('error');
 				return console.log(err);
 			}
 			const fileContent = fs.readFileSync(`log/${fileName}`);
@@ -62,6 +65,7 @@ exports.errorTracker = (req, res, next) => {
 				Body: fileContent,
 			};
 
+			// if(res) res.status(200).send('ok');;
 			// s3bucket.upload(params, function (err, data) {
 			// 	if (err) {
 			// 		console.log(err);
@@ -75,3 +79,85 @@ exports.errorTracker = (req, res, next) => {
 		}
 	);
 };
+
+exports.createLogItem = (status, url, msg, data='') => {
+	console.log(status, url, msg, data)
+	const body = {
+		"text": "GreenButton Log Created",
+		"blocks": [
+			{ "type": "divider" },
+			{
+				"type": "context",
+				"elements": [
+					{
+						"type": "mrkdwn",
+						"text": `*Status:* ${status ? ':white_check_mark:' : ':x:'}`
+					}
+				]
+			},
+			{
+				"type": "context",
+				"elements": [
+					{
+						"type": "mrkdwn",
+						"text": `*URL:*    ${url}`
+					}
+				]
+			},
+			{
+				"type": "context",
+				"elements": [
+					{
+						"type": "mrkdwn",
+						"text": `*Date:*   ${new Date().toLocaleString()}`
+					}
+				]
+			},
+			{
+				"type": "context",
+				"elements": [
+					{
+						"type": "mrkdwn",
+						"text": `*MSG:*   ${msg}`
+					}
+				]
+			},
+			{
+				"type": "context",
+				"elements": [
+					{
+						"type": "mrkdwn",
+						"text": `*Data:*`
+					}
+				]
+			},
+			{
+				"type": "context",
+				"elements": [
+					{
+						"type": "mrkdwn",
+						"text": "```" + data + "```"
+					}
+				]
+			}
+			// {
+			// 	"type": "section",
+			// 	"elements": [
+			// 		{
+			// 			"type": "plain_text",
+			// 			"text": `${data}`
+			// 		}
+			// 	]
+			// }
+		]
+	};
+
+	axios
+		.post("https://hooks.slack.com/services/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", body, { "content-type": "application/json" })
+		.then((res) => {
+			console.log("log created")
+		})
+		.catch((err) => {
+			console.log("log creating error")
+		});
+}
