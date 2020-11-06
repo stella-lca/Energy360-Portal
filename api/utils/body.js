@@ -642,9 +642,10 @@ style='width: 100%; max-width: 600px; border-collapse:collapse; color:#444; text
 															<p
 																style='font-size:inherit; line-height:inherit; margin:0 0 10px; color:inherit; font-family:Arial, "Helvetica Neue", Helvetica, sans-serif; font-weight:normal; padding:0'
 															>
-																<span style="color: inherit;"
-																	><br />Very Truly Yours,<br
-																/>GreenConnect EntrepreneurPortal</span>
+																<span style="color: inherit; font-size:20px;"><br />
+																	Very Truly Yours,<br />
+																	GreenConnect EntrepreneurPortal
+																</span>
 															</p>
 															<p
 																style='font-size:inherit; line-height:inherit; margin:0 0 10px; color:inherit; font-family:Arial, "Helvetica Neue", Helvetica, sans-serif; font-weight:normal; padding:0'
