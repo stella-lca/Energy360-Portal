@@ -47,7 +47,7 @@ const handleToken = async function (authCode, tokenData) {
 		accountNumber,
 	} = tokenData;
 
-	if(!access_token) {
+	if (!access_token) {
 		createLogItem(true, "Token Management", 'Token API ERROR');
 		return false;
 	}
@@ -145,16 +145,13 @@ exports.notifyCallback = async function (req, res) {
 		// const list = await findAllLog();
 		console.log("Utilify API REQUEST ===>", req.body);
 		createLogItem(true, "Utility API Response", "Got the Utility Notify Request TEST", JSON.stringify(req.body));
-		
-		const body = req.body;
-		let fileUrls = [];
-		if (body) {
-			fileUrls = body['espi:batchlist']['espi:resources'];
-		}
-		
+
+		let fileUrls = findNestedObj(tereq.bodyst, 'espi:resources');
 		createLogItem(true, "Utility API Response", "Got the Utility Notify Request", JSON.stringify(fileUrls));
 
-		if (fileUrls.length > 0) {
+		if (fileUrls !== undefined) {
+			if(typeof(fileUrls) === 'string') fileUrls = [fileUrls];
+
 			async.mapLimit(fileUrls, 5, async function (url) {
 				return new Promise((resolve, reject) => {
 					downloadFile(url, resolve)
@@ -202,5 +199,14 @@ exports.notifyCallback = async function (req, res) {
 	}
 };
 
-
+function findNestedObj(entireObj, keyToFind) {
+	let foundObj;
+	JSON.stringify(entireObj, (_, nestedValue) => {
+		if (nestedValue && nestedValue[keyToFind]) {
+			foundObj = nestedValue[keyToFind];
+		}
+		return nestedValue;
+	});
+	return foundObj;
+};
 
