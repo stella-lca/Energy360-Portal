@@ -1,5 +1,5 @@
 const sgMail = require("@sendgrid/mail");
-const { email_body } = require("./body");
+const { email_body, user_email_body } = require("./body");
 require("dotenv").config();
 
 let {
@@ -90,12 +90,13 @@ exports.sendAdminEmail = async ({ content, subject, callback }) => {
 				return err;
 			});
 	} catch (e) {
-		callback(false)
+		if (callback) callback(false)
 	}
 };
 
 exports.sendUserEmail = async ({ content, subject, callback }) => {
 	try {
+		console.log(content)
 		const emailBody = user_email_body(content);
 		const msg = {
 			to: APPSETTING_ADMIN_EMAIL,
@@ -106,7 +107,7 @@ exports.sendUserEmail = async ({ content, subject, callback }) => {
 		sgMail
 			.send(msg)
 			.then(msg => {
-				console.log("sendAdminEmail", "true")
+				console.log("sendUserEmail", "true")
 
 				if (callback) callback(true);
 				return msg;
@@ -117,7 +118,8 @@ exports.sendUserEmail = async ({ content, subject, callback }) => {
 				return err;
 			});
 	} catch (e) {
-		callback(false)
+		console.log("==============")
+		if (callback) callback(false)
 	}
 };
 

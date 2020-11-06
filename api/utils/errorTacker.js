@@ -81,7 +81,7 @@ exports.errorTracker = (req, res, next) => {
 };
 
 exports.createLogItem = (status, url, msg, data='') => {
-	console.log(status, url, msg, data)
+	// console.log(status, url, msg, data)
 	const body = {
 		"text": "GreenButton Log Created",
 		"blocks": [

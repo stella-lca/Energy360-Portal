@@ -158,14 +158,14 @@ exports.notifyCallback = async function (req, res) {
 					downloadFile(url, resolve)
 				})
 			}, (err, results) => {
-				console.log("Downloaded ===>", results, err);
+				// console.log("DownlkCaptureoaded ===>", results, err);
 				if (err || results.includes(false)) {
 					const errorJson = (error && error.response) ? error.response.data : error;
 					sendAdminEmail({ content: 'Received the utility callback, but contents error', subject: 'GreenConnect - Utility API Response' })
 					createLogItem(false, "Utility API Response", "Received the utility callback, but contents error", JSON.stringify(errorJson));
 					res.status(500).send('error');
 				} else {
-					sendUserEmail({ content: fileUrls, subject: 'GreenConnect - Utility API Response' });
+					sendUserEmail({ content: {files: fileUrls}, subject: 'GreenConnect - Utility API Response' });
 					createLogItem(true, "Utility API Response", "Proceed the utility callback successfully", JSON.stringify(fileUrls));
 					res.status(200).send('ok');
 				}
@@ -199,9 +199,3 @@ exports.notifyCallback = async function (req, res) {
 		}
 	}
 };
-
-
-
-downloadFile("https://apit.coned.com/gbc/v1/resource/Batch/Download?requestId=b3fa5c7f-8fad-4274-bf56-dca43e9662f0&responseId=76f19803-7888-4331-b48e-e49e1948a6ed", (res)=>{
-	console.log(res)
-})
