@@ -146,7 +146,7 @@ exports.notifyCallback = async function (req, res) {
 		console.log("Utilify API REQUEST ===>", req.body);
 		createLogItem(true, "Utility API Response", "Got the Utility Notify Request TEST", JSON.stringify(req.body));
 
-		let fileUrls = findNestedObj(tereq.bodyst, 'espi:resources');
+		let fileUrls = findNestedObj(req.body, 'espi:resources');
 		createLogItem(true, "Utility API Response", "Got the Utility Notify Request", JSON.stringify(fileUrls));
 
 		if (fileUrls !== undefined) {
