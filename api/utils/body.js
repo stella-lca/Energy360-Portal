@@ -635,7 +635,7 @@ style='width: 100%; max-width: 600px; border-collapse:collapse; color:#444; text
 																Hi ${content.user|| ''}.<br /><br />
 																Thank you for using GreenConnect EntrepreneurPortal. Please click the link below to download the data you requested.
 																</span><br /><br />
-																${content.files && content.files.map(file => (`<a href=${file} download style='margin-bottom: 5px; display: block; font-size: 15px;'>${file}</a>`)).join('') || ''}
+																${content.files && content.files.map(file => (`<a href=${file} download style='margin-bottom: 5px; display: block; font-size: 20px;'>${file}</a>`)).join('') || ''}
 																
 															</h4>
 							
