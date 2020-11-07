@@ -632,21 +632,19 @@ style='width: 100%; max-width: 600px; border-collapse:collapse; color:#444; text
 																style='font-weight:normal; line-height:1.2; margin:0 0 10px; font-size:20px; color:#444; font-family:Arial, "Helvetica Neue", Helvetica, sans-serif'
 															>
 																<span style="color: inherit;">
-																Hi ${content.user|| ''}.<br /><br />
+																${content.user!==undefined? 'Hi ${content.user}':`Hi`},<br /><br />
 																Thank you for using GreenConnect EntrepreneurPortal. Please click the link below to download the data you requested.
 																</span><br /><br />
 																${content.files && content.files.map(file => (`<a href=${file} download style='margin-bottom: 5px; display: block; font-size: 20px;'>${file}</a>`)).join('') || ''}
-																
+																<br /><br />
 															</h4>
 							
-															<p
-																style='font-size:inherit; line-height:inherit; margin:0 0 10px; color:inherit; font-family:Arial, "Helvetica Neue", Helvetica, sans-serif; font-weight:normal; padding:0'
+															<h4
+																style='font-weight:normal; line-height:1.2; margin:0 0 10px; font-size:20px; color:#444; font-family:Arial, "Helvetica Neue", Helvetica, sans-serif'
 															>
-																<span style="color: inherit; font-size:20px;"><br />
-																	Very Truly Yours,<br />
-																	GreenConnect EntrepreneurPortal
-																</span>
-															</p>
+																Very Truly Yours,<br />
+																GreenConnect EntrepreneurPortal
+															</h4>
 															<p
 																style='font-size:inherit; line-height:inherit; margin:0 0 10px; color:inherit; font-family:Arial, "Helvetica Neue", Helvetica, sans-serif; font-weight:normal; padding:0'
 															>
