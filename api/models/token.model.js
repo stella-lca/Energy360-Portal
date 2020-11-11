@@ -58,13 +58,13 @@ module.exports = (sequelize, DataTypes) => {
 				}
 			})
 			.then(token => token || undefined)
-			.catch(err => err);
+			.catch(err => false);
 	};
 
 	Token.createToken = async tokenData => {
 		return await Token.create(tokenData)
 			.then(token => token)
-			.catch(err => err);
+			.catch(err => false);
 	};
 
 	Token.updateToken = async (authCode, tokenData) => {
@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
 				}
 			})
 			.then(token => token || undefined)
-			.catch(err => err);
+			.catch(err => false);
 	};
 
 	return Token;

@@ -33,8 +33,9 @@ const handleToken = async function (authCode, tokenData) {
 	const expiryDate = moment().add(1, "hours").format();
 
 	console.log('existing token ===>', token)
-	var msg = token !== undefined ? "Token already existed" : "Creating new token";
+	var msg = (token !== undefined && token) ? "Token already existed" : "Creating new token";
 	createLogItem(true, "Token Management", msg);
+	console.log('handleToken =>', msg)
 
 	tokenData.expiry_date = expiryDate;
 	const {
@@ -49,7 +50,8 @@ const handleToken = async function (authCode, tokenData) {
 	} = tokenData;
 
 	if (!access_token) {
-		createLogItem(true, "Token Management", 'Token API ERROR');
+		createLogItem(true, "Token Management", 'Token API Don\'t have valid contents');
+		console.log('handleToken =>', "Token Management", 'Token API Don\'t have valid contents')
 		return false;
 	}
 
@@ -64,8 +66,8 @@ const handleToken = async function (authCode, tokenData) {
 				expiry_date,
 			});
 
-			console.log("updated token ===>", token)
 			msg = status ? "Token updated successfully" : "Token updating error";
+			console.log("handleToken-token_update ===>", msg)
 			createLogItem(true, "Token Management", msg, JSON.stringify(token));
 
 			return token;
@@ -83,14 +85,14 @@ const handleToken = async function (authCode, tokenData) {
 				expiry_date,
 			});
 
-			console.log("created token status ===>", status)
 			msg = status ? "Token created successfully" : "Token creating - Query Error";
+			console.log("handleToken-token_create ===>", msg)
 			createLogItem(true, "Token Management", msg, JSON.stringify(token));
 
 			return token;
 		}
 	} catch (error) {
-		console.log("Token handling issue", error);
+		console.log("handleToken-error ===>", error.response)
 		const errorJson = (error && error.response) ? error.response.data : error;
 		createLogItem(false, "Token Management", "Token handling issue", JSON.stringify(errorJson));
 
@@ -116,13 +118,17 @@ exports.authenticateToken = async function (req, res) {
 	};
 
 
+	// axios
+	// 	.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, {
+	// 		headers,
+	// 	})
 	axios
-		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, {
+		.get("https://data.nola.gov/api/views/hkuw-i89a/rows.json", data, {
 			headers,
 		})
 		.then(async (response) => {
-			console.log("Token API Response", response);
-			createLogItem(true, "TOKEN API", "Token api working correctly", JSON.stringify(tokenData));
+			consoles.log("Token API Response", response.data);
+			createLogItem(true, "TOKEN API", "Token api working correctly", JSON.stringify(response.data));
 
 			const { data: tokenData } = response;
 			const resultData = await handleToken(code, tokenData);
@@ -134,8 +140,8 @@ exports.authenticateToken = async function (req, res) {
 			}
 		})
 		.catch((error) => {
+			console.log("Token api processing error", error.response)
 			const errorJson = (error && error.response) ? error.response.data : error;
-			console.log("Token api processing error", error.response.data)
 			createLogItem(false, "TOKEN API", "Token api processing error", JSON.stringify(errorJson));
 			res.redirect("/callback?success=false");
 		});
