@@ -118,12 +118,8 @@ exports.authenticateToken = async function (req, res) {
 	};
 
 
-	// axios
-	// 	.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, {
-	// 		headers,
-	// 	})
 	axios
-		.get("https://data.nola.gov/api/views/hkuw-i89a/rows.json", data, {
+		.post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, {
 			headers,
 		})
 		.then(async (response) => {
