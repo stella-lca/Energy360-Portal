@@ -24,7 +24,13 @@ exports.downloadFile = (url, cb) => {
 		}
 
 		const file = fs.createWriteStream(fileName);
-		const sendReq = request.get(url);
+		const sendReq = request.get({
+			headers: {
+				'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			url
+		});
 
 		sendReq.on('response', (response) => {
 			if (response.statusCode !== 200) {
