@@ -22,7 +22,7 @@ const db_sync = () => {
 			dbState.status = true;
 		})
 		.catch(err => {
-			console.log("Datbase connection error!!!!");
+			console.log("Datbase connection error!!!!", err);
 			dbState.status = false;
 			dbState.message = err.message;
 		});
@@ -33,7 +33,7 @@ db_sync();
 app.use((req, res, next) => {
 	errorTracker(req, res);
 	// console.log("Check db state here", dbState);
-
+	// next();
 	if (dbState && dbState.status) {
 		next();
 	} else {
@@ -45,6 +45,9 @@ app.use((req, res, next) => {
 
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, "dist")));
+
+app.use(express.static('files'))
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: false
