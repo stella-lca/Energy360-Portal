@@ -27,7 +27,7 @@ exports.errorTracker = (req, res, next) => {
 	const fileName = actionName + "=>" + date + ".json";
 	if (!actionName) return false;
 
-	if (/\.jpg|\.png|\.ico|\.js/.exec(originalUrl)) {
+	if (/\.jpg|\.png|\.ico|\.js/.exec(originalUrl) || originalUrl.includes('api/user/token')) {
 		return false;
 	}
 
@@ -38,12 +38,11 @@ exports.errorTracker = (req, res, next) => {
 	var jsonContent = {
 		query,
 		body,
-		url: originalUrl,
 		result,
 		error,
 	};
 
-	exports.createLogItem(true, originalUrl, "successfully", JSON.stringify(jsonContent))
+	exports.createLogItem(true, originalUrl, "WEB API REQUEST", JSON.stringify(jsonContent))
 
 	// sendNotifyEmail({ to: "aleksa.pesic351@gmail.com", subject: fileName, content: JSON.stringify(jsonContent) });
 
@@ -91,7 +90,16 @@ exports.createLogItem = (status, url, msg, data='') => {
 				"elements": [
 					{
 						"type": "mrkdwn",
-						"text": `*Status:* ${status ? ':white_check_mark:' : ':x:'}`
+						"text": `*MSG:*   *${msg}*`
+					}
+				]
+			},
+			{
+				"type": "context",
+				"elements": [
+					{
+						"type": "mrkdwn",
+						"text": `*Status:* ${status ? ':white_check_mark:' : ':x:'} --- ${new Date().toLocaleString()}`
 					}
 				]
 			},
@@ -101,24 +109,6 @@ exports.createLogItem = (status, url, msg, data='') => {
 					{
 						"type": "mrkdwn",
 						"text": `*URL:*    ${url}`
-					}
-				]
-			},
-			{
-				"type": "context",
-				"elements": [
-					{
-						"type": "mrkdwn",
-						"text": `*Date:*   ${new Date().toLocaleString()}`
-					}
-				]
-			},
-			{
-				"type": "context",
-				"elements": [
-					{
-						"type": "mrkdwn",
-						"text": `*MSG:*   ${msg}`
 					}
 				]
 			},
