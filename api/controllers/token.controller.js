@@ -10,6 +10,7 @@ const {
 const { downloadFile } = require("../utils/downloadFile");
 const { addLog, createLogItem } = require("../utils/errorTacker");
 const { findNestedObj } = require("../utils/utils");
+const https = require("https");
 
 const {
   Token: { findByToken, createToken, updateToken },
@@ -138,6 +139,23 @@ exports.authenticateToken = async function (req, res) {
     redirectUri: `${APPSETTING_HOST}/auth/callback`,
     authCode: code,
   };
+  //   const data = {
+  // 	"grantType": "client_credentials",
+  // 	"clientId": APPSETTING_CLIENT_ID,
+  // 	"clientSecret": APPSETTING_CLIENT_SECRET,
+  // 	"Scope":"FB=3_35_47"
+  //   }
+  //   const data = {
+  //     "grantType":"refresh_token",
+  //     "ClientId" : APPSETTING_CLIENT_ID,
+  //     "ClientSecret": APPSETTING_CLIENT_SECRET,
+  //     "refreshToken": "xgLjx5_OwhzhqBN1I_w8Aw6vJiKRYXGjm4DbUDI1src",
+  //     "subscriptionId": 764
+  // }
+
+  const agent = new https.Agent({
+    rejectUnauthorized: false,
+  });
 
   createLogItem(
     true,
@@ -149,9 +167,10 @@ exports.authenticateToken = async function (req, res) {
   axios
     .post("https://apit.coned.com/gbc/v1/oauth/v1/Token", data, {
       headers,
+      httpsAgent: agent,
     })
     .then(async (response) => {
-      consoles.log("Token API Response", response.data || {});
+      console.log("Token API Response", response.data || {});
 
       createLogItem(
         true,
