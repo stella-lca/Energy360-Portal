@@ -7,7 +7,7 @@ const {
   sendNotifyEmail,
   sendUserEmail,
 } = require("../utils/email");
-const { downloadFile } = require("../utils/downloadFile");
+const { downloadFile, saveAsTxt } = require("../utils/downloadFile");
 const { addLog, createLogItem } = require("../utils/errorTacker");
 const { findNestedObj } = require("../utils/utils");
 const https = require("https");
@@ -222,18 +222,26 @@ exports.notifyCallback = async function (req, res) {
 
     if (fileUrls !== undefined) {
       if (typeof fileUrls === "string") fileUrls = [fileUrls];
-			sendUserEmail({
-				content: { files: fileUrls },
-				subject: "GreenConnect - Utility API Response",
-			});
-			createLogItem(
+	
+      createLogItem(
 				true,
 				"Utility API Response",
 				"Proceed the utility callback successfully",
 				JSON.stringify(fileUrls)
-			);
-      res.status(200).send("ok");
-
+      );
+      
+      saveAsTxt(req.body, (response)=>{
+        if(response) {
+          sendUserEmail({
+            content: { files: [response] },
+            subject: "GreenConnect - Utility API Response",
+          });
+          return res.status(200).send("ok");
+        }
+        else return res.status(204).send("file downloading error");
+      })
+		
+      
     //   async.mapLimit(
     //     fileUrls,
     //     5,
