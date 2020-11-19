@@ -222,46 +222,55 @@ exports.notifyCallback = async function (req, res) {
 
     if (fileUrls !== undefined) {
       if (typeof fileUrls === "string") fileUrls = [fileUrls];
-
-      async.mapLimit(
-        fileUrls,
-        5,
-        async function (url) {
-          return new Promise((resolve, reject) => {
-            downloadFile(url, resolve);
-          });
-        },
-        (err, results) => {
-          // console.log("DownlkCaptureoaded ===>", results, err);
-          if (err || results.includes(false)) {
-            const errorJson =
-              error && error.response ? error.response.data : error;
-            sendAdminEmail({
-              content: "Received the utility callback, but contents error",
-              subject: "GreenConnect - Utility API Response",
-            });
-            createLogItem(
-              false,
-              "Utility API Response",
-              "Received the utility callback, but contents error",
-              JSON.stringify(errorJson)
-            );
-            res.status(500).send("error");
-          } else {
-            sendUserEmail({
-              content: { files: fileUrls },
-              subject: "GreenConnect - Utility API Response",
-            });
-            createLogItem(
-              true,
-              "Utility API Response",
-              "Proceed the utility callback successfully",
-              JSON.stringify(fileUrls)
-            );
-            res.status(200).send("ok");
-          }
-        }
-      );
+			sendUserEmail({
+				content: { files: fileUrls },
+				subject: "GreenConnect - Utility API Response",
+			});
+			createLogItem(
+				true,
+				"Utility API Response",
+				"Proceed the utility callback successfully",
+				JSON.stringify(fileUrls)
+			);
+    //   async.mapLimit(
+    //     fileUrls,
+    //     5,
+    //     async function (url) {
+    //       return new Promise((resolve, reject) => {
+    //         downloadFile(url, resolve);
+    //       });
+    //     },
+    //     (err, results) => {
+    //       // console.log("DownlkCaptureoaded ===>", results, err);
+    //       if (err || results.includes(false)) {
+    //         const errorJson =
+    //           error && error.response ? error.response.data : error;
+    //         sendAdminEmail({
+    //           content: "Received the utility callback, but contents error",
+    //           subject: "GreenConnect - Utility API Response",
+    //         });
+    //         createLogItem(
+    //           false,
+    //           "Utility API Response",
+    //           "Received the utility callback, but contents error",
+    //           JSON.stringify(errorJson)
+    //         );
+    //         res.status(500).send("error");
+    //       } else {
+    //         sendUserEmail({
+    //           content: { files: fileUrls },
+    //           subject: "GreenConnect - Utility API Response",
+    //         });
+    //         createLogItem(
+    //           true,
+    //           "Utility API Response",
+    //           "Proceed the utility callback successfully",
+    //           JSON.stringify(fileUrls)
+    //         );
+    //         res.status(200).send("ok");
+    //       }
+    //     }
+    //   );
     } else {
       sendAdminEmail({
         content: "Received the utility callback, content is empty",
