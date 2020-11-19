@@ -232,6 +232,8 @@ exports.notifyCallback = async function (req, res) {
 				"Proceed the utility callback successfully",
 				JSON.stringify(fileUrls)
 			);
+      res.status(200).send("ok");
+
     //   async.mapLimit(
     //     fileUrls,
     //     5,
