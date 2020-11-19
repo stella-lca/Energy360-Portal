@@ -33,7 +33,6 @@ db_sync();
 app.use((req, res, next) => {
 	errorTracker(req, res);
 	// console.log("Check db state here", dbState);
-	// next();
 	if (dbState && dbState.status) {
 		next();
 	} else {
@@ -47,6 +46,7 @@ app.use(cors());
 app.use(express.static(path.resolve(__dirname, "dist")));
 
 app.use(express.static('files'))
+app.use(express.static('log'))
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
