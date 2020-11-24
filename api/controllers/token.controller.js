@@ -7,8 +7,9 @@ const {
   sendNotifyEmail,
   sendUserEmail,
 } = require("../utils/email");
-const { downloadFile, saveAsTxt } = require("../utils/downloadFile");
+const { downloadFile, saveAsTxt, downloadContents } = require("../utils/downloadFile");
 const { addLog, createLogItem } = require("../utils/errorTacker");
+const { apiClient } = require("../utils/api");
 const { findNestedObj } = require("../utils/utils");
 const https = require("https");
 
@@ -23,15 +24,6 @@ const {
   APPSETTING_CLIENT_SECRET,
   APPSETTING_SUBSCRIPTION_KEY,
 } = process.env;
-
-const config = {
-  bucketName: "increase-prod-logs",
-  region: "us-west-2",
-  accessKeyId: "dd",
-  secretAccessKey: "ad",
-};
-
-const s3bucket = new AWS.S3(config);
 
 const handleToken = async function (authCode, tokenData) {
   let token = await findByToken(authCode);
@@ -204,7 +196,7 @@ exports.authenticateToken = async function (req, res) {
 exports.notifyCallback = async function (req, res) {
   try {
     // const list = await findAllLog();
-    console.log("Utilify API REQUEST ===>", req.body);
+    // console.log("Utilify API REQUEST ===>", req.body);
     createLogItem(
       true,
       "Utility API Response",
@@ -213,6 +205,8 @@ exports.notifyCallback = async function (req, res) {
     );
 
     let fileUrls = findNestedObj(req.body, "espi:resources");
+    console.log(fileUrls)
+
     createLogItem(
       true,
       "Utility API Response",
@@ -222,65 +216,44 @@ exports.notifyCallback = async function (req, res) {
 
     if (fileUrls !== undefined) {
       if (typeof fileUrls === "string") fileUrls = [fileUrls];
-	
+
       createLogItem(
-				true,
-				"Utility API Response",
-				"Proceed the utility callback successfully",
-				JSON.stringify(fileUrls)
+        true,
+        "Utility API Response",
+        "Proceed the utility callback successfully",
+        JSON.stringify(fileUrls)
       );
-      
-      saveAsTxt(req.body, (response)=>{
-        if(response) {
-          sendUserEmail({
-            content: { files: [response] },
-            subject: "GreenConnect - Utility API Response",
-          });
-          return res.status(200).send("ok");
-        }
-        else return res.status(204).send("file downloading error");
-      })
-		
-      
-    //   async.mapLimit(
-    //     fileUrls,
-    //     5,
-    //     async function (url) {
-    //       return new Promise((resolve, reject) => {
-    //         downloadFile(url, resolve);
-    //       });
-    //     },
-    //     (err, results) => {
-    //       // console.log("DownlkCaptureoaded ===>", results, err);
-    //       if (err || results.includes(false)) {
-    //         const errorJson =
-    //           error && error.response ? error.response.data : error;
-    //         sendAdminEmail({
-    //           content: "Received the utility callback, but contents error",
-    //           subject: "GreenConnect - Utility API Response",
-    //         });
-    //         createLogItem(
-    //           false,
-    //           "Utility API Response",
-    //           "Received the utility callback, but contents error",
-    //           JSON.stringify(errorJson)
-    //         );
-    //         res.status(500).send("error");
-    //       } else {
-    //         sendUserEmail({
-    //           content: { files: fileUrls },
-    //           subject: "GreenConnect - Utility API Response",
-    //         });
-    //         createLogItem(
-    //           true,
-    //           "Utility API Response",
-    //           "Proceed the utility callback successfully",
-    //           JSON.stringify(fileUrls)
-    //         );
-    //         res.status(200).send("ok");
-    //       }
-    //     }
-    //   );
+
+      let publicLinks = [];
+      for(let i=0; i<fileUrls.length; i++) {
+        const linkItem = await downloadContents(fileUrls[i]);
+        if(linkItem) publicLinks.push(linkItem);
+      }
+      console.log(publicLinks)
+
+      if(publicLinks.length>0) {
+        sendUserEmail({
+          content: { files: publicLinks },
+          subject: "GreenConnect - Utility API Response",
+        });
+        return res.status(200).send("ok");
+      }
+
+      sendAdminEmail({
+        content: "Received the utility callback, content is empty",
+        subject: "GreenConnect - Utility API Response",
+      });
+      return res.status(204).send("file downloading error");
+
+      // saveAsTxt(req.body, (response) => {
+      //   if (response) {
+      //     sendUserEmail({
+      //       content: { files: [response] },
+      //       subject: "GreenConnect - Utility API Response",
+      //     });
+      //     return res.status(200).send("ok");
+      //   } else return res.status(204).send("file downloading error");
+      // });
     } else {
       sendAdminEmail({
         content: "Received the utility callback, content is empty",

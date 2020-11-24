@@ -1,6 +1,9 @@
 const fs = require("fs");
 const request = require("request");
+var format = require("xml-formatter");
 const uniqueString = require("unique-string");
+const { apiClient } = require("./api");
+
 require("dotenv").config();
 let { APPSETTING_HOST } = process.env;
 
@@ -14,6 +17,39 @@ const fileNameAndExt = (str) => {
     file.substr(0, file.lastIndexOf(".")),
     file.substr(file.lastIndexOf(".") + 1, file.length),
   ];
+};
+
+function formatXml(xml, tab) {
+  // tab = optional indent value, default is tab (\t)
+  var formatted = "",
+    indent = "";
+  tab = tab || "\t";
+  xml.split(/>\s*</).forEach(function (node) {
+    if (node.match(/^\/\w/)) indent = indent.substring(tab.length); // decrease indent by one 'tab'
+    formatted += indent + "<" + node + ">\r\n";
+    if (node.match(/^<?\w[^>]*[^\/]$/)) indent += tab; // increase indent
+  });
+  return formatted.substring(1, formatted.length - 3);
+}
+
+const getExtension = (url) => {
+  if (url === null) {
+    return "";
+  }
+  var index = url.lastIndexOf("/");
+  if (index !== -1) {
+    url = url.substring(index + 1);
+  }
+  index = url.indexOf("?");
+  if (index !== -1) {
+    url = url.substring(0, index);
+  }
+  index = url.indexOf("#");
+  if (index !== -1) {
+    url = url.substring(0, index);
+  }
+  index = url.lastIndexOf(".");
+  return index !== -1 ? url.substring(index + 1) : "";
 };
 
 exports.downloadFile = (url, cb) => {
@@ -68,7 +104,7 @@ exports.downloadFile = (url, cb) => {
 
 exports.saveAsTxt = (contents, cb) => {
   try {
-    let fileName = "File-" + uniqueString() + '.txt';
+    let fileName = "File-" + uniqueString() + ".txt";
     fs.writeFile(
       `files/${fileName}`,
       JSON.stringify(contents),
@@ -81,12 +117,65 @@ exports.saveAsTxt = (contents, cb) => {
 
         console.log("JSON file has been saved.");
         return cb({
-			name: fileName,
-			link: `${APPSETTING_HOST}/${fileName}`
-		});
+          name: fileName,
+          link: `${APPSETTING_HOST}/${fileName}`,
+        });
       }
     );
   } catch (error) {
-	return cb(false);
+    return cb(false);
   }
 };
+
+exports.downloadContents = async (fileLink) => {
+  try {
+    console.log("START");
+    let api = await apiClient();
+    api.defaults.headers.common["content-type"] = "application/atom+xml";
+
+    let fileExt = getExtension(fileLink) || "xml";
+    let fileName = "File-" + uniqueString() + `.${fileExt}`;
+    let filePath = `files/${fileName}`;
+
+    console.log(fileExt, fileName)
+
+    const writer = fs.createWriteStream(filePath);
+
+    const response = await api.get(fileLink, {
+      responseType: "stream",
+    });
+
+    response.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+      writer.on("finish", () => {
+        const newFileName = "File-" + uniqueString() + `.${fileExt}`;
+        const xmlData = fs.readFileSync(filePath, {
+          encoding: "utf8",
+          flag: "r",
+        });
+        var formatedXml = formatXml(xmlData);
+        fs.writeFile("files/" + newFileName, formatedXml, function (err) {
+          if (err) {
+            console.log(err);
+            return reject;
+          }
+          fs.unlinkSync(filePath);
+          resolve({
+            name: newFileName,
+            link: `${APPSETTING_HOST}/${newFileName}`,
+          });
+        });
+      });
+      writer.on("error", reject);
+    });
+  } catch (error) {
+    console.log("downloadContents");
+    return false;
+  }
+};
+
+
+// (async()=>{
+//   exports.downloadContents("https://apit.coned.com/gbc/v1/resource/Batch/Download?requestId=82203ccc-5121-4813-9045-4921e8678c44&responseId=b69b51d9-ae63-4d2b-852a-acabd9b92951")
+// })()

@@ -8,16 +8,16 @@ const { errorTracker } = require("../utils/errorTacker");
 Router.get("/callback", TokenController.authenticateToken);
 Router.post("/tracker", errorTracker);
 Router.get("/token-data", (req, res) => {
-	res.send(req.body);
+  res.send(req.body);
 });
 
 Router.post(
-	"/notify",
-	xmlparser({
-		trim: false,
-		explicitArray: false,
-	}),
-	TokenController.notifyCallback
+  "/notify",
+  xmlparser({
+    trim: false,
+    explicitArray: false,
+  }),
+  TokenController.notifyCallback
 );
 
 module.exports = Router;
