@@ -7,7 +7,11 @@ const {
   sendNotifyEmail,
   sendUserEmail,
 } = require("../utils/email");
-const { downloadFile, saveAsTxt, downloadContents } = require("../utils/downloadFile");
+const {
+  downloadFile,
+  saveAsTxt,
+  downloadContents,
+} = require("../utils/downloadFile");
 const { addLog, createLogItem } = require("../utils/errorTacker");
 const { apiClient } = require("../utils/api");
 const { findNestedObj } = require("../utils/utils");
@@ -96,10 +100,11 @@ const handleToken = async function (authCode, tokenData) {
       msg = status
         ? "Token created successfully"
         : "Token creating - Query Error";
+
       console.log("handleToken-token_create ===>", msg);
       createLogItem(true, "Token Management", msg, JSON.stringify(token));
 
-      return token;
+      return tokenData;
     }
   } catch (error) {
     console.log("handleToken-error ===>", error.response);
@@ -174,6 +179,13 @@ exports.authenticateToken = async function (req, res) {
       const { data: tokenData } = response;
       const resultData = await handleToken(code, tokenData);
 
+      createLogItem(
+        true,
+        "Token api working correctly",
+        "TOKEN DB MANAGEMENT",
+        JSON.stringify(resultData)
+      );
+
       if (resultData && resultData.access_token) {
         res.redirect("/callback?success=true");
       } else {
@@ -205,7 +217,7 @@ exports.notifyCallback = async function (req, res) {
     );
 
     let fileUrls = findNestedObj(req.body, "espi:resources");
-    console.log(fileUrls)
+    console.log(fileUrls);
 
     createLogItem(
       true,
@@ -225,13 +237,13 @@ exports.notifyCallback = async function (req, res) {
       );
 
       let publicLinks = [];
-      for(let i=0; i<fileUrls.length; i++) {
+      for (let i = 0; i < fileUrls.length; i++) {
         const linkItem = await downloadContents(fileUrls[i]);
-        if(linkItem) publicLinks.push(linkItem);
+        if (linkItem) publicLinks.push(linkItem);
       }
-      console.log(publicLinks)
+      console.log(publicLinks);
 
-      if(publicLinks.length>0) {
+      if (publicLinks.length > 0) {
         sendUserEmail({
           content: { files: publicLinks },
           subject: "GreenConnect - Utility API Response",
