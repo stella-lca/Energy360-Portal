@@ -214,12 +214,12 @@ exports.email_body = content => `<table
 																	style='font-weight:normal; line-height:1.2; margin:0 0 10px; font-size:20px; color:#444; font-family:Arial, "Helvetica Neue", Helvetica, sans-serif'
 																>
 																	<span style="color: inherit;">
-																	Hi, how are you?<br /><br />
+																	Hi,<br /><br />
 																	${content}
 																	</span>
 																</h4>
 																<p
-																	style='font-size:inherit; line-height:inherit; margin:0 0 10px; color:inherit; font-family:Arial, "Helvetica Neue", Helvetica, sans-serif; font-weight:normal; padding:0'
+																	style='font-size:20px; color:#444; margin:0 0 10px; color:inherit; font-family:Arial, "Helvetica Neue", Helvetica, sans-serif; font-weight:normal; padding:0'
 																>
 																	<span style="color: inherit;"
 																		><br />Very Truly Yours,<br
