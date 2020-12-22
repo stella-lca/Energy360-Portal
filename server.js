@@ -10,6 +10,7 @@ require("dotenv").config();
 const PORT = process.env.PORT || 3000;
 const router = require("./api/routes");
 
+
 let dbState = {};
 
 const db = require("./api/models");
@@ -30,9 +31,42 @@ const db_sync = () => {
 
 db_sync();
 
+function anyBodyParser(req, res, next) {
+	const {headers} = req;
+	const contentType = headers['content-type'];
+	if(contentType.includes('xml')) {
+		var data = '';
+		req.setEncoding('utf8');
+		req.on('data', function(chunk) { 
+			data += chunk;
+		});
+		req.on('end', function() {
+			req.testBody = data;
+			next();
+		});
+	} else {
+		next();
+	}
+}
+
+app.use(cors());
+app.use(express.static(path.resolve(__dirname, "dist")));
+
+app.use(express.static('files'))
+app.use(express.static('log'))
+
+app.use(anyBodyParser);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+	extended: false
+}));
+
+
 app.use((req, res, next) => {
 	errorTracker(req, res);
 	// console.log("Check db state here", dbState);
+	// next();
+
 	if (dbState && dbState.status) {
 		next();
 	} else {
@@ -42,16 +76,8 @@ app.use((req, res, next) => {
 });
 
 
-app.use(cors());
-app.use(express.static(path.resolve(__dirname, "dist")));
 
-app.use(express.static('files'))
-app.use(express.static('log'))
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-	extended: false
-}));
 
 
 // Express Routing

@@ -13,10 +13,10 @@ Router.get("/token-data", (req, res) => {
 
 Router.post(
   "/notify",
-  xmlparser({
-    trim: false,
-    explicitArray: false,
-  }),
+  // xmlparser({
+  //   trim: false,
+  //   explicitArray: false,
+  // }),
   TokenController.notifyCallback
 );
 

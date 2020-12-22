@@ -3,6 +3,7 @@ const axios = require("axios");
 const moment = require("moment");
 const { sendNotifyEmail } = require("./email");
 const uniqueString = require("unique-string");
+const _ = require("lodash");
 require("dotenv").config();
 let { APPSETTING_HOST } = process.env;
 
@@ -18,16 +19,22 @@ exports.errorTracker = (req, res, next) => {
   const {
     query = {},
     body = {},
+    testBody,
+    method,
+    headers,
     originalUrl = "/test-action",
     result,
     error,
   } = req;
+
+  console.log("===>", req.testBody)
+
   const date = moment().format("MM-DD-YYYY-h:mm:ss");
   const data1 = moment().format("YYYY-MM-DD");
   const logDir = `log/`;
 
   const actionName = originalUrl.replace(/\//g, "-").substring(1);
-  const fileName = 'log-'+ uniqueString() + "-" + date + ".json";
+  const fileName = "log-" + uniqueString() + "-" + date + ".json";
   if (!actionName) return false;
 
   if (
@@ -42,12 +49,14 @@ exports.errorTracker = (req, res, next) => {
   }
 
   var jsonContent = {
-	url: originalUrl,
+    url: originalUrl,
+    method,
     query,
-    body,
+    body: _.isEmpty(body)? testBody : body,
+    headers,
     result,
-	error,
-	log: APPSETTING_HOST +'/'+ fileName
+    error,
+    log: APPSETTING_HOST + "/" + fileName,
   };
 
   exports.createLogItem(
@@ -69,13 +78,13 @@ exports.errorTracker = (req, res, next) => {
         // if(res) res.status(500).send('error');
         return console.log(err);
       }
-    //   const fileContent = fs.readFileSync(`log/${fileName}`);
+      //   const fileContent = fs.readFileSync(`log/${fileName}`);
 
-    //   var params = {
-    //     Bucket: "greenconnect-logs",
-    //     Key: `${data1}/${fileName}`, //file.name doesn't exist as a property
-    //     Body: fileContent,
-    //   };
+      //   var params = {
+      //     Bucket: "greenconnect-logs",
+      //     Key: `${data1}/${fileName}`, //file.name doesn't exist as a property
+      //     Body: fileContent,
+      //   };
 
       // if(res) res.status(200).send('ok');;
       // s3bucket.upload(params, function (err, data) {

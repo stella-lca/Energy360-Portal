@@ -16,6 +16,8 @@ const { addLog, createLogItem } = require("../utils/errorTacker");
 const { apiClient } = require("../utils/api");
 const { findNestedObj } = require("../utils/utils");
 const https = require("https");
+var convert = require("xml-js");
+const _ = require("lodash");
 
 const {
   Token: { findByToken, createToken, updateToken },
@@ -207,17 +209,30 @@ exports.authenticateToken = async function (req, res) {
 
 exports.notifyCallback = async function (req, res) {
   try {
+    var options = {
+      compact: true,
+      trim: true,
+      indentCdata: false,
+      spaces: 0,
+      ignoreComment: true,
+      alwaysChildren: true,
+      ignoreInstruction: true,
+      ignoreDoctype: true,
+    };
+
+    const validXMLText = req.testBody.replace(/&(?!(?:apos|quot|[gl]t|amp);|#)/g, '&amp;');
+    var xmlDoc = convert.xml2js(validXMLText, options);
+
     // const list = await findAllLog();
     // console.log("Utilify API REQUEST ===>", req.body);
     createLogItem(
       true,
       "Utility API Response",
       "Got the Utility Notify Request TEST",
-      JSON.stringify(req.body)
+      JSON.stringify(req.testBody)
     );
 
-    let fileUrls = findNestedObj(req.body, "espi:resources");
-    console.log(fileUrls);
+    let fileUrls = findNestedObj(xmlDoc, "espi:resources");
 
     createLogItem(
       true,
@@ -227,7 +242,13 @@ exports.notifyCallback = async function (req, res) {
     );
 
     if (fileUrls !== undefined) {
-      if (typeof fileUrls === "string") fileUrls = [fileUrls];
+      if (_.isEmpty(fileUrls.length)) {
+        fileUrls = [fileUrls._text];
+      } else {
+        fileUrls = fileUrls.map((item) => item._text);
+      }
+      console.log(fileUrls);
+
 
       createLogItem(
         true,
@@ -285,27 +306,35 @@ exports.notifyCallback = async function (req, res) {
       status: true,
     });
   } catch (error) {
-    console.log("Utility Notify Callback Error", error);
+    // console.log("Utility Notify Callback Error", 'error');
     try {
       const errorJson = error && error.response ? error.response.data : error;
+      console.log("errorJson", errorJson);
       sendAdminEmail({
         content: "Utility callback error",
         subject: "GreenConnect - Utility API Response",
       });
       createLogItem(
-        true,
+        false,
         "Utility API Response",
         "Utility Notify Callback error",
-        JSON.stringify(error)
+        JSON.stringify(errorJson)
       );
 
-      await createLog({
-        content: JSON.stringify(fileUrls),
-        status: false,
-      });
+      // await createLog({
+      //   content: JSON.stringify(errorJson),
+      //   status: false,
+      // });
       res.status(500).end("internal server error");
     } catch (e) {
-      console.log("Utility Notify Callback Error", e);
+      createLogItem(
+        false,
+        "Utility API Response",
+        "Utility Notify Callback error",
+        "Dom management error"
+      );
+      res.status(500).end("internal server error");
+      // console.log("Utility Notify Callback Error ---", e);
       throw e;
     }
   }

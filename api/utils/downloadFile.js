@@ -128,6 +128,7 @@ exports.saveAsTxt = (contents, cb) => {
 };
 
 exports.downloadContents = async (fileLink) => {
+// resource/Batch/Download?requestId={{requestId}}&responseId={{responseId}}
   try {
     console.log("START");
     let api = await apiClient();
@@ -137,7 +138,7 @@ exports.downloadContents = async (fileLink) => {
     let fileName = "File-" + uniqueString() + `.${fileExt}`;
     let filePath = `files/${fileName}`;
 
-    console.log(fileExt, fileName)
+    console.log("fileExt, fileName =>", fileExt, fileName)
 
     const writer = fs.createWriteStream(filePath);
 
