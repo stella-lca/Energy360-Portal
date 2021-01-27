@@ -34,7 +34,7 @@ db_sync();
 function anyBodyParser(req, res, next) {
 	const {headers} = req;
 	const contentType = headers['content-type'];
-	if(contentType.includes('xml')) {
+	if(contentType && contentType.includes('xml')) {
 		var data = '';
 		req.setEncoding('utf8');
 		req.on('data', function(chunk) { 
@@ -64,7 +64,7 @@ app.use(bodyParser.urlencoded({
 
 app.use((req, res, next) => {
 	errorTracker(req, res);
-	// console.log("Check db state here", dbState);
+	console.log("Check db state here", dbState);
 	// next();
 
 	if (dbState && dbState.status) {
