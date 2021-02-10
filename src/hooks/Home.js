@@ -12,7 +12,7 @@ const Home = () => {
 		
 		//TEST Environment
 		const CECONY_redir = `https://wem-cm-t1.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
-		const ORU_redir = `https://wem-cm-t1.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
+		const ORU_redir = `https://wem-cm-t1.oru.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
 		
 // 		//Production Environment
 		// const CECONY_redir = `https://www.coned.com/accounts-billing/dashboard/billing-and-usage/share-my-data-connections/third-party-authorization?ThirdPartyId=${APPSETTING_GREENCONNECT_ID}`;
