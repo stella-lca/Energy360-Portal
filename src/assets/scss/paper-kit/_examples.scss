@@ -724,3 +724,53 @@ nav.navbar-transparent.single-layout {
 	background-color: darkcyan !important;
 	padding: 2px 5em !important;
 }
+
+.card:hover {
+	transform: unset !important;
+}
+
+@media screen and (max-width: 991px) {
+	.section-navbars .navbar-collapse {
+	  display: none !important;
+	}
+  }
+  
+  .callback-container {
+	background: #1a2b5a;
+	height: 100vh;
+	margin: 0px;
+  
+	h1 {
+	  font-family: 'Helvetica', sans-serif;
+	  color: white;
+	}
+  
+	p {
+	  font-family: 'Helvetica', sans-serif;
+	  color: white;
+	  font-size: 20px;
+	}
+  
+	.parent {
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: center;
+	  padding-top: 20%;
+  
+	  &>* {
+		margin: 8px auto;
+	  }
+	}
+  
+	.fa-heart {
+	  color: tomato;
+	  font-size: 50px !important;
+	  height: 30px;
+	  animation: throb 2s;
+	}
+  }
+  
+  .card:hover {
+	transform: unset !important;
+	box-shadow: unset !important;
+  }
