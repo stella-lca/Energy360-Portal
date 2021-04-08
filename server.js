@@ -63,7 +63,7 @@ app.use(bodyParser.urlencoded({
 
 
 app.use((req, res, next) => {
-	errorTracker(req, res);
+	// errorTracker(req, res);
 	console.log("Check db state here", dbState);
 	// next();
 

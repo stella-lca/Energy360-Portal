@@ -3,6 +3,7 @@ const request = require("request");
 var format = require("xml-formatter");
 const uniqueString = require("unique-string");
 const { apiClient } = require("./api");
+const { createLogItem } = require("./errorTacker");
 
 require("dotenv").config();
 let { APPSETTING_HOST } = process.env;
@@ -130,6 +131,8 @@ exports.saveAsTxt = (contents, cb) => {
 exports.downloadContents = async (fileLink) => {
 // resource/Batch/Download?requestId={{requestId}}&responseId={{responseId}}
   try {
+    createLogItem(true, '0---> Origin File Link', fileLink)
+
     console.log("START");
     let api = await apiClient();
     api.defaults.headers.common["content-type"] = "application/atom+xml";
@@ -158,10 +161,15 @@ exports.downloadContents = async (fileLink) => {
         var formatedXml = formatXml(xmlData);
         fs.writeFile("files/" + newFileName, formatedXml, function (err) {
           if (err) {
+            createLogItem(false, '2---> File Download Error', ``)
+
             console.log(err);
             return reject;
           }
           fs.unlinkSync(filePath);
+
+          createLogItem(true, '2---> File Download Success', `${APPSETTING_HOST}/${newFileName}`)
+
           resolve({
             name: newFileName,
             link: `${APPSETTING_HOST}/${newFileName}`,
@@ -171,6 +179,8 @@ exports.downloadContents = async (fileLink) => {
       writer.on("error", reject);
     });
   } catch (error) {
+    createLogItem(false, '2---> File Download Exception', ``)
+
     console.log("downloadContents");
     return false;
   }

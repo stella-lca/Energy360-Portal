@@ -1,5 +1,7 @@
 const axios = require("axios");
 const https = require("https");
+const { addLog, createLogItem } = require('./errorTacker')
+
 var LocalStorage = require("node-localstorage").LocalStorage,
   localStorage = new LocalStorage("./scratch");
 
@@ -49,7 +51,7 @@ const generateClientToken = async function () {
     };
 
     return await instance
-      .post("/oauth/v1/Token", data)
+      .post("oauth/v1/Token", data)
       .then(async ({ data }) => {
         const { access_token } = data || {};
 
@@ -75,6 +77,8 @@ exports.apiClient = async () => {
   try {
     let AUTH_TOKEN = await generateClientToken();
     if (AUTH_TOKEN) {
+      createLogItem(true, '1---> Client Token', AUTH_TOKEN)
+
       instance.defaults.headers.common["Authorization"] =
         "Bearer " + AUTH_TOKEN;
       return instance;
