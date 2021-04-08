@@ -22,17 +22,14 @@ const handleToken = async function (authCode, tokenData) {
   let token = await findByToken(authCode)
   const expiryDate = moment().add(1, 'hours').format()
 
-  console.log('existing token ===>', token)
   var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
   createLogItem(true, 'Token Management', msg)
-  console.log('handleToken =>', msg)
 
   tokenData.expiry_date = expiryDate
   const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber } = tokenData
 
   if (!access_token) {
     createLogItem(true, 'Token Management', "Token API Don't have valid contents")
-    console.log('handleToken =>', 'Token Management', "Token API Don't have valid contents")
     return false
   }
 
@@ -48,7 +45,6 @@ const handleToken = async function (authCode, tokenData) {
       })
 
       msg = status ? 'Token updated successfully' : 'Token updating error'
-      console.log('handleToken-token_update ===>', msg)
       createLogItem(true, 'Token Management', msg, JSON.stringify(token))
 
       return token
@@ -170,7 +166,6 @@ exports.notifyCallback = async function (req, res) {
 
     let fileUrlList = await findNestedObj(xmlDoc, 'espi:resources')
     // let fileUrlList = {"_text":"https://apit.coned.com/gbc/v1/resource/Batch/Download?requestId=24c2179f-71fd-415e-ab3b-a148e45eef7d&responseId=5a3a8e49-4802-4db7-9d3c-8279e87865f9"}
-
     createLogItem(true, 'N-3 ---> Parsed Links Object', JSON.stringify(fileUrls))
 
     var fileUrls = [];
@@ -182,7 +177,6 @@ exports.notifyCallback = async function (req, res) {
       }
 
       createLogItem(true, 'N-4 ---> Parsed File Links', JSON.stringify(fileUrls))
-      res.status(200).send('success')
 
       let publicLinks = []
       for (let i = 0; i < fileUrls.length; i++) {
@@ -196,7 +190,7 @@ exports.notifyCallback = async function (req, res) {
           content: { files: publicLinks },
           subject: 'GreenConnect - Utility API Response'
         })
-        return true
+        return res.status(200).send('success')
       }
 
       createLogItem(true, 'N-5 ---> No Content in Notify', '')
@@ -204,14 +198,14 @@ exports.notifyCallback = async function (req, res) {
         content: 'Received the utility callback, content is empty',
         subject: 'GreenConnect - Utility API Response'
       })
-
+      return res.status(200).send('no contents')
     } else {
       createLogItem(false, 'N4 ---> Empty File Links', '')
       sendAdminEmail({
         content: 'Received the utility callback, content is empty',
         subject: 'GreenConnect - Utility API Response'
       })
-      res.status(200).send('ok')
+      return res.status(200).send('no contents')
     }
   } catch (error) {
     try {

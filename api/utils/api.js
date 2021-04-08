@@ -20,7 +20,7 @@ const agent = new https.Agent({
 
 let instance = axios.create({
   baseURL: 'https://apit.coned.com/gbc/v1/',
-  timeout: 10000,
+  timeout: 100000,
   headers,
   httpsAgent: agent,
   maxContentLength: 100000000,
@@ -72,8 +72,7 @@ exports.apiClient = async () => {
   try {
     let AUTH_TOKEN = await generateClientToken()
     if (AUTH_TOKEN) {
-      createLogItem(true, '1---> Client Token', AUTH_TOKEN)
-
+      createLogItem(true, 'Client Token', AUTH_TOKEN)
       instance.defaults.headers.common['Authorization'] = 'Bearer ' + AUTH_TOKEN
     }
     return instance
