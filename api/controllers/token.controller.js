@@ -159,28 +159,29 @@ exports.notifyCallback = async function (req, res) {
       ignoreInstruction: true,
       ignoreDoctype: true
     }
-    createLogItem(true, 'N1 ---> Notify API Response', ``)
+    createLogItem(true, 'N-1 ---> Notify API Response', ``)
 
     const validXMLText = req.testBody.replace(/&(?!(?:apos|quot|[gl]t|amp);|#)/g, '&amp;')
     var xmlDoc = convert.xml2js(validXMLText, options)
 
     // const list = await findAllLog();
     // console.log("Utilify API REQUEST ===>", req.body);
-    createLogItem(true, 'N2 ---> Parsed Notofiy Response', ``)
+    createLogItem(true, 'N-2 ---> Parsed Notofiy Response', ``)
 
-    let fileUrls = findNestedObj(xmlDoc, 'espi:resources')
+    let fileUrlList = await findNestedObj(xmlDoc, 'espi:resources')
+    // let fileUrlList = {"_text":"https://apit.coned.com/gbc/v1/resource/Batch/Download?requestId=24c2179f-71fd-415e-ab3b-a148e45eef7d&responseId=5a3a8e49-4802-4db7-9d3c-8279e87865f9"}
 
-    createLogItem(true, 'N3 ---> Parsed Links Object', JSON.stringify(fileUrls))
+    createLogItem(true, 'N-3 ---> Parsed Links Object', JSON.stringify(fileUrls))
 
-
-    if (fileUrls !== undefined) {
-      if (_.isEmpty(fileUrls.length)) {
-        fileUrls = [fileUrls._text]
+    var fileUrls = [];
+    if (fileUrlList !== undefined) {
+      if (_.isEmpty(fileUrlList.length)) {
+        fileUrls = [fileUrlList._text]
       } else {
-        fileUrls = fileUrls.map(item => item._text)
+        fileUrls = fileUrlList.map(item => item._text)
       }
 
-      createLogItem(true, 'N4 ---> Parsed File Links', JSON.stringify(fileUrls))
+      createLogItem(true, 'N-4 ---> Parsed File Links', JSON.stringify(fileUrls))
       res.status(200).send('success')
 
       let publicLinks = []
@@ -190,6 +191,7 @@ exports.notifyCallback = async function (req, res) {
       }
 
       if (publicLinks.length > 0) {
+        createLogItem(true, 'N-5 ---> Final Results', JSON.stringify(publicLinks))
         sendUserEmail({
           content: { files: publicLinks },
           subject: 'GreenConnect - Utility API Response'
@@ -197,7 +199,7 @@ exports.notifyCallback = async function (req, res) {
         return true
       }
 
-      createLogItem(true, 'N5 ---> No Content in Notify', '')
+      createLogItem(true, 'N-5 ---> No Content in Notify', '')
       sendAdminEmail({
         content: 'Received the utility callback, content is empty',
         subject: 'GreenConnect - Utility API Response'
