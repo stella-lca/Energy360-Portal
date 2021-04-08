@@ -179,7 +179,7 @@ exports.downloadContents = async (fileLink) => {
       writer.on("error", reject);
     });
   } catch (error) {
-    createLogItem(false, '2---> File Download Exception', ``)
+    createLogItem(false, '2---> File Download Exception', JSON.stringify(error))
 
     console.log("downloadContents");
     return false;
