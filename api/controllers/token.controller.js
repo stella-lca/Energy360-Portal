@@ -182,10 +182,32 @@ exports.notifyCallback = async function (req, res) {
       createLogItem(true, 'Utility API Response', 'Proceed the utility callback successfully', JSON.stringify(fileUrls))
 
       sendAdminEmail({
-        content: `Received the utility callback ${JSON.stringify(fileUrls)}`,
+        content: `DEED: Received the utility callback ${JSON.stringify(fileUrls)}`,
         subject: 'GreenConnect - Utility API Response'
       })
-      return res.status(200).send('success')
+
+      res.status(200).send('success')
+
+      let publicLinks = []
+      for (let i = 0; i < fileUrls.length; i++) {
+        const linkItem = await downloadContents(fileUrls[i])
+        if (linkItem) publicLinks.push(linkItem)
+      }
+
+      console.log('publicLinks', publicLinks)
+
+      if (publicLinks.length > 0) {
+        sendUserEmail({
+          content: { files: publicLinks },
+          subject: 'GreenConnect - Utility API Response'
+        })
+        return true
+      }
+
+      sendAdminEmail({
+        content: 'Received the utility callback, content is empty',
+        subject: 'GreenConnect - Utility API Response'
+      })
 
       // let publicLinks = [];
       // for (let i = 0; i < fileUrls.length; i++) {
