@@ -160,14 +160,15 @@ exports.notifyCallback = async function (req, res) {
       ignoreDoctype: true
     }
 
-    const validXMLText = req.testBody.replace(/&(?!(?:apos|quot|[gl]t|amp);|#)/g, '&amp;')
-    var xmlDoc = convert.xml2js(validXMLText, options)
+    // const validXMLText = req.testBody.replace(/&(?!(?:apos|quot|[gl]t|amp);|#)/g, '&amp;')
+    // var xmlDoc = convert.xml2js(validXMLText, options)
 
-    // const list = await findAllLog();
-    // console.log("Utilify API REQUEST ===>", req.body);
-    createLogItem(true, 'Utility API Response', 'Got the Utility Notify Request TEST', JSON.stringify(req.testBody))
+    // // const list = await findAllLog();
+    // // console.log("Utilify API REQUEST ===>", req.body);
+    // createLogItem(true, 'Utility API Response', 'Got the Utility Notify Request TEST', JSON.stringify(req.testBody))
 
-    let fileUrls = findNestedObj(xmlDoc, 'espi:resources')
+    // let fileUrls = findNestedObj(xmlDoc, 'espi:resources')
+    let fileUrls = {"_text":"https://apit.coned.com/gbc/v1/resource/Batch/Download?requestId=8aad48e3-e41f-4643-a8c4-3f27c84fd3b6&responseId=491e12f8-0425-42b6-9aaa-4a2226792f1e"}
 
     createLogItem(true, 'Utility API Response', 'Got the Utility Notify Request', JSON.stringify(fileUrls))
 
@@ -261,7 +262,7 @@ exports.notifyCallback = async function (req, res) {
         content: 'Utility callback error',
         subject: 'GreenConnect - Utility API Response'
       })
-      createLogItem(false, 'Utility API Response', 'Utility Notify Callback error', JSON.stringify(errorJson))
+      createLogItem(false, 'Utility API Response', 'Utility Notify Callback error', JSON.stringify(error))
 
       // await createLog({
       //   content: JSON.stringify(errorJson),

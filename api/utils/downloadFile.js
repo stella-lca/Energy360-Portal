@@ -136,6 +136,9 @@ exports.downloadContents = async (fileLink) => {
     console.log("START");
     let api = await apiClient();
     api.defaults.headers.common["content-type"] = "application/atom+xml";
+    api.defaults.headers.common["Accept"] = "application/atom+xml";
+    
+    createLogItem(true, '0->1---> Origin Headers', JSON.stringify(api.defaults.headers))
 
     let fileExt = getExtension(fileLink) || "xml";
     let fileName = "File-" + uniqueString() + `.${fileExt}`;
