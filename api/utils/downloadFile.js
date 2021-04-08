@@ -129,13 +129,11 @@ exports.saveAsTxt = (contents, cb) => {
 };
 
 exports.downloadContents = async (fileLink) => {
-// resource/Batch/Download?requestId={{requestId}}&responseId={{responseId}}
   try {
     createLogItem(true, '0---> Origin File Link', fileLink)
 
-    console.log("START");
     let api = await apiClient();
-    api.defaults.headers.common["content-type"] = "application/atom+xml";
+    api.defaults.headers.common["Content-Type"] = "application/atom+xml";
     api.defaults.headers.common["Accept"] = "application/atom+xml";
     
     createLogItem(true, '0->1---> Origin Headers', JSON.stringify(api.defaults.headers))
@@ -143,8 +141,6 @@ exports.downloadContents = async (fileLink) => {
     let fileExt = getExtension(fileLink) || "xml";
     let fileName = "File-" + uniqueString() + `.${fileExt}`;
     let filePath = `files/${fileName}`;
-
-    console.log("fileExt, fileName =>", fileExt, fileName)
 
     const writer = fs.createWriteStream(filePath);
 
@@ -165,10 +161,9 @@ exports.downloadContents = async (fileLink) => {
         fs.writeFile("files/" + newFileName, formatedXml, function (err) {
           if (err) {
             createLogItem(false, '2---> File Download Error', ``)
-
-            console.log(err);
             return reject;
           }
+          
           fs.unlinkSync(filePath);
 
           createLogItem(true, '2---> File Download Success', `${APPSETTING_HOST}/${newFileName}`)

@@ -159,18 +159,19 @@ exports.notifyCallback = async function (req, res) {
       ignoreInstruction: true,
       ignoreDoctype: true
     }
+    createLogItem(true, 'N1 ---> Notify API Response', ``)
 
-    // const validXMLText = req.testBody.replace(/&(?!(?:apos|quot|[gl]t|amp);|#)/g, '&amp;')
-    // var xmlDoc = convert.xml2js(validXMLText, options)
+    const validXMLText = req.testBody.replace(/&(?!(?:apos|quot|[gl]t|amp);|#)/g, '&amp;')
+    var xmlDoc = convert.xml2js(validXMLText, options)
 
-    // // const list = await findAllLog();
-    // // console.log("Utilify API REQUEST ===>", req.body);
-    // createLogItem(true, 'Utility API Response', 'Got the Utility Notify Request TEST', JSON.stringify(req.testBody))
+    // const list = await findAllLog();
+    // console.log("Utilify API REQUEST ===>", req.body);
+    createLogItem(true, 'N2 ---> Parsed Notofiy Response', ``)
 
-    // let fileUrls = findNestedObj(xmlDoc, 'espi:resources')
-    let fileUrls = {"_text":"https://apit.coned.com/gbc/v1/resource/Batch/Download?requestId=8aad48e3-e41f-4643-a8c4-3f27c84fd3b6&responseId=491e12f8-0425-42b6-9aaa-4a2226792f1e"}
+    let fileUrls = findNestedObj(xmlDoc, 'espi:resources')
 
-    createLogItem(true, 'Utility API Response', 'Got the Utility Notify Request', JSON.stringify(fileUrls))
+    createLogItem(true, 'N3 ---> Parsed Links Object', JSON.stringify(fileUrls))
+
 
     if (fileUrls !== undefined) {
       if (_.isEmpty(fileUrls.length)) {
@@ -178,15 +179,8 @@ exports.notifyCallback = async function (req, res) {
       } else {
         fileUrls = fileUrls.map(item => item._text)
       }
-      console.log(fileUrls)
 
-      createLogItem(true, 'Utility API Response', 'Proceed the utility callback successfully', JSON.stringify(fileUrls))
-
-      sendAdminEmail({
-        content: `DEED: Received the utility callback ${JSON.stringify(fileUrls)}`,
-        subject: 'GreenConnect - Utility API Response'
-      })
-
+      createLogItem(true, 'N4 ---> Parsed File Links', JSON.stringify(fileUrls))
       res.status(200).send('success')
 
       let publicLinks = []
@@ -194,8 +188,6 @@ exports.notifyCallback = async function (req, res) {
         const linkItem = await downloadContents(fileUrls[i])
         if (linkItem) publicLinks.push(linkItem)
       }
-
-      console.log('publicLinks', publicLinks)
 
       if (publicLinks.length > 0) {
         sendUserEmail({
@@ -205,74 +197,31 @@ exports.notifyCallback = async function (req, res) {
         return true
       }
 
+      createLogItem(true, 'N5 ---> No Content in Notify', '')
       sendAdminEmail({
         content: 'Received the utility callback, content is empty',
         subject: 'GreenConnect - Utility API Response'
       })
 
-      // let publicLinks = [];
-      // for (let i = 0; i < fileUrls.length; i++) {
-      //   const linkItem = await downloadContents(fileUrls[i]);
-      //   if (linkItem) publicLinks.push(linkItem);
-      // }
-      // console.log(publicLinks);
-
-      // if (publicLinks.length > 0) {
-      //   sendUserEmail({
-      //     content: { files: publicLinks },
-      //     subject: "GreenConnect - Utility API Response",
-      //   });
-      //   return res.status(200).send("ok");
-      // }
-
-      // sendAdminEmail({
-      //   content: "Received the utility callback, content is empty",
-      //   subject: "GreenConnect - Utility API Response",
-      // });
-      // return res.status(204).send("file downloading error");
-
-      // saveAsTxt(req.body, (response) => {
-      //   if (response) {
-      //     sendUserEmail({
-      //       content: { files: [response] },
-      //       subject: "GreenConnect - Utility API Response",
-      //     });
-      //     return res.status(200).send("ok");
-      //   } else return res.status(204).send("file downloading error");
-      // });
     } else {
+      createLogItem(false, 'N4 ---> Empty File Links', '')
       sendAdminEmail({
         content: 'Received the utility callback, content is empty',
         subject: 'GreenConnect - Utility API Response'
       })
-      createLogItem(true, 'GreenConnect - Utility API Response', 'Received the utility callback, content is empty', JSON.stringify(fileUrls))
       res.status(200).send('ok')
     }
-
-    await createLog({
-      content: fileUrls && fileUrls.join(','),
-      status: true
-    })
   } catch (error) {
-    // console.log("Utility Notify Callback Error", 'error');
     try {
-      const errorJson = error && error.response ? error.response.data : error
-      console.log('errorJson', errorJson)
+      createLogItem(false, 'Notify Parsing Exception', '')
       sendAdminEmail({
         content: 'Utility callback error',
         subject: 'GreenConnect - Utility API Response'
       })
-      createLogItem(false, 'Utility API Response', 'Utility Notify Callback error', JSON.stringify(error))
-
-      // await createLog({
-      //   content: JSON.stringify(errorJson),
-      //   status: false,
-      // });
-      res.status(500).end('internal server error')
+      return res.status(500).end('internal server error')
     } catch (e) {
-      createLogItem(false, 'Utility API Response', 'Utility Notify Callback error', 'Dom management error')
+      createLogItem(false, 'Server Error in Notify', '')
       res.status(500).end('internal server error')
-      // console.log("Utility Notify Callback Error ---", e);
       throw e
     }
   }
