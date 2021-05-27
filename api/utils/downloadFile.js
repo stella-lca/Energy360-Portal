@@ -186,5 +186,5 @@ exports.downloadContents = async (fileLink) => {
 
 
 // (async()=>{
-//   exports.downloadContents("https://apit.coned.com/gbc/v1/resource/Batch/Download?requestId=82203ccc-5121-4813-9045-4921e8678c44&responseId=b69b51d9-ae63-4d2b-852a-acabd9b92951")
+//   exports.downloadContents("https://api.coned.com/gbc/v1/resource/Batch/Download?requestId=82203ccc-5121-4813-9045-4921e8678c44&responseId=b69b51d9-ae63-4d2b-852a-acabd9b92951")
 // })()

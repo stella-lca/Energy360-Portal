@@ -115,7 +115,7 @@ exports.authenticateToken = async function (req, res) {
   createLogItem(true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
 
   axios
-    .post('https://apit.coned.com/gbc/v1/oauth/v1/Token', data, {
+    .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
       headers,
       httpsAgent: agent
     })
@@ -165,7 +165,7 @@ exports.notifyCallback = async function (req, res) {
     createLogItem(true, 'N-2 ---> Parsed Notofiy Response', ``)
 
     let fileUrlList = await findNestedObj(xmlDoc, 'espi:resources')
-    // let fileUrlList = {"_text":"https://apit.coned.com/gbc/v1/resource/Batch/Download?requestId=24c2179f-71fd-415e-ab3b-a148e45eef7d&responseId=5a3a8e49-4802-4db7-9d3c-8279e87865f9"}
+    // let fileUrlList = {"_text":"https://api.coned.com/gbc/v1/resource/Batch/Download?requestId=24c2179f-71fd-415e-ab3b-a148e45eef7d&responseId=5a3a8e49-4802-4db7-9d3c-8279e87865f9"}
     createLogItem(true, 'N-3 ---> Parsed Links Object', JSON.stringify(fileUrls))
 
     var fileUrls = [];

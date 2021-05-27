@@ -19,7 +19,7 @@ const agent = new https.Agent({
 })
 
 let instance = axios.create({
-  baseURL: 'https://apit.coned.com/gbc/v1/',
+  baseURL: 'https://api.coned.com/gbc/v1/',
   timeout: 100000,
   headers,
   httpsAgent: agent,
