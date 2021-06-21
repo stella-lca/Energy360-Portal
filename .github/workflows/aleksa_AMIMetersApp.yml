@@ -52,5 +52,5 @@ jobs:
       with:
         app-name: 'AMIMetersApp'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_02a9fadf6c824ffa810b3216a40d937f }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_d2204e3789124aa49ddbcaf6853ed41b }}
         package: .
