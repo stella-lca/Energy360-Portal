@@ -17,7 +17,7 @@ const sequelize = new Sequelize(
   {
     host: SQLAZURECONNSTR_DB_HOST,
     dialect: 'mssql',
-    dialectOptions: { options: { encrypt: true, trustServerCertificate: true } }
+    dialectOptions: { options: { encrypt: true } }
   }
 );
 
