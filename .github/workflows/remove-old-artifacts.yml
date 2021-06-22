@@ -14,5 +14,6 @@ jobs:
     - name: Remove old artifacts
       uses: c-hive/gha-remove-artifacts@v1
       with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         skip-tags: true
         skip-recent: 5
