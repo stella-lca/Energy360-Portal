@@ -48,10 +48,9 @@ const Scope = () => {
                   <Input
                     type='checkbox'
                     name='checkbox1'
-                    value='FB=1_3_4_5_6_7_10_13_14_15_16_18_26_28_32_33_35_37_38_41_44_46_47;IntervalDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904_86400;'
+                    value='FB=1_3_4_5_7_10_13_14_18_32_33_35_37_38_41_44;IntervalDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904;'
                     defaultChecked
                   />
-                  {/* value="FB=1_3_4_5_7_10_13_14_18_32_33_35_37_38_41_44;IntervalDuration= Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904;" */}
                   Consumption Scope
                 </Label>
               </FormGroup>
@@ -60,9 +59,8 @@ const Scope = () => {
                   <Input
                     type='checkbox'
                     name='checkbox2'
-                    value='FB=1_3_4_5_6_7_10_13_14_15_16_18_26_28_32_33_35_37_38_41_44_46_47;IntervalDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904_86400;'
+                    value='FB=1_3_6_10_13_14_15_16_28_32_33_35_37_38_41_44;IntervalDuration=Monthly;BlockDuration=Monthly;HistoryLength=63113904;'
                   />
-                  {/* value='FB=1_3_6_10_13_14_15_16_28_32_33_35_37_38_41_44;IntervalDuration= Monthly;BlockDuration=Monthly;HistoryLength=63113904;' */}
                   Billing Scope
                 </Label>
               </FormGroup>
@@ -71,9 +69,8 @@ const Scope = () => {
                   <Input
                     type='checkbox'
                     name='checkbox3'
-                    value='FB=1_3_4_5_6_7_10_13_14_15_16_18_26_28_32_33_35_37_38_41_44_46_47;IntervalDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904_86400;'
+                    value='FB=1_3_4_5_7_13_14_18_32_33_35_37_38_41_44;IntervalDuration=900_300;BlockDuration=Daily;HistoryLength=86400;'
                   />
-                  {/* value='FB=1_3_4_5_7_13_14_18_32_33_35_37_38_41_44;IntervalDuration= 900_300;BlockDuration=Daily;HistoryLength=86400;' */}
                   Real-Time Scope
                 </Label>
               </FormGroup>
@@ -82,9 +79,8 @@ const Scope = () => {
                   <Input
                     type='checkbox'
                     name='checkbox4'
-                    value='FB=1_3_4_5_6_7_10_13_14_15_16_18_26_28_32_33_35_37_38_41_44_46_47;IntervalDuration=Monthly_3600_900_300;BlockDuration=Monthly_Daily;HistoryLength=63113904_86400;'
+                    value='FB=1_3_13_14_46_47;'
                   />
-                  {/* value='FB=1_3_13_14_46_47;'  */}
                   Retail Customer Scope
                 </Label>
               </FormGroup>
