@@ -92,7 +92,8 @@ exports.authenticateToken = async function (req, res) {
     clientId: APPSETTING_CLIENT_ID,
     clientSecret: APPSETTING_CLIENT_SECRET,
     redirectUri: `${APPSETTING_HOST}/auth/callback`,
-    authCode: code
+    authCode: code,
+    "Scope":"FB=3_35_47"
   }
   //   const data = {
   // 	"grantType": "client_credentials",
