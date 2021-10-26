@@ -87,20 +87,19 @@ exports.authenticateToken = async function (req, res) {
     'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY
   }
 
+  // const data = {
+  //   grantType: 'authorization_code',
+  //   clientId: APPSETTING_CLIENT_ID,
+  //   clientSecret: APPSETTING_CLIENT_SECRET,
+  //   redirectUri: `${APPSETTING_HOST}/auth/callback`,
+  //   authCode: code
+  // }
   const data = {
-    grantType: 'authorization_code',
-    clientId: APPSETTING_CLIENT_ID,
-    clientSecret: APPSETTING_CLIENT_SECRET,
-    redirectUri: `${APPSETTING_HOST}/auth/callback`,
-    authCode: code,
-    "Scope":"FB=3_35_47"
+  	"grantType": "client_credentials",
+  	"clientId": APPSETTING_CLIENT_ID,
+  	"clientSecret": APPSETTING_CLIENT_SECRET,
+  	"scope":"FB=3_35_47"
   }
-  //   const data = {
-  // 	"grantType": "client_credentials",
-  // 	"clientId": APPSETTING_CLIENT_ID,
-  // 	"clientSecret": APPSETTING_CLIENT_SECRET,
-  // 	"Scope":"FB=3_35_47"
-  //   }
   //   const data = {
   //     "grantType":"refresh_token",
   //     "ClientId" : APPSETTING_CLIENT_ID,
