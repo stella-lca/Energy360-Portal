@@ -97,8 +97,7 @@ exports.authenticateToken = async function (req, res) {
   const data = {
   	"grantType": "client_credentials",
   	"clientId": APPSETTING_CLIENT_ID,
-  	"clientSecret": APPSETTING_CLIENT_SECRET,
-  	"scope":"FB=3_35_47"
+  	"clientSecret": APPSETTING_CLIENT_SECRET
   }
   //   const data = {
   //     "grantType":"refresh_token",
