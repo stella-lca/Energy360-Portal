@@ -19,7 +19,9 @@ const {
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const handleToken = async function (authCode, tokenData) {
+  console.log("handleToken Call", authCode)
   let token = await findByToken(authCode)
+  console.log("token findByToken >>", token);
   const expiryDate = moment().add(1, 'hours').format()
 
   var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
@@ -43,7 +45,7 @@ const handleToken = async function (authCode, tokenData) {
         expires_in,
         expiry_date
       })
-
+      console.log("token updateToken >>", status);
       msg = status ? 'Token updated successfully' : 'Token updating error'
       createLogItem(true, 'Token Management', msg, JSON.stringify(token))
 
@@ -61,7 +63,7 @@ const handleToken = async function (authCode, tokenData) {
         accountNumber,
         expiry_date
       })
-
+      console.log("token createToken >>", status);
       msg = status ? 'Token created successfully' : 'Token creating - Query Error'
 
       console.log('handleToken-token_create ===>', msg)
@@ -81,7 +83,7 @@ const handleToken = async function (authCode, tokenData) {
 exports.authenticateToken = async function (req, res) {
   //authorization code generated & sent by Utility
   const { code } = req.query
-
+  console.log("code >>", code);
   const headers = {
     'content-type': 'application/json',
     'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY
@@ -113,34 +115,42 @@ exports.authenticateToken = async function (req, res) {
   })
 
   createLogItem(true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
+  try {
+    axios
+      .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
+        headers,
+        httpsAgent: agent
+      })
+      .then(async response => {
+        console.log('Token API Response', response.data || {})
 
-  axios
-    .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
-      headers,
-      httpsAgent: agent
-    })
-    .then(async response => {
-      console.log('Token API Response', response.data || {})
+        createLogItem(true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
 
-      createLogItem(true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
+        const { data: tokenData } = response
+        console.log("tokenData >>", tokenData);
 
-      const { data: tokenData } = response
-      const resultData = await handleToken(code, tokenData)
+        const resultData = await handleToken(code, tokenData)
+        console.log("resultData >>", resultData);
+        createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
 
-      createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
-
-      if (resultData && resultData.access_token) {
-        res.redirect('/callback?success=true')
-      } else {
+        if (resultData && resultData.access_token) {
+          res.redirect('/callback?success=true')
+        } else {
+          res.redirect('/callback?success=false')
+        }
+      })
+      .catch(error => {
+        console.log('Token api processing error', error)
+        const errorJson = error && error.response ? error.response.data : error
+        // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
         res.redirect('/callback?success=false')
-      }
-    })
-    .catch(error => {
-      console.log('Token api processing error', error)
-      const errorJson = error && error.response ? error.response.data : error
-      // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
-      res.redirect('/callback?success=false')
-    })
+      })
+  } catch (error) {
+    console.log('Catch Error', error)
+    const errorJson = error && error.response ? error.response.data : error
+    // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
+    res.redirect('/callback?success=false')
+  }
 }
 
 exports.notifyCallback = async function (req, res) {
