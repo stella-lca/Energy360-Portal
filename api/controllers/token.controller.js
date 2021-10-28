@@ -94,13 +94,12 @@ exports.authenticateToken = async function (req, res) {
     redirectUri: `${APPSETTING_HOST}/auth/callback`,
     authCode: code
   }
-  // const data = {
-  //   "grantType": "client_credentials",
-  //   "clientId": APPSETTING_CLIENT_ID,
-  //   "clientSecret": APPSETTING_CLIENT_SECRET,
-  //   "scope": "FB=3_35_47",
-  //   authCode: code
-  // }
+  //   const data = {
+  // 	"grantType": "client_credentials",
+  // 	"clientId": APPSETTING_CLIENT_ID,
+  // 	"clientSecret": APPSETTING_CLIENT_SECRET,
+  // 	"Scope":"FB=3_35_47"
+  //   }
   //   const data = {
   //     "grantType":"refresh_token",
   //     "ClientId" : APPSETTING_CLIENT_ID,
@@ -131,7 +130,7 @@ exports.authenticateToken = async function (req, res) {
       createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
 
       if (resultData && resultData.access_token) {
-        res.redirect(`/callback?success=true&data=${resultData.access_token}&code=${code}`)
+        res.redirect('/callback?success=true')
       } else {
         res.redirect('/callback?success=false')
       }
