@@ -80,69 +80,67 @@ const handleToken = async function (authCode, tokenData) {
 
 exports.authenticateToken = async function (req, res) {
   //authorization code generated & sent by Utility
-
   const { code } = req.query
 
-  res.redirect(`/callback?success=true&code=${code}`)
-  // const headers = {
-  //   'content-type': 'application/json',
-  //   'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY
+  const headers = {
+    'content-type': 'application/json',
+    'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY
+  }
+
+  const data = {
+    grantType: 'authorization_code',
+    clientId: APPSETTING_CLIENT_ID,
+    clientSecret: APPSETTING_CLIENT_SECRET,
+    redirectUri: `${APPSETTING_HOST}/auth/callback`,
+    authCode: code
+  }
+  //   const data = {
+  // 	"grantType": "client_credentials",
+  // 	"clientId": APPSETTING_CLIENT_ID,
+  // 	"clientSecret": APPSETTING_CLIENT_SECRET,
+  // 	"Scope":"FB=3_35_47"
+  //   }
+  //   const data = {
+  //     "grantType":"refresh_token",
+  //     "ClientId" : APPSETTING_CLIENT_ID,
+  //     "ClientSecret": APPSETTING_CLIENT_SECRET,
+  //     "refreshToken": "xgLjx5_OwhzhqBN1I_w8Aw6vJiKRYXGjm4DbUDI1src",
+  //     "subscriptionId": 764
   // }
 
-  // const data = {
-  //   grantType: 'authorization_code',
-  //   clientId: APPSETTING_CLIENT_ID,
-  //   clientSecret: APPSETTING_CLIENT_SECRET,
-  //   redirectUri: `${APPSETTING_HOST}/auth/callback`,
-  //   authCode: code
-  // }
-  // //   const data = {
-  // // 	"grantType": "client_credentials",
-  // // 	"clientId": APPSETTING_CLIENT_ID,
-  // // 	"clientSecret": APPSETTING_CLIENT_SECRET,
-  // // 	"Scope":"FB=3_35_47"
-  // //   }
-  // //   const data = {
-  // //     "grantType":"refresh_token",
-  // //     "ClientId" : APPSETTING_CLIENT_ID,
-  // //     "ClientSecret": APPSETTING_CLIENT_SECRET,
-  // //     "refreshToken": "xgLjx5_OwhzhqBN1I_w8Aw6vJiKRYXGjm4DbUDI1src",
-  // //     "subscriptionId": 764
-  // // }
+  const agent = new https.Agent({
+    rejectUnauthorized: false
+  })
 
-  // const agent = new https.Agent({
-  //   rejectUnauthorized: false
-  // })
+  createLogItem(true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
 
-  // createLogItem(true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
+  axios
+    .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
+      headers,
+      httpsAgent: agent
+    })
+    .then(async response => {
+      console.log('Token API Response', response.data || {})
 
-  // axios
-  //   .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
-  //     headers,
-  //     httpsAgent: agent
-  //   })
-  //   .then(async response => {
-  //     console.log('Token API Response', response.data || {})
+      createLogItem(true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
 
-  //     createLogItem(true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
+      const { data: tokenData } = response
+      const resultData = await handleToken(code, tokenData)
 
-  //     const { data: tokenData } = response
-  //     const resultData = await handleToken(code, tokenData)
+      createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
 
-  //     createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
-
-  //     if (resultData && resultData.access_token) {
-  //       res.redirect('/callback?success=true')
-  //     } else {
-  //       res.redirect('/callback?success=false')
-  //     }
-  //   })
-  //   .catch(error => {
-  //     console.log('Token api processing error', error)
-  //     const errorJson = error && error.response ? error.response.data : error
-  //     createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
-  //     res.redirect('/callback?success=false')
-  //   })
+      if (resultData && resultData.access_token) {
+        res.redirect('/callback?success=true')
+      } else {
+        res.redirect('/callback?success=false')
+      }
+    })
+    .catch(error => {
+      console.log('Token api processing error', error)
+      const errorJson = error && error.response ? error.response.data : error
+      createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
+      res.redirect('/callback?success=false')
+    })
 }
 
 exports.notifyCallback = async function (req, res) {
