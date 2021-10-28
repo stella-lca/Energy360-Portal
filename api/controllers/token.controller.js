@@ -138,7 +138,7 @@ exports.authenticateToken = async function (req, res) {
     .catch(error => {
       console.log('Token api processing error', error)
       const errorJson = error && error.response ? error.response.data : error
-      createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
+      // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
       res.redirect('/callback?success=false')
     })
 }
