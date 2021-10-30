@@ -10,13 +10,14 @@ const { findNestedObj } = require('../utils/utils')
 const https = require('https')
 var convert = require('xml-js')
 const _ = require('lodash')
+const jwt = require("jsonwebtoken");
 
 const {
   Token: { findByToken, createToken, updateToken },
   Log: { findAllLog, createLog, findLog }
 } = require('../models')
 
-const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
+const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_JWT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const handleToken = async function (authCode, tokenData) {
   console.log("handleToken Call", authCode)
@@ -28,7 +29,7 @@ const handleToken = async function (authCode, tokenData) {
   createLogItem(true, 'Token Management', msg)
 
   tokenData.expiry_date = expiryDate
-  const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber } = tokenData
+  const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email } = tokenData
 
   if (!access_token) {
     createLogItem(true, 'Token Management', "Token API Don't have valid contents")
@@ -56,6 +57,7 @@ const handleToken = async function (authCode, tokenData) {
         authCode,
         access_token,
         refresh_token,
+        email,
         expires_in,
         scope,
         resourceURI,
@@ -84,6 +86,10 @@ exports.authenticateToken = async function (req, res) {
   //authorization code generated & sent by Utility
   const { code } = req.query
   console.log("code >>", code);
+  console.log('session token ===>', req.session)
+  let token = req.session.token
+  const { userId, email } = jwt.verify(token, APPSETTING_JWT_SECRET);
+
   const headers = {
     'content-type': 'application/json',
     'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY
@@ -129,6 +135,7 @@ exports.authenticateToken = async function (req, res) {
         const { data: tokenData } = response
         console.log("tokenData >>", tokenData);
 
+        tokenData.email = email
         const resultData = await handleToken(code, tokenData)
         console.log("resultData >>", resultData);
         createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
