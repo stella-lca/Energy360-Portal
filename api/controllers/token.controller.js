@@ -19,23 +19,23 @@ const {
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const handleToken = async function (authCode, tokenData) {
-  console.log("handleToken Call", authCode)
-  let token = await findByToken(authCode)
-  console.log("token findByToken >>", token);
-  const expiryDate = moment().add(1, 'hours').format()
-
-  var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
-  createLogItem(true, 'Token Management', msg)
-
-  tokenData.expiry_date = expiryDate
-  const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber } = tokenData
-
-  if (!access_token) {
-    createLogItem(true, 'Token Management', "Token API Don't have valid contents")
-    return false
-  }
-
   try {
+    console.log("handleToken Call", authCode)
+    let token = await findByToken(authCode)
+    console.log("token findByToken >>", token);
+    const expiryDate = moment().add(1, 'hours').format()
+
+    var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
+    createLogItem(true, 'Token Management', msg)
+
+    tokenData.expiry_date = expiryDate
+    const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber } = tokenData
+
+    if (!access_token) {
+      createLogItem(true, 'Token Management', "Token API Don't have valid contents")
+      return false
+    }
+  
     let status
     if (token !== undefined && token.access_token) {
       // if (moment(token.expiry_date) < moment()) {
@@ -81,42 +81,43 @@ const handleToken = async function (authCode, tokenData) {
 }
 
 exports.authenticateToken = async function (req, res) {
-  //authorization code generated & sent by Utility
-  const { code } = req.query
-  console.log("code >>", code);
-  const headers = {
-    'content-type': 'application/json',
-    'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY
-  }
-
-  
-  const data = {
-    grantType: 'authorization_code',
-    clientId: APPSETTING_CLIENT_ID,
-    clientSecret: APPSETTING_CLIENT_SECRET,
-    redirectUri: `${APPSETTING_HOST}/auth/callback`,
-    authCode: code
-  }
-  //   const data = {
-  // 	"grantType": "client_credentials",
-  // 	"clientId": APPSETTING_CLIENT_ID,
-  // 	"clientSecret": APPSETTING_CLIENT_SECRET,
-  // 	"Scope":"FB=3_35_47"
-  //   }
-  //   const data = {
-  //     "grantType":"refresh_token",
-  //     "ClientId" : APPSETTING_CLIENT_ID,
-  //     "ClientSecret": APPSETTING_CLIENT_SECRET,
-  //     "refreshToken": "xgLjx5_OwhzhqBN1I_w8Aw6vJiKRYXGjm4DbUDI1src",
-  //     "subscriptionId": 764
-  // }
-
-  const agent = new https.Agent({
-    rejectUnauthorized: false
-  })
-
-  createLogItem(true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
   try {
+    //authorization code generated & sent by Utility
+    const { code } = req.query
+    console.log("code >>", code);
+    const headers = {
+      'content-type': 'application/json',
+      'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY
+    }
+
+
+    const data = {
+      grantType: 'authorization_code',
+      clientId: APPSETTING_CLIENT_ID,
+      clientSecret: APPSETTING_CLIENT_SECRET,
+      redirectUri: `${APPSETTING_HOST}/auth/callback`,
+      authCode: code
+    }
+    //   const data = {
+    // 	"grantType": "client_credentials",
+    // 	"clientId": APPSETTING_CLIENT_ID,
+    // 	"clientSecret": APPSETTING_CLIENT_SECRET,
+    // 	"Scope":"FB=3_35_47"
+    //   }
+    //   const data = {
+    //     "grantType":"refresh_token",
+    //     "ClientId" : APPSETTING_CLIENT_ID,
+    //     "ClientSecret": APPSETTING_CLIENT_SECRET,
+    //     "refreshToken": "xgLjx5_OwhzhqBN1I_w8Aw6vJiKRYXGjm4DbUDI1src",
+    //     "subscriptionId": 764
+    // }
+
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    })
+
+    createLogItem(true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
+  
     axios
       .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
         headers,
