@@ -29,7 +29,7 @@ const handleToken = async function (authCode, tokenData) {
   createLogItem(true, 'Token Management', msg)
 
   tokenData.expiry_date = expiryDate
-  const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber } = tokenData
+  const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email } = tokenData
 
   if (!access_token) {
     createLogItem(true, 'Token Management', "Token API Don't have valid contents")
@@ -57,6 +57,7 @@ const handleToken = async function (authCode, tokenData) {
         authCode,
         access_token,
         refresh_token,
+        email,
         expires_in,
         scope,
         resourceURI,
@@ -88,7 +89,7 @@ exports.authenticateToken = async function (req, res) {
   console.log('session token ===>', req.session)
   let token = req.session.token
   const { userId, email } = jwt.verify(token, APPSETTING_JWT_SECRET);
-  console.log('session token', token)
+
   const headers = {
     'content-type': 'application/json',
     'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY
@@ -134,7 +135,7 @@ exports.authenticateToken = async function (req, res) {
         const { data: tokenData } = response
         console.log("tokenData >>", tokenData);
 
-        // tokenData.email = email
+        tokenData.email = email
         const resultData = await handleToken(code, tokenData)
         console.log("resultData >>", resultData);
         createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
