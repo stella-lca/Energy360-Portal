@@ -89,6 +89,7 @@ exports.authenticateToken = async function (req, res) {
     'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY
   }
 
+  
   const data = {
     grantType: 'authorization_code',
     clientId: APPSETTING_CLIENT_ID,
