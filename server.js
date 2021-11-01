@@ -6,7 +6,6 @@ const cors = require("cors");
 const app = express();
 const { errorTracker } = require("./api/utils/errorTacker");
 require("dotenv").config();
-const session = require('express-session');
 
 const PORT = process.env.PORT || 3000;
 const router = require("./api/routes");
@@ -50,7 +49,6 @@ function anyBodyParser(req, res, next) {
 	}
 }
 
-app.use(session({ secret: 'gReEnConNEct', saveUninitialized: true, resave: true }));
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, "dist")));
 

@@ -3,6 +3,7 @@ import { ContextState } from "../context";
 import axios from "axios";
 import { useHistory } from "react-router-dom"
 const authUtils = (props) => {
+	let history = useHistory()
 	const {
 		handleUserLogin,
 		handleUserSignup,
@@ -75,16 +76,16 @@ const authUtils = (props) => {
 	};
 
 	const authTokenCode = code => {
-		let history = useHistory()
+		let token = localStorage.getItem('token')
 		axios({
 			method: "get",
-			url: "/api/token-authorize",
-			params: { code: code }
+			url: "/api/authorize-code",
+			params: { code: code, token: token }
 		})
 			.then(response => {
 				const { status, data } = response;
 				if (status === 200) {
-					if (data) {
+					if (data.status) {
 						history.push('/callback?success=true')
 					} else {
 						history.push('/callback?success=false')

@@ -85,16 +85,19 @@ const handleToken = async function (authCode, tokenData) {
 exports.authenticateToken = async function (req, res) {
   try {
     //authorization code generated & sent by Utility
-    const { code } = req.query
+    const { code, token } = req.query
 
     console.log("code ===> ", code);
-    console.log('session token ===> ', req.session)
 
     let email = ''
-    if (req.session.token) {
-      let tokenData = jwt.verify(req.session.token, APPSETTING_JWT_SECRET);
-      console.log("tokenData ===ss> ", tokenData)
-      email = tokenData.email
+    if (token) {
+      try {
+        let tokenData = jwt.verify(token, APPSETTING_JWT_SECRET);
+        console.log("tokenData ===> ", tokenData)
+        email = tokenData.email
+      } catch (e) {
+        return res.status(401).send({ message: "Invalid Token" });
+      }
     }
 
     const headers = {
