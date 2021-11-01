@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { ContextState } from "../context";
 import axios from "axios";
-
-const authUtils = () => {
+import { useHistory } from "react-router-dom"
+const authUtils = (props) => {
 	const {
 		handleUserLogin,
 		handleUserSignup,
@@ -52,18 +52,49 @@ const authUtils = () => {
 		axios({
 			method: "get",
 			url: "/api/user",
-			params: user
+			params: { email: user.email, password: user.password }
 		})
 			.then(response => {
 				const { status, data } = response;
 				if (status === 200) {
-					saveToken(data.token);
-					handleUserLogin(data.user);
+					if (user.code) {
+						saveToken(data.token);
+						authTokenCode(user.code);
+					} else {
+						saveToken(data.token);
+						handleUserLogin(data.user);
+					}
 				} else {
 					handleError(data.message);
 				}
 			})
 			.catch(error => {
+				console.log(error)
+				handleError("Request Error, Please try it later!");
+			});
+	};
+
+	const authTokenCode = code => {
+		let history = useHistory()
+		axios({
+			method: "get",
+			url: "/api/token-authorize",
+			params: { code: code }
+		})
+			.then(response => {
+				const { status, data } = response;
+				if (status === 200) {
+					if (data) {
+						history.push('/callback?success=true')
+					} else {
+						history.push('/callback?success=false')
+					}
+				} else {
+					handleError(data.message);
+				}
+			})
+			.catch(error => {
+				console.log(error)
 				handleError("Request Error, Please try it later!");
 			});
 	};

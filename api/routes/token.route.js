@@ -6,7 +6,8 @@ const { TokenController } = require('../controllers');
 const { errorTracker } = require('../utils/errorTacker');
 const { sendAdminEmail } = require('../utils/email');
 
-Router.get('/callback', TokenController.authenticateToken);
+Router.get('/callback', TokenController.loginCallback);
+Router.get('/authorize-code', TokenController.authenticateToken);
 Router.post('/tracker', errorTracker);
 Router.get('/token-data', (req, res) => {
   res.send(req.body);

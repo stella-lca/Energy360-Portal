@@ -7,10 +7,12 @@ import { ContextState } from "../context";
 import authUtils from "../utils/auth";
 import { isEmpty } from "lodash";
 
-const Login = () => {
+const Login = (props) => {
 	const { userLogin } = authUtils();
 	const { authState, isloading, errorState } = useContext(ContextState);
 	const [errors, setError] = useState({});
+	const [code, setCode] = useState('');
+	const [isCode, setIsCode] = useState(false);
 
 	const errorMsg = type => {
 		const msg = errors[type];
@@ -20,6 +22,16 @@ const Login = () => {
 				feedback: msg
 			};
 	};
+
+
+	useEffect(() => {
+		const search = props.location.search;
+		const code = new URLSearchParams(search).get('code');
+		if (code) {
+			setCode(code)
+			setIsCode(true)
+		}
+	}, []);
 
 	const formValidate = values => {
 		let errorFields = {};
@@ -47,7 +59,11 @@ const Login = () => {
 
 		const errorMsgs = formValidate(user);
 		if (isEmpty(errorMsgs)) {
+			if (isCode) {
+				user.code = code
+			}
 			userLogin(user);
+			
 		} else {
 			setError(errorMsgs);
 		}
@@ -107,7 +123,7 @@ const Login = () => {
 								className="btn-link"
 								color="danger"
 								href="/forgot-password"
-								// onClick={e => e.preventDefault()}
+							// onClick={e => e.preventDefault()}
 							>
 								Forgot password?
 							</Button>

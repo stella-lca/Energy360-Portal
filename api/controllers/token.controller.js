@@ -128,7 +128,7 @@ exports.authenticateToken = async function (req, res) {
     })
 
     createLogItem(true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
-  
+
     axios
       .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
         headers,
@@ -149,23 +149,30 @@ exports.authenticateToken = async function (req, res) {
         createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
 
         if (resultData && resultData.access_token) {
-          res.redirect('/callback?success=true')
+          res.status(200).send({ status: true });
         } else {
-          res.redirect('/callback?success=false')
+          res.status(200).send({ status: false });
         }
       })
       .catch(error => {
         console.log('Token api processing error', error)
         const errorJson = error && error.response ? error.response.data : error
         // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
-        res.redirect('/callback?success=false')
+        res.status(200).send({ status: false });
       })
   } catch (error) {
     console.log('Catch Error', error)
     const errorJson = error && error.response ? error.response.data : error
     // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
-    res.redirect('/callback?success=false')
+    res.status(200).send({ status: false });
   }
+}
+
+exports.loginCallback = async function (req, res) {
+  //authorization code generated & sent by Utility
+  const { code } = req.query
+  res.redirect(`/?code=${code}`)
+
 }
 
 exports.notifyCallback = async function (req, res) {
