@@ -6,6 +6,7 @@ const cors = require("cors");
 const app = express();
 const { errorTracker } = require("./api/utils/errorTacker");
 require("dotenv").config();
+const session = require('express-session');
 
 const PORT = process.env.PORT || 3000;
 const router = require("./api/routes");
@@ -32,15 +33,15 @@ const db_sync = () => {
 db_sync();
 
 function anyBodyParser(req, res, next) {
-	const {headers} = req;
+	const { headers } = req;
 	const contentType = headers['content-type'];
-	if(contentType && contentType.includes('xml')) {
+	if (contentType && contentType.includes('xml')) {
 		var data = '';
 		req.setEncoding('utf8');
-		req.on('data', function(chunk) { 
+		req.on('data', function (chunk) {
 			data += chunk;
 		});
-		req.on('end', function() {
+		req.on('end', function () {
 			req.testBody = data;
 			next();
 		});
@@ -49,6 +50,7 @@ function anyBodyParser(req, res, next) {
 	}
 }
 
+app.use(session({ secret: 'gReEnConNEct', saveUninitialized: true, resave: true }));
 app.use(cors());
 app.use(express.static(path.resolve(__dirname, "dist")));
 

@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			field: "authCode"
 		},
+		email: {
+			type: DataTypes.TEXT,
+			field: "email",
+		},
 		access_token: {
 			type: DataTypes.TEXT,
 			field: "access_token",
