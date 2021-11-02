@@ -61,6 +61,7 @@ exports.signup = async (req, res) => {
     console.log(user);
     if (user !== undefined) {
       const token = await createJwtToken(user);
+      req.session.token = token
       const userName = `${user.firstName} ${user.lastName}`;
       user = userData(user);
       sendAdminEmail({
@@ -95,7 +96,7 @@ exports.signin = async (req, res) => {
 
     user = userData(user);
     const token = await createJwtToken(user);
-
+    req.session.token = token
     res.status(200).send({
       token,
       user
