@@ -34,7 +34,7 @@
 		"@sendgrid/mail": "^6.5.3",
 		"aws-s3": "^2.0.5",
 		"aws-sdk": "^2.651.0",
-		"axios": "^0.19.2",
+		"axios": "^0.21.2",
 		"bcrypt": "^3.0.8",
 		"body-parser": "^1.19.0",
 		"body-parser-xml": "^2.0.0",
