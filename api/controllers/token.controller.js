@@ -11,11 +11,12 @@ const https = require('https')
 var convert = require('xml-js')
 const _ = require('lodash')
 const jwt = require("jsonwebtoken");
-
+var db = require('../models')
 const {
   Token: { findByToken, createToken, updateToken },
   Log: { findAllLog, createLog, findLog }
 } = require('../models')
+const QueryTypes = require('sequelize').QueryTypes
 
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_JWT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
 
@@ -257,5 +258,20 @@ exports.notifyCallback = async function (req, res) {
       res.status(500).end('internal server error')
       throw e
     }
+  }
+}
+
+exports.deleteData = async function (req, res) {
+  try {
+    await db.sequelize.query(`DELETE FROM GCEP_Tokens;`, {
+      type: QueryTypes.DELETE
+    });
+
+    let Tokens = await db.Token.findAll();
+
+    return res.status(200).send({ message: "Successfully deleted", Token: Tokens })
+  } catch (error) {
+    console.log(error)
+    return res.status(403).send({ message: "Error", error: error })
   }
 }
