@@ -37,7 +37,7 @@
 		"axios": "^0.19.2",
 		"bcrypt": "^3.0.8",
 		"body-parser": "^1.19.0",
-		"body-parser-xml": "^2.0.0",
+		"body-parser-xml": "^2.0.3",
 		"camaro": "^6.0.4",
 		"cookie-parser": "^1.4.4",
 		"cors": "^2.8.5",
