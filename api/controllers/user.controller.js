@@ -4,6 +4,7 @@ const {
   User: { findByID, findUser, createUser, deleteUser, updateUser }
 } = require('../models');
 const { sendEmail, sendAdminEmail } = require('../utils/email');
+const db = require('../models');
 
 const {
   APPSETTING_JWT_SECRET,
@@ -67,7 +68,7 @@ exports.signup = async (req, res) => {
       sendAdminEmail({
         content: `${
           userName.charAt(0).toUpperCase() + userName.slice(1)
-        } just joined to Greenconnect. <br/>`,
+          } just joined to Greenconnect. <br/>`,
         subject: 'Greenconnect - User Profile'
       });
       res.status(200).send({ user, token });
@@ -164,7 +165,13 @@ exports.delete = async (req, res) => {
 // Check token validation
 exports.checkToken = async (req, res) => {
   const { id } = req.user;
-  let user = await findByID(id);
+  // let user = await findByID(id);
+  let user = await db.User.findOne({
+    where: { id: id },
+    include: [{
+      model: db.Token
+    }]
+  })
   if (user !== undefined) {
     user = userData(user);
     return res.send({
