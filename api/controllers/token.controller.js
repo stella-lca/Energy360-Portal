@@ -30,13 +30,19 @@ const handleToken = async function (authCode, tokenData) {
     createLogItem(true, 'Token Management', msg)
 
     tokenData.expiry_date = expiryDate
-    const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email } = tokenData
+    const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email, userId } = tokenData
 
     if (!access_token) {
       createLogItem(true, 'Token Management', "Token API Don't have valid contents")
       return false
     }
+
+    // Decode Coned Access Token
+    let conedToken = jwt.decode(access_token, { json: true });
+    let conedSub = conedToken['sub']
+
     console.log("email ====> ", email);
+
     let status
     if (token !== undefined && token.access_token) {
       // if (moment(token.expiry_date) < moment()) {
@@ -60,6 +66,8 @@ const handleToken = async function (authCode, tokenData) {
         expires_in,
         scope,
         email,
+        userId,
+        conedSub,
         resourceURI,
         authorizationURI,
         accountNumber,
@@ -91,10 +99,12 @@ exports.authenticateToken = async function (req, res) {
     console.log('session token ===> ', req.session)
 
     let email = ''
+    let userId = ''
     if (req.session.token) {
       let tokenData = jwt.verify(req.session.token, APPSETTING_JWT_SECRET);
-      console.log("tokenData ===ss> ", tokenData)
+      console.log("tokenData ===> ", tokenData)
       email = tokenData.email
+      userId = tokenData.userId
     }
 
     const headers = {
@@ -141,7 +151,9 @@ exports.authenticateToken = async function (req, res) {
 
         const { data: tokenData } = response
         console.log("tokenData >>", tokenData);
+
         tokenData.email = email
+        tokenData.userId = userId
 
         const resultData = await handleToken(code, tokenData)
         console.log("resultData >>", resultData);

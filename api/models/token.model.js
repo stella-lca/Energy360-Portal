@@ -16,6 +16,18 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.TEXT,
 			field: "email",
 		},
+		userId: {
+			type: DataTypes.INTEGER(),
+			allowNull: true,
+			references: {
+				model: 'GCEP_Users',
+				key: 'id'
+			}
+		},
+		conedSub: {
+			type: DataTypes.TEXT,
+			allowNull: true,
+		},
 		access_token: {
 			type: DataTypes.TEXT,
 			field: "access_token",

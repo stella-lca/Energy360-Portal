@@ -33,6 +33,8 @@ db.User = sequelize.import('./user.model');
 db.Token = sequelize.import('./token.model');
 db.Log = sequelize.import('./log.model');
 
+db.User.hasOne(db.Token, { onDelete: "cascade", foreignKey: 'userId' })
+
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
