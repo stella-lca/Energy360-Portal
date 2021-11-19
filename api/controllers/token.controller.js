@@ -194,10 +194,10 @@ exports.externalAPI = async function (req, res) {
     console.log("refresh token ===> ", refresh_token);
     console.log('resource URI ===> ', resourceURI)
 
-    let data1 = await retailCustomerDetails(refresh_token, resourceURI.split("/").at(-1));
+    let data1 = await retailCustomerDetails(refresh_token, resourceURI);
     console.log("Customer Details DATA >> ", data1)
 
-    let usagePointDetailsData = await usagePointDetails(refresh_token, resourceURI.split("/").at(-1))
+    let usagePointDetailsData = await usagePointDetails(refresh_token, resourceURI)
     console.log("Customer Details usagePointDetailsData >> ", usagePointDetailsData)
 
     res.redirect('/callback?success=true')
