@@ -5,7 +5,7 @@ const async = require('async')
 const { sendAdminEmail, sendNotifyEmail, sendUserEmail } = require('../utils/email')
 const { downloadFile, saveAsTxt, downloadContents } = require('../utils/downloadFile')
 const { addLog, createLogItem } = require('../utils/errorTacker')
-const { apiClient, retailCustomerDetails } = require('../utils/api')
+const { apiClient, retailCustomerDetails, usagePointDetails } = require('../utils/api')
 const { findNestedObj } = require('../utils/utils')
 const https = require('https')
 var convert = require('xml-js')
@@ -24,7 +24,7 @@ const handleToken = async function (authCode, tokenData) {
   try {
     console.log("handleToken Call", authCode)
     let token = await findByToken(authCode)
-    console.log("token findByToken >>", token);
+    
     const expiryDate = moment().add(1, 'hours').format()
 
     var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
@@ -59,6 +59,8 @@ const handleToken = async function (authCode, tokenData) {
 
       return token
     } else {
+      let subscriptionId = resourceURI.split("/").at(-1)
+      let authorizationId = authorizationURI.split("/").at(-1)
       //save new token.
       status = await createToken({
         authCode,
@@ -67,6 +69,8 @@ const handleToken = async function (authCode, tokenData) {
         expires_in,
         scope,
         email,
+        subscriptionId,
+        authorizationId,
         userId,
         conedSub,
         resourceURI,
@@ -139,7 +143,7 @@ exports.authenticateToken = async function (req, res) {
     })
 
     createLogItem(true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
-  
+
     axios
       .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
         headers,
@@ -156,8 +160,12 @@ exports.authenticateToken = async function (req, res) {
         tokenData.email = email
         tokenData.userId = userId
 
-        let data1 = await retailCustomerDetails(tokenData.resourceURI);
+        let data1 = await retailCustomerDetails(tokenData.refresh_token, tokenData.resourceURI.split("/").at(-1));
         console.log("Customer Details DATA >> ", data1)
+
+        let usagePointDetailsData = await usagePointDetails(tokenData.refresh_token, tokenData.resourceURI.split("/").at(-1))
+        console.log("Customer Details usagePointDetailsData >> ", usagePointDetailsData)
+
         const resultData = await handleToken(code, tokenData)
         console.log("resultData >>", resultData);
 

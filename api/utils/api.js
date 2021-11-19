@@ -79,7 +79,7 @@ exports.apiClient = async () => {
   } catch (error) { }
 }
 
-exports.generateThiredPartyToken = async function (refreshToken, subscriptionId) {
+const generateThirdPartyToken = async function (refreshToken, subscriptionId) {
   try {
 
     var oldTpDate = parseInt(localStorage.getItem('TPDate') || 0)
@@ -110,7 +110,7 @@ exports.generateThiredPartyToken = async function (refreshToken, subscriptionId)
         const { access_token } = data || {}
 
         if (access_token) {
-          console.log('Created new client token successfully')
+          console.log('Created new Third Party token successfully')
           localStorage.setItem('TPDate', Date.now())
           localStorage.setItem('TPToken', access_token)
           return access_token
@@ -118,18 +118,18 @@ exports.generateThiredPartyToken = async function (refreshToken, subscriptionId)
         return null
       })
       .catch(error => {
-        console.log('Token creating error =', error)
+        console.log('Third Party Token creating error =', error)
         return null
       })
   } catch (error) {
-    console.log('Token Creating Error ', error)
+    console.log('Third Party Token Creating Error ', error)
     return null
   }
 }
 
-exports.thiredApiClient = async (refreshToken, subscriptionId) => {
+exports.ThirdPartyApiClient = async (refreshToken, subscriptionId) => {
   try {
-    let AUTH_TOKEN = await this.generateThiredPartyToken(refreshToken, subscriptionId)
+    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
     if (AUTH_TOKEN) {
       createLogItem(true, 'Client TP Token', AUTH_TOKEN)
       instance.defaults.headers.common['Authorization'] = 'Bearer ' + AUTH_TOKEN
@@ -138,9 +138,9 @@ exports.thiredApiClient = async (refreshToken, subscriptionId) => {
   } catch (error) { }
 }
 
-exports.retailCustomerDetails = async (resourceURI) => {
+exports.retailCustomerDetails = async (refreshToken, subscriptionId) => {
   try {
-    let AUTH_TOKEN = await generateClientToken()
+    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
     let headers = {
       'content-type': 'application/json',
@@ -150,7 +150,7 @@ exports.retailCustomerDetails = async (resourceURI) => {
 
     return await axios({
       method: 'get',
-      url: resourceURI,
+      url: `https://api.coned.com/gbc/v1/resource/Customer/${subscriptionId}`,
       timeout: 100000,
       headers,
       httpsAgent: agent,
@@ -161,11 +161,43 @@ exports.retailCustomerDetails = async (resourceURI) => {
       return data;
     })
       .catch(error => {
-        console.log('Token creating error =', error)
+        console.log('Retail Customer Data error =', error)
         return null
       })
   } catch (error) {
-    console.log('Token Creating Error ', error)
+    console.log('Retail Customer Data error ', error)
+    return null
+  }
+}
+
+exports.usagePointDetails = async (refreshToken, subscriptionId) => {
+  try {
+    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
+
+    let headers = {
+      'content-type': 'application/json',
+      'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
+      'Authorization': 'Bearer ' + AUTH_TOKEN
+    }
+
+    return await axios({
+      method: 'get',
+      url: `https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint`,
+      timeout: 100000,
+      headers,
+      httpsAgent: agent,
+      maxContentLength: 100000000,
+      maxBodyLength: 100000000
+    }).then(async ({ data }) => {
+      console.log("usagePointDetails >> ", data)
+      return data;
+    })
+      .catch(error => {
+        console.log('usagePointDetails error =', error)
+        return null
+      })
+  } catch (error) {
+    console.log('usagePointDetails Error ', error)
     return null
   }
 }

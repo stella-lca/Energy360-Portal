@@ -59,6 +59,14 @@ module.exports = (sequelize, DataTypes) => {
 		accountNumber: {
 			type: DataTypes.STRING,
 			field: "accountNumber"
+		},
+		subscriptionId: {
+			type: DataTypes.STRING,
+			field: "subscriptionId"
+		},
+		authorizationId: {
+			type: DataTypes.STRING,
+			field: "authorizationId"
 		}
 	},
 	{
