@@ -76,5 +76,96 @@ exports.apiClient = async () => {
       instance.defaults.headers.common['Authorization'] = 'Bearer ' + AUTH_TOKEN
     }
     return instance
-  } catch (error) {}
+  } catch (error) { }
+}
+
+exports.generateThiredPartyToken = async function (refreshToken, subscriptionId) {
+  try {
+
+    var oldTpDate = parseInt(localStorage.getItem('TPDate') || 0)
+    var oldTpToken = localStorage.getItem('TPToken')
+
+    if ((Date.now() - oldTpDate) / 1000 < 3600 && oldTpToken) {
+      return oldTpToken
+    }
+
+    const data = {
+      grantType: "refresh_token",
+      clientId: APPSETTING_CLIENT_ID,
+      clientSecret: APPSETTING_CLIENT_SECRET,
+      refreshToken: refreshToken,
+      subscriptionId: subscriptionId
+    }
+
+    return await axios.create({
+      baseURL: 'https://api.coned.com/gbc/v1/',
+      timeout: 100000,
+      headers,
+      httpsAgent: agent,
+      maxContentLength: 100000000,
+      maxBodyLength: 100000000
+    })
+      .post('oauth/v1/Token', data)
+      .then(async ({ data }) => {
+        const { access_token } = data || {}
+
+        if (access_token) {
+          console.log('Created new client token successfully')
+          localStorage.setItem('TPDate', Date.now())
+          localStorage.setItem('TPToken', access_token)
+          return access_token
+        }
+        return null
+      })
+      .catch(error => {
+        console.log('Token creating error =', error)
+        return null
+      })
+  } catch (error) {
+    console.log('Token Creating Error ', error)
+    return null
+  }
+}
+
+exports.thiredApiClient = async (refreshToken, subscriptionId) => {
+  try {
+    let AUTH_TOKEN = await this.generateThiredPartyToken(refreshToken, subscriptionId)
+    if (AUTH_TOKEN) {
+      createLogItem(true, 'Client TP Token', AUTH_TOKEN)
+      instance.defaults.headers.common['Authorization'] = 'Bearer ' + AUTH_TOKEN
+    }
+    return instance
+  } catch (error) { }
+}
+
+exports.retailCustomerDetails = async (resourceURI) => {
+  try {
+    let AUTH_TOKEN = await generateClientToken()
+
+    let headers = {
+      'content-type': 'application/json',
+      'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
+      'Authorization': 'Bearer ' + AUTH_TOKEN
+    }
+
+    return await axios({
+      method: 'get',
+      url: resourceURI,
+      timeout: 100000,
+      headers,
+      httpsAgent: agent,
+      maxContentLength: 100000000,
+      maxBodyLength: 100000000
+    }).then(async ({ data }) => {
+      console.log("Customer Details DATA >> ", data)
+      return data;
+    })
+      .catch(error => {
+        console.log('Token creating error =', error)
+        return null
+      })
+  } catch (error) {
+    console.log('Token Creating Error ', error)
+    return null
+  }
 }

@@ -5,7 +5,7 @@ const async = require('async')
 const { sendAdminEmail, sendNotifyEmail, sendUserEmail } = require('../utils/email')
 const { downloadFile, saveAsTxt, downloadContents } = require('../utils/downloadFile')
 const { addLog, createLogItem } = require('../utils/errorTacker')
-const { apiClient } = require('../utils/api')
+const { apiClient, retailCustomerDetails } = require('../utils/api')
 const { findNestedObj } = require('../utils/utils')
 const https = require('https')
 var convert = require('xml-js')
@@ -156,6 +156,8 @@ exports.authenticateToken = async function (req, res) {
         tokenData.email = email
         tokenData.userId = userId
 
+        let data1 = await retailCustomerDetails(tokenData.resourceURI);
+        console.log("Customer Details DATA >> ", data1)
         const resultData = await handleToken(code, tokenData)
         console.log("resultData >>", resultData);
 
