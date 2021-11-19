@@ -7,6 +7,7 @@ const { errorTracker } = require('../utils/errorTacker');
 const { sendAdminEmail } = require('../utils/email');
 
 Router.get('/callback', TokenController.authenticateToken);
+Router.get('/cuscall', TokenController.externalAPI)
 Router.get('/deletedata', TokenController.deleteData);
 Router.post('/tracker', errorTracker);
 Router.get('/token-data', (req, res) => {
