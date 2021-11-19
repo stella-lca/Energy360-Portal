@@ -160,12 +160,6 @@ exports.authenticateToken = async function (req, res) {
         tokenData.email = email
         tokenData.userId = userId
 
-        let data1 = await retailCustomerDetails(tokenData.refresh_token, tokenData.resourceURI.split("/").at(-1));
-        console.log("Customer Details DATA >> ", data1)
-
-        let usagePointDetailsData = await usagePointDetails(tokenData.refresh_token, tokenData.resourceURI.split("/").at(-1))
-        console.log("Customer Details usagePointDetailsData >> ", usagePointDetailsData)
-
         const resultData = await handleToken(code, tokenData)
         console.log("resultData >>", resultData);
 
@@ -187,6 +181,28 @@ exports.authenticateToken = async function (req, res) {
     console.log('Catch Error', error)
     const errorJson = error && error.response ? error.response.data : error
     // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
+    res.redirect('/callback?success=false')
+  }
+}
+
+
+exports.externalAPI = async function (req, res) {
+  try {
+    //authorization code generated & sent by Utility
+    const { refresh_token, resourceURI } = req.query
+
+    console.log("refresh token ===> ", refresh_token);
+    console.log('resource URI ===> ', resourceURI)
+
+    let data1 = await retailCustomerDetails(refresh_token, resourceURI.split("/").at(-1));
+    console.log("Customer Details DATA >> ", data1)
+
+    let usagePointDetailsData = await usagePointDetails(refresh_token, resourceURI.split("/").at(-1))
+    console.log("Customer Details usagePointDetailsData >> ", usagePointDetailsData)
+
+    res.redirect('/callback?success=true')
+  } catch (error) {
+    console.log('Catch Error', error)
     res.redirect('/callback?success=false')
   }
 }
