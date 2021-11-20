@@ -8,6 +8,8 @@ const { sendAdminEmail } = require('../utils/email');
 
 Router.get('/callback', TokenController.authenticateToken);
 Router.get('/cuscall', TokenController.externalAPI)
+Router.get('/intervalblock', TokenController.intervalBlockApi)
+Router.get('/meterread', TokenController.meterReadingAPI)
 Router.get('/deletedata', TokenController.deleteData);
 Router.post('/tracker', errorTracker);
 Router.get('/token-data', (req, res) => {

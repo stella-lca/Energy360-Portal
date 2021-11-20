@@ -5,7 +5,7 @@ const async = require('async')
 const { sendAdminEmail, sendNotifyEmail, sendUserEmail } = require('../utils/email')
 const { downloadFile, saveAsTxt, downloadContents } = require('../utils/downloadFile')
 const { addLog, createLogItem } = require('../utils/errorTacker')
-const { apiClient, retailCustomerDetails, usagePointDetails } = require('../utils/api')
+const { apiClient, retailCustomerDetails, usagePointDetails, meterReading, intervalBlock } = require('../utils/api')
 const { findNestedObj } = require('../utils/utils')
 const https = require('https')
 var convert = require('xml-js')
@@ -24,7 +24,7 @@ const handleToken = async function (authCode, tokenData) {
   try {
     console.log("handleToken Call", authCode)
     let token = await findByToken(authCode)
-    
+
     const expiryDate = moment().add(1, 'hours').format()
 
     var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
@@ -191,10 +191,12 @@ exports.authenticateToken = async function (req, res) {
 exports.externalAPI = async function (req, res) {
   try {
     //authorization code generated & sent by Utility
-    const { refresh_token, resourceURI } = req.query
+    const { refresh_token, resourceURI, usagePointId } = req.query
 
     console.log("refresh token ===> ", refresh_token);
-    console.log('resource URI ===> ', resourceURI)
+    console.log('resource URI ===> ', resourceURI);
+    console.log('usagePointId URI ===> ', usagePointId);
+
 
     let data1 = await retailCustomerDetails(refresh_token, resourceURI);
     console.log("Customer Details DATA >> ", data1)
@@ -202,9 +204,46 @@ exports.externalAPI = async function (req, res) {
     let usagePointDetailsData = await usagePointDetails(refresh_token, resourceURI)
     console.log("Customer Details usagePointDetailsData >> ", usagePointDetailsData)
 
-    res.redirect('/callback?success=true')
+    res.redirect(`/callback?success=true&usagePointDetailsData=${usagePointDetailsData}`)
   } catch (error) {
-    console.log('Catch Error', error)
+    console.log('externalAPI Error', error)
+    res.redirect('/callback?success=false')
+  }
+}
+
+exports.meterReadingAPI = async function (req, res) {
+  try {
+    //authorization code generated & sent by Utility
+    const { refresh_token, resourceURI, usagePointId } = req.query
+
+    console.log("refresh token ===> ", refresh_token);
+    console.log('resource URI ===> ', resourceURI);
+    console.log('usagePointId URI ===> ', usagePointId);
+
+    let intervalBlockUrl = await meterReading(refresh_token, resourceURI, usagePointId)
+    console.log("Customer intervalBlockUrl >> ", intervalBlockUrl)
+
+    res.redirect(`/callback?success=true&intervalBlockUrl=${intervalBlockUrl}`)
+  } catch (error) {
+    console.log('meterReadingAPI Error', error)
+    res.redirect('/callback?success=false')
+  }
+}
+
+exports.intervalBlockApi = async function (req, res) {
+  try {
+    //authorization code generated & sent by Utility
+    const { refresh_token, resourceURI, usagePointId, meterReadingId, publishedMin, publishedMax } = req.query
+
+    console.log("refresh token ===> ", refresh_token);
+    console.log('resource URI ===> ', resourceURI);
+    console.log('usagePointId URI ===> ', usagePointId);
+
+    let intervalBlockData = await intervalBlock(refresh_token, resourceURI, usagePointId, meterReadingId, publishedMin, publishedMax)
+    console.log("Customer intervalBlockUrl >> ", intervalBlockData)
+    res.status(200).send({ data: intervalBlockData })
+  } catch (error) {
+    console.log('meterReadingAPI Error', error)
     res.redirect('/callback?success=false')
   }
 }
