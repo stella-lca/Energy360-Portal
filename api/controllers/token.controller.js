@@ -59,8 +59,9 @@ const handleToken = async function (authCode, tokenData) {
 
       return token
     } else {
-      let subscriptionId = resourceURI.split("/").at(-1)
-      let authorizationId = authorizationURI.split("/").at(-1)
+      let subscriptionId = resourceURI.split("/").pop();
+      let authorizationId = authorizationURI.split("/").pop();
+
       //save new token.
       status = await createToken({
         authCode,
@@ -87,7 +88,8 @@ const handleToken = async function (authCode, tokenData) {
       return tokenData
     }
   } catch (error) {
-    console.log('handleToken-error ===>', error.response)
+    console.log('handleToken-error ===>', error)
+    console.log('handleToken-error.response ===>', error.response)
     const errorJson = error && error.response ? error.response.data : error
     createLogItem(false, 'Token Management', 'Token handling issue', JSON.stringify(errorJson))
 
