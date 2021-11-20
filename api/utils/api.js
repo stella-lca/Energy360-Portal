@@ -1,7 +1,7 @@
 const axios = require('axios')
 const https = require('https')
 const { addLog, createLogItem } = require('./errorTacker');
-const xml2js = require('xml-js');
+const xml2jsObj = require('xml-js');
 
 
 var LocalStorage = require('node-localstorage').LocalStorage,
@@ -159,9 +159,26 @@ exports.retailCustomerDetails = async (refreshToken, subscriptionId) => {
       maxContentLength: 100000000,
       maxBodyLength: 100000000
     }).then(async ({ data }) => {
-      let result = JSON.parse(xml2js.xml2json(data, { compact: true, spaces: 4 }));
-      console.log("Customer Details DATA >> ", result)
-      return result;
+      let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+      let retailCustomer = result.feed.entry.content["cust:retailCustomer"]
+
+      if (retailCustomer) {
+        let meterAccountNumber = retailCustomer['cust:accountNumber']._text
+        let mainAddress = retailCustomer['cust:mainAddress']
+        let address = mainAddress['cust:streetDetail']._text + ' ' + mainAddress['cust:cityDetail']._text + ', ' + mainAddress['cust:stateDetail']._text + ' ' + mainAddress['cust:postalCode']._text
+
+        console.log("meterAccountNumber >> ", meterAccountNumber, "Address >> ", address);
+        result = {
+          meterAccountNumber,
+          address
+        }
+        console.log("Customer Details DATA >> ", result)
+        return result;
+      } else {
+        console.log('Retail Customer Data =', retailCustomer)
+        return null
+      }
+
     })
       .catch(error => {
         console.log('Retail Customer Data error =', error)
@@ -192,9 +209,23 @@ exports.usagePointDetails = async (refreshToken, subscriptionId) => {
       maxContentLength: 100000000,
       maxBodyLength: 100000000
     }).then(async ({ data }) => {
-      let result = JSON.parse(xml2js.xml2json(data, { compact: true, spaces: 4 }));
-      console.log("usagePointDetails >> ", result)
-      return result;
+      let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+      let links = result.feed.entry.link
+      if (links.length > 0) {
+        let MeterReadingUrl
+        for (let i = 0; i < links.length; i++) {
+          const element = links[i];
+          if (element._attributes.href.includes('MeterReading')) {
+            MeterReadingUrl = element._attributes.href
+            break
+          }
+        }
+        console.log("usagePointDetails >> ", MeterReadingUrl)
+        return MeterReadingUrl;
+      } else {
+        console.log("usagePointDetails null >> ", links)
+        return null
+      }
     })
       .catch(error => {
         console.log('usagePointDetails error =', error)
@@ -202,6 +233,111 @@ exports.usagePointDetails = async (refreshToken, subscriptionId) => {
       })
   } catch (error) {
     console.log('usagePointDetails Error ', error)
+    return null
+  }
+}
+
+exports.meterReading = async (refreshToken, subscriptionId, usagePointId) => {
+  try {
+    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
+
+    let headers = {
+      'content-type': 'application/json',
+      'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
+      'Authorization': 'Bearer ' + AUTH_TOKEN
+    }
+
+    return await axios({
+      method: 'get',
+      url: `https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading`,
+      timeout: 100000,
+      headers,
+      httpsAgent: agent,
+      maxContentLength: 100000000,
+      maxBodyLength: 100000000
+    }).then(async ({ data }) => {
+      let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+      let links = result.feed.entry.link
+      if (links.length > 0) {
+        let IntervalBlockUrl
+        for (let i = 0; i < links.length; i++) {
+          const element = links[i];
+          if (element._attributes.href.includes('IntervalBlock')) {
+            IntervalBlockUrl = element._attributes.href
+            break
+          }
+        }
+        console.log("MeterReading >> ", IntervalBlockUrl)
+        return IntervalBlockUrl;
+      } else {
+        console.log("MeterReading null >> ", links)
+        return null
+      }
+    })
+      .catch(error => {
+        console.log('MeterReading error =', error)
+        return null
+      })
+  } catch (error) {
+    console.log('MeterReading Error ', error)
+    return null
+  }
+}
+
+exports.intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterReadingId, publishedMin, publishedMax) => {
+  try {
+    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
+
+    let headers = {
+      'content-type': 'application/json',
+      'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
+      'Authorization': 'Bearer ' + AUTH_TOKEN
+    }
+
+    return await axios({
+      method: 'get',
+      url: `https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${publishedMin}&publishedMax=${publishedMax}`,
+      timeout: 100000,
+      headers,
+      httpsAgent: agent,
+      maxContentLength: 100000000,
+      maxBodyLength: 100000000
+    }).then(async ({ data }) => {
+      let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+
+      let intervalBlocks = result.feed.entry.content['espi:intervalBlocks']['espi:intervalBlock']
+
+      if (intervalBlocks.length > 0) {
+        let dateViseIntervalBlock = []
+        for (let i = 0; i < intervalBlocks.length; i++) {
+          const element = intervalBlocks[i];
+
+          let timestamp = element['espi:interval']['espi:start']._text
+          let obj = {}
+          obj.date = moment.unix(timestamp).format('YYYY-MM-DD');
+
+          let intervalReading = element['espi:intervalReading']
+          intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
+
+          let intervalReadingTotal = _.sum(intervalReading);
+          console.log(intervalReadingTotal);
+          obj.totalUsage = intervalReadingTotal
+          dateViseIntervalBlock.push(obj)
+
+        }
+        console.log("intervalBlock >> ", result)
+        return dateViseIntervalBlock;
+      } else {
+        console.log("intervalBlock >> ", result.feed)
+        return null
+      }
+    })
+      .catch(error => {
+        console.log('intervalBlock error =', error)
+        return null
+      })
+  } catch (error) {
+    console.log('intervalBlock Error ', error)
     return null
   }
 }
