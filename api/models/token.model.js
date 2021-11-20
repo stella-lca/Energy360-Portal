@@ -67,20 +67,36 @@ module.exports = (sequelize, DataTypes) => {
 		authorizationId: {
 			type: DataTypes.STRING,
 			field: "authorizationId"
+		},
+		conedAddress: {
+			type: DataTypes.STRING,
+			field: "conedAddress"
+		},
+		meterAccountId: {
+			type: DataTypes.STRING,
+			field: "meterAccountId"
+		},
+		meterReadingId: {
+			type: DataTypes.STRING,
+			field: "meterReadingId"
+		},
+		usagePointId: {
+			type: DataTypes.STRING,
+			field: "usagePointId"
 		}
 	},
-	{
-		timestamps: true,
-		createdAt: "createdDate",
-		updatedAt: "modifiedDate"
-	});
+		{
+			timestamps: true,
+			createdAt: "createdDate",
+			updatedAt: "modifiedDate"
+		});
 
 	Token.findByToken = async code => {
 		return await Token.findOne({
-				where: {
-					authCode: code
-				}
-			})
+			where: {
+				authCode: code
+			}
+		})
 			.then(token => token || undefined)
 			.catch(err => false);
 	};
@@ -93,10 +109,10 @@ module.exports = (sequelize, DataTypes) => {
 
 	Token.updateToken = async (authCode, tokenData) => {
 		return await Token.update(tokenData, {
-				where: {
-					authCode: authCode
-				}
-			})
+			where: {
+				authCode: authCode
+			}
+		})
 			.then(token => token || undefined)
 			.catch(err => false);
 	};
