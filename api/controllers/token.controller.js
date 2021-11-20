@@ -191,17 +191,30 @@ exports.authenticateToken = async function (req, res) {
 exports.externalAPI = async function (req, res) {
   try {
     //authorization code generated & sent by Utility
-    const { refresh_token, resourceURI, usagePointId } = req.query
+    const { refresh_token, resourceURI } = req.query
 
     console.log("refresh token ===> ", refresh_token);
     console.log('resource URI ===> ', resourceURI);
-    console.log('usagePointId URI ===> ', usagePointId);
 
 
     let data1 = await retailCustomerDetails(refresh_token, resourceURI);
     console.log("Customer Details DATA >> ", data1)
 
     let usagePointDetailsData = await usagePointDetails(refresh_token, resourceURI)
+
+    if (usagePointDetailsData) {
+      let data = {
+        conedAddress: data1.address,
+        meterAccountId: data1.meterAccountNumber,
+        usagePointId: usagePointDetailsData
+      }
+      data = await db.Token.update(data, {
+        where: {
+          subscriptionId: resourceURI
+        }
+      });
+      console.log("update Usage id and address >>", data)
+    }
     console.log("Customer Details usagePointDetailsData >> ", usagePointDetailsData)
 
     res.redirect(`/callback?success=true&usagePointDetailsData=${usagePointDetailsData}`)
@@ -220,10 +233,22 @@ exports.meterReadingAPI = async function (req, res) {
     console.log('resource URI ===> ', resourceURI);
     console.log('usagePointId URI ===> ', usagePointId);
 
-    let intervalBlockUrl = await meterReading(refresh_token, resourceURI, usagePointId)
-    console.log("Customer intervalBlockUrl >> ", intervalBlockUrl)
+    let meterReadingId = await meterReading(refresh_token, resourceURI, usagePointId)
+    console.log("Customer meterReadingId >> ", meterReadingId)
 
-    res.redirect(`/callback?success=true&intervalBlockUrl=${intervalBlockUrl}`)
+    if (meterReadingId) {
+      let data = {
+        meterReadingId: meterReadingId
+      }
+      data = await db.Token.update(data, {
+        where: {
+          subscriptionId: resourceURI
+        }
+      });
+      console.log("update Meter id >> ", data)
+    }
+
+    res.redirect(`/callback?success=true&meterReadingId=${meterReadingId}`)
   } catch (error) {
     console.log('meterReadingAPI Error', error)
     res.redirect('/callback?success=false')
@@ -238,8 +263,17 @@ exports.intervalBlockApi = async function (req, res) {
     console.log("refresh token ===> ", refresh_token);
     console.log('resource URI ===> ', resourceURI);
     console.log('usagePointId URI ===> ', usagePointId);
+    let token = await db.Token.findOne({
+      where: {
+        subscriptionId: resourceURI
+      }
+    })
+    let intervalBlockData = await intervalBlock(refresh_token, resourceURI, usagePointId, meterReadingId, publishedMin, publishedMax, token.id)
 
-    let intervalBlockData = await intervalBlock(refresh_token, resourceURI, usagePointId, meterReadingId, publishedMin, publishedMax)
+
+    let data = await db.MeterReading.bulkCreate(intervalBlockData);
+    console.log(data)
+
     console.log("Customer intervalBlockUrl >> ", intervalBlockData)
     res.status(200).send({ data: intervalBlockData })
   } catch (error) {

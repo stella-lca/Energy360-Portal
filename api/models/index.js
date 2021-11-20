@@ -32,8 +32,11 @@ Sequelize.DATE.prototype._stringify = function _stringify(date, options) {
 db.User = sequelize.import('./user.model');
 db.Token = sequelize.import('./token.model');
 db.Log = sequelize.import('./log.model');
+db.MeterReading = sequelize.import('./meterReading.model');
 
 db.User.hasOne(db.Token, { onDelete: "cascade", foreignKey: 'userId' })
+db.Token.hasMany(db.MeterReading, { onDelete: "cascade", foreignKey: 'tokenId' })
+
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
