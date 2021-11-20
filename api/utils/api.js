@@ -1,6 +1,8 @@
 const axios = require('axios')
 const https = require('https')
-const { addLog, createLogItem } = require('./errorTacker')
+const { addLog, createLogItem } = require('./errorTacker');
+const xml2js = require('xml-js');
+
 
 var LocalStorage = require('node-localstorage').LocalStorage,
   localStorage = new LocalStorage('./scratch')
@@ -157,8 +159,9 @@ exports.retailCustomerDetails = async (refreshToken, subscriptionId) => {
       maxContentLength: 100000000,
       maxBodyLength: 100000000
     }).then(async ({ data }) => {
-      console.log("Customer Details DATA >> ", data)
-      return data;
+      let result = JSON.parse(xml2js.xml2json(data, { compact: true, spaces: 4 }));
+      console.log("Customer Details DATA >> ", result)
+      return result;
     })
       .catch(error => {
         console.log('Retail Customer Data error =', error)
@@ -189,8 +192,9 @@ exports.usagePointDetails = async (refreshToken, subscriptionId) => {
       maxContentLength: 100000000,
       maxBodyLength: 100000000
     }).then(async ({ data }) => {
-      console.log("usagePointDetails >> ", data)
-      return data;
+      let result = JSON.parse(xml2js.xml2json(data, { compact: true, spaces: 4 }));
+      console.log("usagePointDetails >> ", result)
+      return result;
     })
       .catch(error => {
         console.log('usagePointDetails error =', error)
