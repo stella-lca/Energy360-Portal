@@ -308,8 +308,15 @@ exports.intervalBlock = async (refreshToken, subscriptionId, usagePointId, meter
 
       let KVARH = false
       let dateViseIntervalBlock = {}
-      for (let j = 0; j < result.feed.entry.length; j++) {
-        const element = result.feed.entry[j];
+      let resultArray = []
+      console.log('result.feed.entry >> ', result.feed.entry);
+      if (!result.feed.entry.length) {
+        resultArray.push(result.feed.entry);
+      } else {
+        resultArray = result.feed.entry
+      }
+      for (let j = 0; j < resultArray.length; j++) {
+        const element = resultArray[j];
         let links = element.link
         for (let a = 0; a < links.length; a++) {
           const linkElement = links[a];
