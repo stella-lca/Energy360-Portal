@@ -71,7 +71,7 @@ const generateClientToken = async function () {
   }
 }
 
-exports.apiClient = async () => {
+const apiClient = async () => {
   try {
     let AUTH_TOKEN = await generateClientToken()
     if (AUTH_TOKEN) {
@@ -130,7 +130,7 @@ const generateThirdPartyToken = async function (refreshToken, subscriptionId) {
   }
 }
 
-exports.ThirdPartyApiClient = async (refreshToken, subscriptionId) => {
+const ThirdPartyApiClient = async (refreshToken, subscriptionId) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
     if (AUTH_TOKEN) {
@@ -141,7 +141,7 @@ exports.ThirdPartyApiClient = async (refreshToken, subscriptionId) => {
   } catch (error) { }
 }
 
-exports.retailCustomerDetails = async (refreshToken, subscriptionId) => {
+const retailCustomerDetails = async (refreshToken, subscriptionId) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
@@ -191,7 +191,7 @@ exports.retailCustomerDetails = async (refreshToken, subscriptionId) => {
   }
 }
 
-exports.usagePointDetails = async (refreshToken, subscriptionId) => {
+const usagePointDetails = async (refreshToken, subscriptionId) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
@@ -238,7 +238,7 @@ exports.usagePointDetails = async (refreshToken, subscriptionId) => {
   }
 }
 
-exports.meterReading = async (refreshToken, subscriptionId, usagePointId) => {
+const meterReading = async (refreshToken, subscriptionId, usagePointId) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
@@ -285,7 +285,7 @@ exports.meterReading = async (refreshToken, subscriptionId, usagePointId) => {
   }
 }
 
-exports.intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterReadingId, publishedMin, publishedMax, tokenId) => {
+const intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterReadingId, publishedMin, publishedMax, tokenId) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
@@ -373,5 +373,10 @@ exports.intervalBlock = async (refreshToken, subscriptionId, usagePointId, meter
 }
 
 module.exports = {
-  generateThirdPartyToken
+  generateThirdPartyToken,
+  apiClient,
+  retailCustomerDetails,
+  usagePointDetails,
+  meterReading,
+  intervalBlock
 }
