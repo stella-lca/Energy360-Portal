@@ -53,6 +53,7 @@
 		"lodash": "^4.17.21",
 		"moment": "^2.29.1",
 		"mysql2": "^2.1.0",
+		"node-cron": "^3.0.0",
 		"node-localstorage": "^2.1.6",
 		"path": "^0.12.7",
 		"query-string": "^6.11.0",

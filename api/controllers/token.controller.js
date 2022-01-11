@@ -44,6 +44,24 @@ const handleToken = async function (authCode, tokenData) {
 
     console.log("email ====> ", email);
 
+    // Customer Details
+    let customerDetails = await retailCustomerDetails(refresh_token, resourceURI);
+    console.log("Customer Details DATA >> ", customerDetails)
+
+    // UsagePoint ID
+    let usagePointDetailsData = await usagePointDetails(refresh_token, resourceURI)
+    let meterReadingId = await meterReading(refresh_token, resourceURI, usagePointDetailsData)
+
+    let conedAddress
+    let meterAccountId
+    let usagePointId
+
+    if (usagePointDetailsData) {
+      conedAddress = customerDetails.address
+      meterAccountId = customerDetails.meterAccountNumber
+      usagePointId = usagePointDetailsData
+    }
+
     let status
     if (token !== undefined && token.access_token) {
       // if (moment(token.expiry_date) < moment()) {
@@ -75,6 +93,10 @@ const handleToken = async function (authCode, tokenData) {
         userId,
         conedSub,
         resourceURI,
+        conedAddress,
+        meterAccountId,
+        usagePointId,
+        meterReadingId,
         authorizationURI,
         accountNumber,
         expiry_date
