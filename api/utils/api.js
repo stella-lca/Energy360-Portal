@@ -371,3 +371,7 @@ exports.intervalBlock = async (refreshToken, subscriptionId, usagePointId, meter
     return null
   }
 }
+
+module.exports = {
+  generateThirdPartyToken
+}
