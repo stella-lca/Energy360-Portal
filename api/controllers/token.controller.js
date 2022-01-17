@@ -52,10 +52,15 @@ const handleToken = async function (authCode, tokenData) {
     let usagePointDetailsData = await usagePointDetails(refresh_token, resourceURI)
     let meterReadingId = await meterReading(refresh_token, resourceURI, usagePointDetailsData)
 
+    let conedAddress
+    let meterAccountId
+    let usagePointId
 
-    let conedAddress = customerDetails.address
-    let meterAccountId = customerDetails.meterAccountNumber
-    let usagePointId = usagePointDetailsData
+    if (usagePointDetailsData) {
+      conedAddress = customerDetails.address
+      meterAccountId = customerDetails.meterAccountNumber
+      usagePointId = usagePointDetailsData
+    }
 
     let status
     if (token !== undefined && token.access_token) {
@@ -101,10 +106,6 @@ const handleToken = async function (authCode, tokenData) {
 
       console.log('handleToken-token_create ===>', msg)
       createLogItem(true, 'Token Management', msg, JSON.stringify(token))
-
-      tokenData.address = customerDetails.address
-      tokenData.meterAccountNumber = customerDetails.meterAccountNumber
-      tokenData.usagePointDetailsData = usagePointDetailsData
 
       return tokenData
     }
@@ -189,7 +190,7 @@ exports.authenticateToken = async function (req, res) {
         createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
 
         if (resultData && resultData.access_token) {
-          res.redirect(`/callback?success=true&address=${resultData.address}&meterAccountNumber=${resultData.meterAccountNumber}&usagePointDetailsData=${resultData.usagePointDetailsData}`)
+          res.redirect('/callback?success=true')
         } else {
           res.redirect('/callback?success=false')
         }
@@ -299,7 +300,8 @@ exports.intervalBlockApi = async function (req, res) {
     res.status(200).send({ data: intervalBlockData })
   } catch (error) {
     console.log('meterReadingAPI Error', error)
-    res.redirect('/callback?success=false')
+    return res.status(500).send({ err: error, message: "error" })
+    // res.redirect('/callback?success=false')
   }
 }
 
