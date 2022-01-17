@@ -282,9 +282,8 @@ exports.intervalBlockApi = async function (req, res) {
     //authorization code generated & sent by Utility
     const { resourceURI, publishedMin, publishedMax } = req.query
 
-    console.log("refresh token ===> ", refresh_token);
     console.log('resource URI ===> ', resourceURI);
-    console.log('usagePointId URI ===> ', usagePointId);
+
     let token = await db.Token.findOne({
       where: {
         subscriptionId: resourceURI
