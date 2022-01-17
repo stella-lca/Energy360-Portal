@@ -297,14 +297,14 @@ const intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterRe
       'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
       'Authorization': 'Bearer ' + AUTH_TOKEN
     },
-      firstDayOfYear = moment.startOf('year').format('YYYY-MM-DD');
+      firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
 
-    let meterReading = await db.Token.findAll({
+    let meterReading = await db.MeterReading.findAll({
       where: {
+        tokenId: tokenId,
         date: { [Op.gt]: firstDayOfYear }
       }
     })
-
 
     if (meterReading.length > 0) {
       return await axios({
@@ -380,21 +380,23 @@ const intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterRe
         })
     } else {
 
-      let d = new Date()
+      let d = new Date(),
+        year = moment().year()
 
       let months = getMonthsBeforeGivenDate(d);
       let weeksDates = []
       for (let i = 0; i < months.length; i++) {
         const element = months[i];
-        let array = getWeeksStartAndEndInMonth(element);
-        weeksDates.concat(array)
+        let array = getWeeksStartAndEndInMonth(element, year, "monday");
+        weeksDates = weeksDates.concat(array)
       }
-      let MeterReadingTillDate = []
-
+      let MeterReadingTillDate = [],
+        lastWeek = false
       for (let i = 0; i < weeksDates.length; i++) {
         let weeksDatesElement = weeksDates[i];
-        if (checkIfDateIsBetweenTwoDates(d, weeksDatesElement)) {
-          weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: weeksDatesElement.endDate }
+        if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
+          weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
+          lastWeek = true
         }
         let { data } = await axios({
           method: 'get',
@@ -462,13 +464,16 @@ const intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterRe
         }
         console.log("array >>", array);
         MeterReadingTillDate.concat(array)
+        if (lastWeek) {
+          break
+        }
         // return array
       }
       return MeterReadingTillDate
     }
   } catch (error) {
     console.log('intervalBlock Error ', error)
-    throw error
+    return new Error(error)
   }
 }
 
