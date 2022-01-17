@@ -300,7 +300,8 @@ exports.intervalBlockApi = async function (req, res) {
     res.status(200).send({ data: intervalBlockData })
   } catch (error) {
     console.log('meterReadingAPI Error', error)
-    res.redirect('/callback?success=false')
+    return res.status(500).send({ err: error, message: "error" })
+    // res.redirect('/callback?success=false')
   }
 }
 

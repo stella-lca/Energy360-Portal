@@ -4,6 +4,9 @@ const { addLog, createLogItem } = require('./errorTacker');
 const xml2jsObj = require('xml-js');
 const moment = require('moment');
 const _ = require('lodash');
+const db = require('../models');
+var Op = require('sequelize').Op;
+var { getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth, checkIfDateIsBetweenTwoDates } = require('../utils/utils');
 
 var LocalStorage = require('node-localstorage').LocalStorage,
   localStorage = new LocalStorage('./scratch')
@@ -293,82 +296,179 @@ const intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterRe
       'content-type': 'application/json',
       'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
       'Authorization': 'Bearer ' + AUTH_TOKEN
-    }
+    },
+      firstDayOfYear = moment.startOf('year').format('YYYY-MM-DD');
 
-    return await axios({
-      method: 'get',
-      url: `https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${publishedMin}&publishedMax=${publishedMax}`,
-      timeout: 100000,
-      headers,
-      httpsAgent: agent,
-      maxContentLength: 100000000,
-      maxBodyLength: 100000000
-    }).then(async ({ data }) => {
-      let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
-
-      let KVARH = false
-      let dateViseIntervalBlock = {}
-      let resultArray = []
-      console.log('result.feed.entry >> ', result.feed.entry);
-      if (!result.feed.entry.length) {
-        resultArray.push(result.feed.entry);
-      } else {
-        resultArray = result.feed.entry
+    let meterReading = await db.Token.findAll({
+      where: {
+        date: { [Op.gt]: firstDayOfYear }
       }
-      for (let j = 0; j < resultArray.length; j++) {
-        const element = resultArray[j];
-        let links = element.link
-        for (let a = 0; a < links.length; a++) {
-          const linkElement = links[a];
-          if (linkElement._attributes.href.includes('KVARH')) {
-            KVARH = true
-          } else {
-            KVARH = false
-          }
+    })
+
+
+    if (meterReading.length > 0) {
+      return await axios({
+        method: 'get',
+        url: `https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${publishedMin}&publishedMax=${publishedMax}`,
+        timeout: 100000,
+        headers,
+        httpsAgent: agent,
+        maxContentLength: 100000000,
+        maxBodyLength: 100000000
+      }).then(async ({ data }) => {
+        let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+
+        let KVARH = false
+        let dateViseIntervalBlock = {}
+        let resultArray = []
+        console.log('result.feed.entry >> ', result.feed.entry);
+        if (!result.feed.entry.length) {
+          resultArray.push(result.feed.entry);
+        } else {
+          resultArray = result.feed.entry
         }
-        let intervalBlocks = element.content['espi:intervalBlocks']['espi:intervalBlock']
-
-        if (intervalBlocks.length > 0) {
-
-          for (let i = 0; i < intervalBlocks.length; i++) {
-            const intervalBlockElement = intervalBlocks[i];
-
-            let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
-
-            let intervalReading = intervalBlockElement['espi:intervalReading']
-            intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
-
-            let intervalReadingTotal = _.sum(intervalReading);
-            console.log(intervalReadingTotal);
-            let date = moment.unix(timestamp).format('YYYY-MM-DD');
-            if (KVARH) {
-              dateViseIntervalBlock[date] = {
-                date: date,
-                KVARHReading: intervalReadingTotal,
-                tokenId: tokenId,
-                KWHReading: null
-              }
+        for (let j = 0; j < resultArray.length; j++) {
+          const element = resultArray[j];
+          let links = element.link
+          for (let a = 0; a < links.length; a++) {
+            const linkElement = links[a];
+            if (linkElement._attributes.href.includes('KVARH')) {
+              KVARH = true
             } else {
-              dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
+              KVARH = false
+            }
+          }
+          let intervalBlocks = element.content['espi:intervalBlocks']['espi:intervalBlock']
+
+          if (intervalBlocks.length > 0) {
+
+            for (let i = 0; i < intervalBlocks.length; i++) {
+              const intervalBlockElement = intervalBlocks[i];
+
+              let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
+
+              let intervalReading = intervalBlockElement['espi:intervalReading']
+              intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
+
+              let intervalReadingTotal = _.sum(intervalReading);
+              console.log(intervalReadingTotal);
+              let date = moment.unix(timestamp).format('YYYY-MM-DD');
+              if (KVARH) {
+                dateViseIntervalBlock[date] = {
+                  date: date,
+                  KVARHReading: intervalReadingTotal,
+                  tokenId: tokenId,
+                  KWHReading: null
+                }
+              } else {
+                dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
+              }
             }
           }
         }
-      }
-      console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
-      let array = []
-      for (const property in dateViseIntervalBlock) {
-        array.push(dateViseIntervalBlock[property]);
-      }
-      console.log("array >>", array);
-      return array
-    })
-      .catch(error => {
-        console.log('intervalBlock error =', error)
-        return null
+        console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
+        let array = []
+        for (const property in dateViseIntervalBlock) {
+          array.push(dateViseIntervalBlock[property]);
+        }
+        console.log("array >>", array);
+        return array
       })
+        .catch(error => {
+          console.log('intervalBlock error =', error)
+          throw error
+        })
+    } else {
+
+      let d = new Date()
+
+      let months = getMonthsBeforeGivenDate(d);
+      let weeksDates = []
+      for (let i = 0; i < months.length; i++) {
+        const element = months[i];
+        let array = getWeeksStartAndEndInMonth(element);
+        weeksDates.concat(array)
+      }
+      let MeterReadingTillDate = []
+
+      for (let i = 0; i < weeksDates.length; i++) {
+        let weeksDatesElement = weeksDates[i];
+        if (checkIfDateIsBetweenTwoDates(d, weeksDatesElement)) {
+          weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: weeksDatesElement.endDate }
+        }
+        let { data } = await axios({
+          method: 'get',
+          url: `https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${weeksDatesElement.startDate}&publishedMax=${weeksDatesElement.endDate}`,
+          timeout: 100000,
+          headers,
+          httpsAgent: agent,
+          maxContentLength: 100000000,
+          maxBodyLength: 100000000
+        })
+        let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+
+        let KVARH = false
+        let dateViseIntervalBlock = {}
+        let resultArray = []
+        console.log('result.feed.entry >> ', result.feed.entry);
+        if (!result.feed.entry.length) {
+          resultArray.push(result.feed.entry);
+        } else {
+          resultArray = result.feed.entry
+        }
+        for (let j = 0; j < resultArray.length; j++) {
+          const resultArrayElement = resultArray[j];
+          let links = resultArrayElement.link
+          for (let a = 0; a < links.length; a++) {
+            const linkElement = links[a];
+            if (linkElement._attributes.href.includes('KVARH')) {
+              KVARH = true
+            } else {
+              KVARH = false
+            }
+          }
+          let intervalBlocks = resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']
+
+          if (intervalBlocks.length > 0) {
+
+            for (let a = 0; a < intervalBlocks.length; a++) {
+              const intervalBlockElement = intervalBlocks[a];
+
+              let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
+
+              let intervalReading = intervalBlockElement['espi:intervalReading']
+              intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
+
+              let intervalReadingTotal = _.sum(intervalReading);
+              console.log(intervalReadingTotal);
+              let date = moment.unix(timestamp).format('YYYY-MM-DD');
+              if (KVARH) {
+                dateViseIntervalBlock[date] = {
+                  date: date,
+                  KVARHReading: intervalReadingTotal,
+                  tokenId: tokenId,
+                  KWHReading: null
+                }
+              } else {
+                dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
+              }
+            }
+          }
+        }
+        console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
+        let array = []
+        for (const property in dateViseIntervalBlock) {
+          array.push(dateViseIntervalBlock[property]);
+        }
+        console.log("array >>", array);
+        MeterReadingTillDate.concat(array)
+        // return array
+      }
+      return MeterReadingTillDate
+    }
   } catch (error) {
     console.log('intervalBlock Error ', error)
-    return null
+    throw error
   }
 }
 

@@ -1,4 +1,6 @@
-exports.findNestedObj = (entireObj, keyToFind) => {
+const moment = require("moment");
+
+const findNestedObj = (entireObj, keyToFind) => {
 	let foundObj;
 	JSON.stringify(entireObj, (_, nestedValue) => {
 		if (nestedValue && nestedValue[keyToFind]) {
@@ -68,6 +70,45 @@ const getWeeksStartAndEndInMonth = (month, year, _start) => {
 }
 // console.table(getWeeksStartAndEndInMonth(1, 2020, 'monday'));
 
+/** 
+ * @param {*} date
+ * @returns Returns the months passed before given date for current year 
+ */
+const getMonthsBeforeGivenDate = (date) => {
+	var dateStart = moment().startOf('year'),
+		dateEnd = moment(new Date(date)),
+		timeValues = [];
+
+	while (dateEnd > dateStart || dateStart.format('M') === dateEnd.format('M')) {
+		timeValues.push(dateStart.format('M'));
+		dateStart.add(1, 'month');
+	}
+	console.log(timeValues)
+	return timeValues
+}
+
+/**
+ * 
+ * @param {*} currentDate new Date() 
+ * @param {*} datesObj type {startDate: "YYYY-MM-DD", endDate: "YYYY-MM-DD" }
+ * @returns Boolean
+ */
+
+const checkIfDateIsBetweenTwoDates = (currentDate, datesObj) => {
+	var date = moment(currentDate);
+	var startDate = moment(datesObj.startDate, "YYYY-MM-DD");
+	var endDate = moment(datesObj.endDate, "YYYY-MM-DD");
+
+	if (!(date.isBefore(startDate) || date.isAfter(endDate))) {
+		return true
+	} else {
+		return true
+	}
+}
+
 module.exports = {
-	getWeeksStartAndEndInMonth
+	findNestedObj,
+	getWeeksStartAndEndInMonth,
+	getMonthsBeforeGivenDate,
+	checkIfDateIsBetweenTwoDates
 }
