@@ -5,7 +5,7 @@ const async = require('async')
 const { sendAdminEmail, sendNotifyEmail, sendUserEmail } = require('../utils/email')
 const { downloadFile, saveAsTxt, downloadContents } = require('../utils/downloadFile')
 const { addLog, createLogItem } = require('../utils/errorTacker')
-const { apiClient, retailCustomerDetails, usagePointDetails, meterReading, intervalBlock } = require('../utils/api')
+const { apiClient, retailCustomerDetails, usagePointDetails, meterReading, intervalBlockTest } = require('../utils/api')
 const { findNestedObj } = require('../utils/utils')
 const https = require('https')
 var convert = require('xml-js')
@@ -289,7 +289,7 @@ exports.intervalBlockApi = async function (req, res) {
         subscriptionId: resourceURI
       }
     })
-    let intervalBlockData = await intervalBlock(token.refresh_token, resourceURI, token.usagePointId, token.meterReadingId, publishedMin, publishedMax, token.id)
+    let intervalBlockData = await intervalBlockTest(token.refresh_token, resourceURI, token.usagePointId, token.meterReadingId, publishedMin, publishedMax, token.id)
 
     let data = await db.MeterReading.bulkCreate(intervalBlockData);
     console.log(data)
