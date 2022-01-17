@@ -95,14 +95,14 @@ const getMonthsBeforeGivenDate = (date) => {
  */
 
 const checkIfDateIsBetweenTwoDates = (currentDate, datesObj) => {
-	var date = moment(currentDate);
+	var date = moment(currentDate, 'YYYY-MM-DD');
 	var startDate = moment(datesObj.startDate, "YYYY-MM-DD");
 	var endDate = moment(datesObj.endDate, "YYYY-MM-DD");
 
 	if (!(date.isBefore(startDate) || date.isAfter(endDate))) {
 		return true
 	} else {
-		return true
+		return false
 	}
 }
 
