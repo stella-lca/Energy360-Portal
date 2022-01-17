@@ -464,15 +464,15 @@ const intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterRe
           }
           console.log("array >>", array);
           MeterReadingTillDate.concat(array)
-          if (lastWeek) {
-            break
-          }
           // return array
         })
           .catch(error => {
             console.log('intervalBlock error =', error)
             throw error
           })
+        if (lastWeek) {
+          break
+        }
       }
       return MeterReadingTillDate
     }
