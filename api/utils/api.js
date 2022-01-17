@@ -398,7 +398,7 @@ const intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterRe
           weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
           lastWeek = true
         }
-        let { data } = await axios({
+        await axios({
           method: 'get',
           url: `https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${weeksDatesElement.startDate}&publishedMax=${weeksDatesElement.endDate}`,
           timeout: 100000,
@@ -406,68 +406,73 @@ const intervalBlock = async (refreshToken, subscriptionId, usagePointId, meterRe
           httpsAgent: agent,
           maxContentLength: 100000000,
           maxBodyLength: 100000000
-        })
-        let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+        }).then(async ({ data }) => {
+          let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
 
-        let KVARH = false
-        let dateViseIntervalBlock = {}
-        let resultArray = []
-        console.log('result.feed.entry >> ', result.feed.entry);
-        if (!result.feed.entry.length) {
-          resultArray.push(result.feed.entry);
-        } else {
-          resultArray = result.feed.entry
-        }
-        for (let j = 0; j < resultArray.length; j++) {
-          const resultArrayElement = resultArray[j];
-          let links = resultArrayElement.link
-          for (let a = 0; a < links.length; a++) {
-            const linkElement = links[a];
-            if (linkElement._attributes.href.includes('KVARH')) {
-              KVARH = true
-            } else {
-              KVARH = false
-            }
+          let KVARH = false
+          let dateViseIntervalBlock = {}
+          let resultArray = []
+          console.log('result.feed.entry >> ', result.feed.entry);
+          if (!result.feed.entry.length) {
+            resultArray.push(result.feed.entry);
+          } else {
+            resultArray = result.feed.entry
           }
-          let intervalBlocks = resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']
-
-          if (intervalBlocks.length > 0) {
-
-            for (let a = 0; a < intervalBlocks.length; a++) {
-              const intervalBlockElement = intervalBlocks[a];
-
-              let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
-
-              let intervalReading = intervalBlockElement['espi:intervalReading']
-              intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
-
-              let intervalReadingTotal = _.sum(intervalReading);
-              console.log(intervalReadingTotal);
-              let date = moment.unix(timestamp).format('YYYY-MM-DD');
-              if (KVARH) {
-                dateViseIntervalBlock[date] = {
-                  date: date,
-                  KVARHReading: intervalReadingTotal,
-                  tokenId: tokenId,
-                  KWHReading: null
-                }
+          for (let j = 0; j < resultArray.length; j++) {
+            const resultArrayElement = resultArray[j];
+            let links = resultArrayElement.link
+            for (let a = 0; a < links.length; a++) {
+              const linkElement = links[a];
+              if (linkElement._attributes.href.includes('KVARH')) {
+                KVARH = true
               } else {
-                dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
+                KVARH = false
+              }
+            }
+            let intervalBlocks = resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']
+
+            if (intervalBlocks.length > 0) {
+
+              for (let a = 0; a < intervalBlocks.length; a++) {
+                const intervalBlockElement = intervalBlocks[a];
+
+                let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
+
+                let intervalReading = intervalBlockElement['espi:intervalReading']
+                intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
+
+                let intervalReadingTotal = _.sum(intervalReading);
+                console.log(intervalReadingTotal);
+                let date = moment.unix(timestamp).format('YYYY-MM-DD');
+                if (KVARH) {
+                  dateViseIntervalBlock[date] = {
+                    date: date,
+                    KVARHReading: intervalReadingTotal,
+                    tokenId: tokenId,
+                    KWHReading: null
+                  }
+                } else {
+                  dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
+                }
               }
             }
           }
-        }
-        console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
-        let array = []
-        for (const property in dateViseIntervalBlock) {
-          array.push(dateViseIntervalBlock[property]);
-        }
-        console.log("array >>", array);
-        MeterReadingTillDate.concat(array)
+          console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
+          let array = []
+          for (const property in dateViseIntervalBlock) {
+            array.push(dateViseIntervalBlock[property]);
+          }
+          console.log("array >>", array);
+          MeterReadingTillDate.concat(array)
+          // return array
+        })
+          .catch(error => {
+            console.log('intervalBlock error =', error)
+            throw error
+          })
         if (lastWeek) {
           break
         }
-        // return array
       }
       return MeterReadingTillDate
     }
