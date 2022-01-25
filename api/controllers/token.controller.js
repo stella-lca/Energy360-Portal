@@ -43,14 +43,15 @@ const handleToken = async function (authCode, tokenData) {
     let conedSub = conedToken['sub']
 
     console.log("email ====> ", email);
-
+    let subscriptionId = resourceURI.split("/").pop();
+    let authorizationId = authorizationURI.split("/").pop();
     // Customer Details
-    let customerDetails = await retailCustomerDetails(refresh_token, resourceURI);
+    let customerDetails = await retailCustomerDetails(refresh_token, subscriptionId);
     console.log("Customer Details DATA >> ", customerDetails)
 
     // UsagePoint ID
-    let usagePointDetailsData = await usagePointDetails(refresh_token, resourceURI)
-    let meterReadingId = await meterReading(refresh_token, resourceURI, usagePointDetailsData)
+    let usagePointDetailsData = await usagePointDetails(refresh_token, subscriptionId)
+    let meterReadingId = await meterReading(refresh_token, subscriptionId, usagePointDetailsData)
 
     let conedAddress
     let meterAccountId
@@ -77,9 +78,6 @@ const handleToken = async function (authCode, tokenData) {
 
       return token
     } else {
-      let subscriptionId = resourceURI.split("/").pop();
-      let authorizationId = authorizationURI.split("/").pop();
-
       //save new token.
       status = await createToken({
         authCode,
