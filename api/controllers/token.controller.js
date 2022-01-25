@@ -5,7 +5,7 @@ const async = require('async')
 const { sendAdminEmail, sendNotifyEmail, sendUserEmail } = require('../utils/email')
 const { downloadFile, saveAsTxt, downloadContents } = require('../utils/downloadFile')
 const { addLog, createLogItem } = require('../utils/errorTacker')
-const { apiClient, retailCustomerDetails, usagePointDetails, meterReading, intervalBlockTest } = require('../utils/api')
+const { apiClient, retailCustomerDetails, usagePointDetails, meterReading, intervalBlockTest, intervalBlock, generateThirdPartyToken } = require('../utils/api')
 const { findNestedObj } = require('../utils/utils')
 const https = require('https')
 var convert = require('xml-js')
@@ -287,7 +287,51 @@ exports.intervalBlockApi = async function (req, res) {
         subscriptionId: resourceURI
       }
     })
-    let intervalBlockData = await intervalBlockTest(token.refresh_token, resourceURI, token.usagePointId, token.meterReadingId, token.id)
+    let intervalBlockData = await intervalBlockTest(token.refresh_token, resourceURI, token.usagePointId, token.meterReadingId, token.id, res)
+
+    let data = await db.MeterReading.bulkCreate(intervalBlockData);
+    console.log(data)
+
+    console.log("Customer intervalBlockUrl >> ", intervalBlockData)
+    res.status(200).send({ data: intervalBlockData })
+  } catch (error) {
+    console.log('meterReadingAPI Error', error)
+    return res.status(500).send({ err: error, message: "error" })
+    // res.redirect('/callback?success=false')
+  }
+}
+
+exports.intervalBlockFunction = async function (req, res) {
+  try {
+    //authorization code generated & sent by Utility
+    const { resourceURI, minDate, maxDate } = req.query
+
+    console.log('resource URI ===> ', resourceURI);
+
+    let token = await db.Token.findOne({
+      where: {
+        subscriptionId: resourceURI
+      }
+    })
+
+    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
+
+    let headers = {
+      'content-type': 'application/json',
+      'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
+      'Authorization': 'Bearer ' + AUTH_TOKEN
+    }
+
+    let datas = {
+      subscriptionId: resourceURI,
+      usagePointId: token.usagePointId,
+      meterReadingId: token.meterReadingId,
+      startDate: minDate,
+      endDate: maxDate,
+      tokenId: token.id
+    }
+
+    let intervalBlockData = await intervalBlock(headers, datas)
 
     let data = await db.MeterReading.bulkCreate(intervalBlockData);
     console.log(data)

@@ -364,7 +364,7 @@ const intervalBlock = async (headers, data) => {
     })
 }
 
-const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, meterReadingId, tokenId) => {
+const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, meterReadingId, tokenId, res) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
@@ -421,17 +421,20 @@ const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, met
         endDate: weeksDatesElement.endDate,
         tokenId: tokenId
       }
-      let array = await intervalBlock(headers, obj)
-      MeterReadingTillDate.concat(array)
+      // let array = await intervalBlock(headers, obj)
+      MeterReadingTillDate.concat(obj)
       if (lastWeek) {
         break
       }
     }
-    return MeterReadingTillDate
+    return res.status(200).send({ data: MeterReadingTillDate })
+
+
     // }
   } catch (error) {
     console.log('intervalBlock Error ', error)
-    return new Error(error)
+    return res.status(500).send({ err: error, message: "error" })
+    // return new Error(error)
   }
 }
 
@@ -441,5 +444,6 @@ module.exports = {
   retailCustomerDetails,
   usagePointDetails,
   meterReading,
-  intervalBlockTest
+  intervalBlockTest,
+  intervalBlock
 }
