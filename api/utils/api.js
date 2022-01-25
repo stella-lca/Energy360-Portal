@@ -364,7 +364,7 @@ const intervalBlock = async (headers, data) => {
     })
 }
 
-const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, meterReadingId, publishedMin, publishedMax, tokenId) => {
+const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, meterReadingId, tokenId) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
@@ -382,53 +382,53 @@ const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, met
       }
     })
 
-    if (meterReading.length > 0) {
+    // if (meterReading.length > 0) {
+    //   let obj = {
+    //     subscriptionId: subscriptionId,
+    //     usagePointId: usagePointId,
+    //     meterReadingId: meterReadingId,
+    //     startDate: publishedMin,
+    //     endDate: publishedMax,
+    //     tokenId: tokenId
+    //   }
+    //   let array = await intervalBlock(headers, obj)
+    //   return array
+    // } else {
+
+    let d = new Date(),
+      year = moment().year()
+
+    let months = getMonthsBeforeGivenDate(d);
+    let weeksDates = []
+    for (let i = 0; i < months.length; i++) {
+      const element = months[i];
+      let array = getWeeksStartAndEndInMonth(element, year, "monday");
+      weeksDates = weeksDates.concat(array)
+    }
+    let MeterReadingTillDate = [],
+      lastWeek = false
+    for (let i = 0; i < weeksDates.length; i++) {
+      let weeksDatesElement = weeksDates[i];
+      if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
+        weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
+        lastWeek = true
+      }
       let obj = {
         subscriptionId: subscriptionId,
         usagePointId: usagePointId,
         meterReadingId: meterReadingId,
-        startDate: publishedMin,
-        endDate: publishedMax,
+        startDate: weeksDatesElement.startDate,
+        endDate: weeksDatesElement.endDate,
         tokenId: tokenId
       }
       let array = await intervalBlock(headers, obj)
-      return array
-    } else {
-
-      let d = new Date(),
-        year = moment().year()
-
-      let months = getMonthsBeforeGivenDate(d);
-      let weeksDates = []
-      for (let i = 0; i < months.length; i++) {
-        const element = months[i];
-        let array = getWeeksStartAndEndInMonth(element, year, "monday");
-        weeksDates = weeksDates.concat(array)
+      MeterReadingTillDate.concat(array)
+      if (lastWeek) {
+        break
       }
-      let MeterReadingTillDate = [],
-        lastWeek = false
-      for (let i = 0; i < weeksDates.length; i++) {
-        let weeksDatesElement = weeksDates[i];
-        if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
-          weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
-          lastWeek = true
-        }
-        let obj = {
-          subscriptionId: subscriptionId,
-          usagePointId: usagePointId,
-          meterReadingId: meterReadingId,
-          startDate: weeksDatesElement.startDate,
-          endDate: weeksDatesElement.endDate,
-          tokenId: tokenId
-        }
-        let array = await intervalBlock(headers, obj)
-        MeterReadingTillDate.concat(array)
-        if (lastWeek) {
-          break
-        }
-      }
-      return MeterReadingTillDate
     }
+    return MeterReadingTillDate
+    // }
   } catch (error) {
     console.log('intervalBlock Error ', error)
     return new Error(error)
