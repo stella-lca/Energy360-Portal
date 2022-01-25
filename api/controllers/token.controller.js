@@ -278,7 +278,7 @@ exports.meterReadingAPI = async function (req, res) {
 exports.intervalBlockApi = async function (req, res) {
   try {
     //authorization code generated & sent by Utility
-    const { resourceURI, publishedMin, publishedMax } = req.query
+    const { resourceURI } = req.query
 
     console.log('resource URI ===> ', resourceURI);
 
@@ -287,7 +287,7 @@ exports.intervalBlockApi = async function (req, res) {
         subscriptionId: resourceURI
       }
     })
-    let intervalBlockData = await intervalBlockTest(token.refresh_token, resourceURI, token.usagePointId, token.meterReadingId, publishedMin, publishedMax, token.id)
+    let intervalBlockData = await intervalBlockTest(token.refresh_token, resourceURI, token.usagePointId, token.meterReadingId, token.id)
 
     let data = await db.MeterReading.bulkCreate(intervalBlockData);
     console.log(data)
