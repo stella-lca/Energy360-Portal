@@ -69,6 +69,8 @@ const meterReading = () => {
                         weeksDates = weeksDates.concat(array)
                     }
                     console.log('weeksDates >> ', weeksDates)
+                    await errorEmail(`array await weeksDates >> ${JSON.stringify(weeksDates)}`);
+
                     let MeterReadingTillDate = [],
                         lastWeek = false
                     for (let i = 0; i < weeksDates.length; i++) {
@@ -85,6 +87,8 @@ const meterReading = () => {
                             endDate: weeksDatesElement.endDate,
                             tokenId: tokenElement.id
                         }
+                        await errorEmail(`array await obj >> ${obj}`);
+
                         let array = await intervalBlock(headers, obj)
                         await errorEmail(`array await intervalBlock >> ${array}`);
 
@@ -94,6 +98,7 @@ const meterReading = () => {
                         }
                     }
                     console.log(MeterReadingTillDate)
+                    await errorEmail(`MeterReadingTillDate >> ${MeterReadingTillDate}`);
 
                     let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
                     console.log(data)
