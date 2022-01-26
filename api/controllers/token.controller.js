@@ -314,7 +314,7 @@ exports.intervalBlockFunction = async function (req, res) {
       }
     })
 
-    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
+    let AUTH_TOKEN = await generateThirdPartyToken(token.refreshToken, token.subscriptionId)
 
     let headers = {
       'content-type': 'application/json',
