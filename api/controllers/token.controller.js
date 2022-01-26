@@ -316,22 +316,22 @@ exports.intervalBlockFunction = async function (req, res) {
     })
 
     let AUTH_TOKEN = await generateThirdPartyToken(token.refresh_token, token.subscriptionId)
-
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    })
     let headers = {
       'content-type': 'application/json',
       'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
       'Authorization': 'Bearer ' + AUTH_TOKEN
     }
-
-    let { data } = await axios({
-      method: 'get',
-      url: `https://api.coned.com/gbc/v1/resource/Subscription/${resourceURI}/UsagePoint/${token.usagePointId}/MeterReading/${token.meterReadingId}/IntervalBlock?publishedMin=${minDate}&publishedMax=${maxDate}`,
+    let options = {
       timeout: 100000,
       headers,
       httpsAgent: agent,
       maxContentLength: 100000000,
       maxBodyLength: 100000000
-    })
+    }
+    let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${resourceURI}/UsagePoint/${token.usagePointId}/MeterReading/${token.meterReadingId}/IntervalBlock?publishedMin=${minDate}&publishedMax=${maxDate}`, options)
     let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
 
     let KVARH = false
