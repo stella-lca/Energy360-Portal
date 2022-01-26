@@ -24,13 +24,14 @@ const meterReading = () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll();
         console.log("Tokens >>", Token);
+        await errorEmail(`TOKEN >> ${Token}`);
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
 
             try {
                 let AUTH_TOKEN = await generateThirdPartyToken(tokenElement.refreshToken, tokenElement.subscriptionId)
 
-                await errorEmail(`${tokenElement, AUTH_TOKEN}`);
+                await errorEmail(`AUTH_TOKEN>> ${AUTH_TOKEN}`);
 
                 let headers = {
                     'content-type': 'application/json',
@@ -88,6 +89,8 @@ const meterReading = () => {
                             tokenId: tokenElement.id
                         }
                         let array = await intervalBlock(headers, obj)
+                        await errorEmail(`array await intervalBlock >> ${array}`);
+
                         MeterReadingTillDate.concat(array)
                         if (lastWeek) {
                             break
@@ -100,7 +103,7 @@ const meterReading = () => {
                 }
 
             } catch (error) {
-                await errorEmail(`${error}`)
+                await errorEmail(`CRON ERROR >> ${error}`)
                 console.log('intervalBlock Error ', error)
             }
         }
