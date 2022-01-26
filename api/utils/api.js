@@ -291,17 +291,17 @@ const meterReading = async (refreshToken, subscriptionId, usagePointId) => {
 
 const intervalBlock = async (headers, data) => {
   let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, tokenId } = data
-  await axios({
-    method: 'get',
-    url: `https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`,
-    timeout: 100000,
-    headers,
-    httpsAgent: agent,
-    maxContentLength: 100000000,
-    maxBodyLength: 100000000
-  }).then(async ({ data }) => {
+  try {
+    let options = {
+      timeout: 100000,
+      headers,
+      httpsAgent: agent,
+      maxContentLength: 100000000,
+      maxBodyLength: 100000000
+    }
+    let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`, options)
     let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
-
+    await errorEmail(`XMLDATA >> ${data}`);
     let KVARH = false
     let dateViseIntervalBlock = {}
     let resultArray = []
@@ -341,7 +341,7 @@ const intervalBlock = async (headers, data) => {
             dateViseIntervalBlock[date] = {
               date: date,
               KVARHReading: intervalReadingTotal,
-              tokenId: tokenId,
+              tokenId: token.id,
               KWHReading: null
             }
           } else {
@@ -351,18 +351,21 @@ const intervalBlock = async (headers, data) => {
       }
     }
     console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
+    await errorEmail(`dateViseIntervalBlock >> ${JSON.stringify(dateViseIntervalBlock)}`)
+
     let array = []
     for (const property in dateViseIntervalBlock) {
       array.push(dateViseIntervalBlock[property]);
     }
     console.log("array >>", array);
+    await errorEmail(`array >> ${JSON.stringify(array)}`)
     return array
-  })
-    .catch(async error => {
-      await errorEmail(`intervalBlock ERROR >> ${error}`)
-      console.log('intervalBlock error =', error)
-      throw error
-    })
+  }
+  catch (error) {
+    await errorEmail(`intervalBlock ERROR >> ${error}`)
+    console.log('intervalBlock error =', error)
+    throw error
+  }
 }
 
 const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, meterReadingId, tokenId, res) => {

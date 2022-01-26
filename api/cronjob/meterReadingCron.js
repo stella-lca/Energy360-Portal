@@ -30,10 +30,6 @@ const meterReading = () => {
             try {
                 let AUTH_TOKEN = await generateThirdPartyToken(tokenElement.refresh_token, tokenElement.subscriptionId)
 
-                await errorEmail(`AUTH_TOKEN >> ${AUTH_TOKEN}`);
-                await errorEmail(`tokenElement >> ${JSON.stringify(tokenElement)}`);
-
-
                 let headers = {
                     'content-type': 'application/json',
                     'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
