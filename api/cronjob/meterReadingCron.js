@@ -11,6 +11,8 @@ const { checkIfDateIsBetweenTwoDates, getMonthsBeforeGivenDate, getWeeksStartAnd
 var Op = require('sequelize').Op;
 const { errorEmail } = require('../utils/email');
 require('dotenv').config()
+const momentTZ = require('moment-timezone');
+
 
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
 
@@ -23,6 +25,10 @@ const meterReading = () => {
     cron.schedule('* * * * *', async () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll();
+        var sone = momentTZ.tz.guess();
+        var timezone = momentTZ.tz(sone).zoneAbbr()
+
+        await errorEmail(`timeZone >> ${moment().format('ZZ'), timezone}`);
         console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
@@ -69,6 +75,8 @@ const meterReading = () => {
                         weeksDates = weeksDates.concat(array)
                     }
                     console.log('weeksDates >> ', weeksDates)
+                    await errorEmail(`array await weeksDates >> ${JSON.stringify(weeksDates)}`);
+
                     let MeterReadingTillDate = [],
                         lastWeek = false
                     for (let i = 0; i < weeksDates.length; i++) {
@@ -85,8 +93,10 @@ const meterReading = () => {
                             endDate: weeksDatesElement.endDate,
                             tokenId: tokenElement.id
                         }
+                        await errorEmail(`array await obj >> ${JSON.stringify(obj)}`);
+
                         let array = await intervalBlock(headers, obj)
-                        await errorEmail(`array await intervalBlock >> ${array}`);
+                        await errorEmail(`array await intervalBlock >> ${JSON.stringify(array)}`);
 
                         MeterReadingTillDate.concat(array)
                         if (lastWeek) {
@@ -94,6 +104,7 @@ const meterReading = () => {
                         }
                     }
                     console.log(MeterReadingTillDate)
+                    await errorEmail(`MeterReadingTillDate >> ${JSON.stringify(MeterReadingTillDate)}`);
 
                     let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
                     console.log(data)
