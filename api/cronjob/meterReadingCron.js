@@ -28,11 +28,10 @@ const meterReading = () => {
             let tokenElement = Token[i];
 
             try {
-                let AUTH_TOKEN = await generateThirdPartyToken("tlbIYNIiiPLdMTlUCvxqCOGOiEZQDe2XLLO1HfqHSp4", "11527")
+                let AUTH_TOKEN = await generateThirdPartyToken(tokenElement.refresh_token, tokenElement.subscriptionId)
 
-                await errorEmail(`AUTH_TOKEN>> ${AUTH_TOKEN}, ${tokenElement.refreshToken}, ${tokenElement.subscriptionId}`);
-                console.log("Tokens >>", JSON.stringify(Token));
-                await errorEmail(`TOKEN >> ${JSON.stringify(Token)}`);
+                await errorEmail(`AUTH_TOKEN >> ${AUTH_TOKEN}`);
+                await errorEmail(`tokenElement >> ${JSON.stringify(tokenElement)}`);
 
 
                 let headers = {
