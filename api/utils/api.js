@@ -366,12 +366,12 @@ const intervalBlock = async (headers, data) => {
 
 const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, meterReadingId, tokenId, res) => {
   try {
-    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
+    // let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
     let headers = {
       'content-type': 'application/json',
       'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
-      'Authorization': 'Bearer ' + AUTH_TOKEN
+      'Authorization': 'Bearer ' /*+ AUTH_TOKEN**/
     },
       firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
 
@@ -405,6 +405,7 @@ const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, met
       let array = getWeeksStartAndEndInMonth(element, year, "monday");
       weeksDates = weeksDates.concat(array)
     }
+    console.log('weeksDates >> ', weeksDates)
     let MeterReadingTillDate = [],
       lastWeek = false
     for (let i = 0; i < weeksDates.length; i++) {
@@ -422,19 +423,18 @@ const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, met
         tokenId: tokenId
       }
       // let array = await intervalBlock(headers, obj)
-      MeterReadingTillDate.concat(obj)
+      MeterReadingTillDate.push(obj)
       if (lastWeek) {
         break
       }
     }
-    return res.status(200).send({ data: MeterReadingTillDate })
+    console.log(MeterReadingTillDate)
 
-
+    return MeterReadingTillDate
     // }
   } catch (error) {
     console.log('intervalBlock Error ', error)
-    return res.status(500).send({ err: error, message: "error" })
-    // return new Error(error)
+    return new Error(error)
   }
 }
 

@@ -293,7 +293,7 @@ exports.intervalBlockApi = async function (req, res) {
     console.log(data)
 
     console.log("Customer intervalBlockUrl >> ", intervalBlockData)
-    res.status(200).send({ data: intervalBlockData })
+    res.status(200).json({ data: intervalBlockData })
   } catch (error) {
     console.log('meterReadingAPI Error', error)
     return res.status(500).send({ err: error, message: "error" })
@@ -314,7 +314,7 @@ exports.intervalBlockFunction = async function (req, res) {
       }
     })
 
-    let AUTH_TOKEN = await generateThirdPartyToken(token.refreshToken, token.subscriptionId)
+    let AUTH_TOKEN = await generateThirdPartyToken(token.refresh_token, token.subscriptionId)
 
     let headers = {
       'content-type': 'application/json',
