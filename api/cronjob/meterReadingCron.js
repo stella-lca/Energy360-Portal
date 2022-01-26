@@ -8,6 +8,7 @@ const xml2jsObj = require('xml-js');
 const moment = require('moment');
 const _ = require('lodash');
 const { checkIfDateIsBetweenTwoDates, getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth } = require('../utils/utils');
+var Op = require('sequelize').Op;
 require('dotenv').config()
 
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
