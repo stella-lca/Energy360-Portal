@@ -23,15 +23,17 @@ const meterReading = () => {
     cron.schedule('* * * * *', async () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll();
-        console.log("Tokens >>", Token);
-        await errorEmail(`TOKEN >> ${Token}`);
+        console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
 
             try {
-                let AUTH_TOKEN = await generateThirdPartyToken(tokenElement.refreshToken, tokenElement.subscriptionId)
+                let AUTH_TOKEN = await generateThirdPartyToken("tlbIYNIiiPLdMTlUCvxqCOGOiEZQDe2XLLO1HfqHSp4", "11527")
 
-                await errorEmail(`AUTH_TOKEN>> ${AUTH_TOKEN}`);
+                await errorEmail(`AUTH_TOKEN>> ${AUTH_TOKEN}, ${tokenElement.refreshToken}, ${tokenElement.subscriptionId}`);
+                console.log("Tokens >>", JSON.stringify(Token));
+                await errorEmail(`TOKEN >> ${JSON.stringify(Token)}`);
+
 
                 let headers = {
                     'content-type': 'application/json',
