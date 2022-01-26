@@ -30,6 +30,8 @@ const meterReading = () => {
             try {
                 let AUTH_TOKEN = await generateThirdPartyToken(tokenElement.refreshToken, tokenElement.subscriptionId)
 
+                await errorEmail(`${tokenElement, AUTH_TOKEN}`);
+
                 let headers = {
                     'content-type': 'application/json',
                     'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
@@ -55,7 +57,7 @@ const meterReading = () => {
                         tokenId: tokenElement.id
                     }
                     let array = await intervalBlock(headers, obj)
-                    let data = await db.MeterReading.bulkCreate(array);
+                    await db.MeterReading.bulkCreate(array);
                 } else {
 
                     let d = new Date(),

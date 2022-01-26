@@ -7,6 +7,7 @@ const _ = require('lodash');
 const db = require('../models');
 var Op = require('sequelize').Op;
 var { getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth, checkIfDateIsBetweenTwoDates } = require('../utils/utils');
+const { errorEmail } = require('./email');
 
 var LocalStorage = require('node-localstorage').LocalStorage,
   localStorage = new LocalStorage('./scratch')
@@ -359,6 +360,7 @@ const intervalBlock = async (headers, data) => {
     return array
   }
   catch (error) {
+    await errorEmail(`${error}`)
     console.log('intervalBlock error =', error)
     throw error
   }
