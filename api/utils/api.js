@@ -291,15 +291,15 @@ const meterReading = async (refreshToken, subscriptionId, usagePointId) => {
 const intervalBlock = async (headers, data) => {
   let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, tokenId } = data
   try {
-    let { data } = await axios({
-      method: 'get',
-      url: `https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`,
+    let options = {
       timeout: 100000,
       headers,
       httpsAgent: agent,
       maxContentLength: 100000000,
       maxBodyLength: 100000000
-    })
+    }
+    let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`, options)
+
     let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
 
     let KVARH = false
@@ -356,7 +356,6 @@ const intervalBlock = async (headers, data) => {
       array.push(dateViseIntervalBlock[property]);
     }
     console.log("array >>", array);
-    // MeterReadingTillDate.concat(array)p
     return array
   }
   catch (error) {

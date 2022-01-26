@@ -392,8 +392,8 @@ exports.intervalBlockFunction = async function (req, res) {
     let response = await db.MeterReading.bulkCreate(array);
     console.log(response)
 
-    console.log("Customer intervalBlockUrl >> ", array)
-    res.status(200).send({ data: array })
+    console.log("Customer intervalBlockUrl >> ", response)
+    res.status(200).send({ data: response })
   } catch (error) {
     console.log('meterReadingAPI Error', error)
     return res.status(500).send(error)
