@@ -80,7 +80,7 @@ app.use((req, res, next) => {
 
 
 
-// meterReading()
+meterReading()
 
 // Express Routing
 app.use("/", router);
