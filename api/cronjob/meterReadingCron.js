@@ -9,6 +9,7 @@ const moment = require('moment');
 const _ = require('lodash');
 const { checkIfDateIsBetweenTwoDates, getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth } = require('../utils/utils');
 var Op = require('sequelize').Op;
+const { errorEmail } = require('../utils/email');
 require('dotenv').config()
 
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
@@ -43,9 +44,8 @@ const meterReading = () => {
                     }
                 })
 
-                let readingDate = moment().format('YYYY-MM-DD');
-
                 if (meterReading.length > 0) {
+                    let readingDate = moment().format('YYYY-MM-DD');
                     let obj = {
                         subscriptionId: tokenElement.subscriptionId,
                         usagePointId: tokenElement.usagePointId,
@@ -55,7 +55,7 @@ const meterReading = () => {
                         tokenId: tokenElement.id
                     }
                     let array = await intervalBlock(headers, obj)
-                    return array
+                    let data = await db.MeterReading.bulkCreate(array);
                 } else {
 
                     let d = new Date(),
@@ -98,6 +98,7 @@ const meterReading = () => {
                 }
 
             } catch (error) {
+                await errorEmail(`${error}`)
                 console.log('intervalBlock Error ', error)
             }
         }
