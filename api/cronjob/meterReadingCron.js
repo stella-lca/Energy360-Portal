@@ -20,7 +20,7 @@ const agent = new https.Agent({
 const meterReading = () => {
 
     cron.schedule('* * * * *', async () => {
-        console.log('running a task every two minutes');
+        console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll();
         console.log("Tokens >>", Token);
         for (let i = 0; i < Token.length; i++) {
