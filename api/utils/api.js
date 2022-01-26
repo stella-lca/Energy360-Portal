@@ -341,7 +341,7 @@ const intervalBlock = async (headers, data) => {
             dateViseIntervalBlock[date] = {
               date: date,
               KVARHReading: intervalReadingTotal,
-              tokenId: token.id,
+              tokenId: tokenId,
               KWHReading: null
             }
           } else {
