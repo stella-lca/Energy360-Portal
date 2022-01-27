@@ -14,10 +14,6 @@ require('dotenv').config()
 
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
 
-const agent = new https.Agent({
-    rejectUnauthorized: false
-})
-
 const meterReading = () => {
 
     cron.schedule('*/2 * * * *', async () => {
@@ -26,7 +22,7 @@ const meterReading = () => {
         let Env = await db.Env.findAll();
         console.log(JSON.stringify(Env, null, 2))
         let SlackHook = Env[0].SlackHook
-        let msg
+
         console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
@@ -74,7 +70,6 @@ const meterReading = () => {
                     }
 
                     console.log('weeksDates >> ', weeksDates)
-                    msg = 'array await weeksDates'
 
                     let MeterReadingTillDate = [],
                         lastWeek = false
@@ -101,16 +96,14 @@ const meterReading = () => {
                         }
                     }
                     console.log(MeterReadingTillDate)
-                    msg = 'MeterReadingTillDate'
-                    await createLogItem(SlackHook, true, 'MeterReadingTillDate', msg, JSON.stringify(MeterReadingTillDate))
+                    createLogItem(SlackHook, true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
 
                     let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
                     console.log(data)
                 }
 
             } catch (error) {
-                let msg = 'CRON ERROR'
-                await createLogItem(SlackHook, true, 'CRON ERROR', msg, error)
+                createLogItem(SlackHook, true, 'CRON ERROR', "CRON ERROR", error)
                 console.log('intervalBlock Error ', error)
             }
         }

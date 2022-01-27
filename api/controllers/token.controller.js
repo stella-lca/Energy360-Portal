@@ -28,15 +28,15 @@ const handleToken = async function (SlackHook, authCode, tokenData) {
 
     const expiryDate = moment().add(1, 'hours').format()
 
-    // var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
-    // await createLogItem(SlackHook, true, 'Token Management', msg)
+    var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
+    createLogItem(SlackHook, true, 'Token Management', msg)
 
     tokenData.expiry_date = expiryDate
     const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email, userId } = tokenData
 
     if (!access_token) {
-      // await createLogItem(SlackHook, true, 'Token Management', "Token API Don't have valid contents")
-      // return false
+      createLogItem(SlackHook, true, 'Token Management', "Token API Don't have valid contents")
+      return false
     }
 
     // Decode Coned Access Token
@@ -74,8 +74,8 @@ const handleToken = async function (SlackHook, authCode, tokenData) {
         expiry_date
       })
       console.log("token updateToken >>", status);
-      // msg = status ? 'Token updated successfully' : 'Token updating error'
-      // await createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
+      msg = status ? 'Token updated successfully' : 'Token updating error'
+      createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
 
       return token
     } else {
@@ -103,21 +103,26 @@ const handleToken = async function (SlackHook, authCode, tokenData) {
       console.log("token createToken >>", status);
       msg = status ? 'Token created successfully' : 'Token creating - Query Error'
 
-      // console.log('handleToken-token_create ===>', msg)
-      // await createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
+      console.log('handleToken-token_create ===>', msg)
+      createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
 
       return tokenData
     }
   } catch (error) {
 
-    // const errorJson = error && error.response ? error.response.data : error
-    // await createLogItem(SlackHook, false, 'Token Management', 'Token handling issue', JSON.stringify(errorJson))
+    const errorJson = error && error.response ? error.response.data : error
+    createLogItem(SlackHook, false, 'Token Management', 'Token handling issue', JSON.stringify(errorJson))
 
     return false
   }
 }
 
 exports.authenticateToken = async function (req, res) {
+
+  let Env = await db.Env.findAll();
+  console.log(JSON.stringify(Env, null, 2))
+  let SlackHook = Env[0].SlackHook
+
   try {
     //authorization code generated & sent by Utility
     const { code } = req.query
@@ -133,10 +138,6 @@ exports.authenticateToken = async function (req, res) {
       email = tokenData.email
       userId = tokenData.userId
     }
-
-    let Env = await db.Env.findAll();
-    console.log(JSON.stringify(Env, null, 2))
-    let SlackHook = Env[0].SlackHook
 
     const headers = {
       'content-type': 'application/json',
@@ -168,7 +169,7 @@ exports.authenticateToken = async function (req, res) {
       rejectUnauthorized: false
     })
 
-    // await createLogItem(SlackHook, true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
+    createLogItem(SlackHook, true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
 
     axios
       .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
@@ -178,7 +179,7 @@ exports.authenticateToken = async function (req, res) {
       .then(async response => {
         console.log('Token API Response', response.data || {})
 
-        // await createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
+        createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
 
         const { data: tokenData } = response
         console.log("tokenData >>", tokenData);
@@ -189,7 +190,7 @@ exports.authenticateToken = async function (req, res) {
         const resultData = await handleToken(SlackHook, code, tokenData)
         console.log("resultData >>", resultData);
 
-        // await createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
+        createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
 
         if (resultData && resultData.access_token) {
           res.redirect('/callback?success=true')
@@ -200,13 +201,13 @@ exports.authenticateToken = async function (req, res) {
       .catch(error => {
         console.log('Token api processing error', error)
         const errorJson = error && error.response ? error.response.data : error
-        // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
+        createLogItem(SlackHook, false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
         res.redirect('/callback?success=false')
       })
   } catch (error) {
     console.log('Catch Error', error)
     const errorJson = error && error.response ? error.response.data : error
-    // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
+    createLogItem(SlackHook, false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
     res.redirect('/callback?success=false')
   }
 }
@@ -343,8 +344,7 @@ exports.intervalBlockFunction = async function (req, res) {
     res.status(200).send({ data: response })
   } catch (error) {
     console.log('meterReadingAPI Error', error)
-    let msg = 'XMl data'
-    await createLogItem(SlackHook, true, 'MeterReadingTillDate', msg, error)
+    createLogItem(SlackHook, true, 'intervalBlockFunction', "meterReadingAPI Error", error)
     return res.status(500).send(error)
     // res.redirect('/callback?success=false')
   }
