@@ -28,15 +28,15 @@ const handleToken = async function (SlackHook, authCode, tokenData) {
 
     const expiryDate = moment().add(1, 'hours').format()
 
-    var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
-    await createLogItem(SlackHook, true, 'Token Management', msg)
+    // var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
+    // await createLogItem(SlackHook, true, 'Token Management', msg)
 
     tokenData.expiry_date = expiryDate
     const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email, userId } = tokenData
 
     if (!access_token) {
-      await createLogItem(SlackHook, true, 'Token Management', "Token API Don't have valid contents")
-      return false
+      // await createLogItem(SlackHook, true, 'Token Management', "Token API Don't have valid contents")
+      // return false
     }
 
     // Decode Coned Access Token
@@ -74,8 +74,8 @@ const handleToken = async function (SlackHook, authCode, tokenData) {
         expiry_date
       })
       console.log("token updateToken >>", status);
-      msg = status ? 'Token updated successfully' : 'Token updating error'
-      await createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
+      // msg = status ? 'Token updated successfully' : 'Token updating error'
+      // await createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
 
       return token
     } else {
@@ -103,15 +103,15 @@ const handleToken = async function (SlackHook, authCode, tokenData) {
       console.log("token createToken >>", status);
       msg = status ? 'Token created successfully' : 'Token creating - Query Error'
 
-      console.log('handleToken-token_create ===>', msg)
-      await createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
+      // console.log('handleToken-token_create ===>', msg)
+      // await createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
 
       return tokenData
     }
   } catch (error) {
 
-    const errorJson = error && error.response ? error.response.data : error
-    await createLogItem(SlackHook, false, 'Token Management', 'Token handling issue', JSON.stringify(errorJson))
+    // const errorJson = error && error.response ? error.response.data : error
+    // await createLogItem(SlackHook, false, 'Token Management', 'Token handling issue', JSON.stringify(errorJson))
 
     return false
   }
@@ -168,7 +168,7 @@ exports.authenticateToken = async function (req, res) {
       rejectUnauthorized: false
     })
 
-    await createLogItem(SlackHook, true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
+    // await createLogItem(SlackHook, true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
 
     axios
       .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
@@ -178,7 +178,7 @@ exports.authenticateToken = async function (req, res) {
       .then(async response => {
         console.log('Token API Response', response.data || {})
 
-        await createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
+        // await createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
 
         const { data: tokenData } = response
         console.log("tokenData >>", tokenData);
@@ -189,7 +189,7 @@ exports.authenticateToken = async function (req, res) {
         const resultData = await handleToken(SlackHook, code, tokenData)
         console.log("resultData >>", resultData);
 
-        await createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
+        // await createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
 
         if (resultData && resultData.access_token) {
           res.redirect('/callback?success=true')
