@@ -9,7 +9,6 @@ const moment = require('moment');
 const _ = require('lodash');
 const { checkIfDateIsBetweenTwoDates, getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth } = require('../utils/utils');
 var Op = require('sequelize').Op;
-const { errorEmail } = require('../utils/email');
 require('dotenv').config()
 const momentTZ = require('moment-timezone');
 
@@ -25,10 +24,16 @@ const meterReading = () => {
     cron.schedule('* * * * *', async () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll();
+        let Env = await db.Env.findAll();
+        console.log(JSON.stringify(Env, null, 2))
+        let SlackHook = Env[0].SlackHook
+
         var sone = momentTZ.tz.guess();
         var timezone = momentTZ.tz(sone).zoneAbbr()
 
-        await errorEmail(`timeZone >> ${moment().format('ZZ') + ", " + timezone}`);
+        let msg = 'Azure TimeZone'
+        createLogItem(SlackHook, true, 'Time Zone', msg, moment().format('ZZ') + ", " + timezone)
+
         console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
@@ -74,8 +79,10 @@ const meterReading = () => {
                         let array = getWeeksStartAndEndInMonth(element, year, "monday");
                         weeksDates = weeksDates.concat(array)
                     }
+
                     console.log('weeksDates >> ', weeksDates)
-                    await errorEmail(`array await weeksDates >> ${JSON.stringify(weeksDates)}`);
+                    msg = 'array await weeksDates'
+                    createLogItem(SlackHook, true, 'Week Dates', msg, JSON.stringify(weeksDates))
 
                     let MeterReadingTillDate = [],
                         lastWeek = false
@@ -102,14 +109,16 @@ const meterReading = () => {
                         }
                     }
                     console.log(MeterReadingTillDate)
-                    await errorEmail(`MeterReadingTillDate >> ${JSON.stringify(MeterReadingTillDate)}`);
+                    msg = 'MeterReadingTillDate'
+                    createLogItem(SlackHook, true, 'MeterReadingTillDate', msg, JSON.stringify(MeterReadingTillDate))
 
                     let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
                     console.log(data)
                 }
 
             } catch (error) {
-                await errorEmail(`CRON ERROR >> ${error}`)
+                let msg = 'CRON ERROR'
+                createLogItem(SlackHook, true, 'CRON ERROR', msg, error)
                 console.log('intervalBlock Error ', error)
             }
         }
