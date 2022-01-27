@@ -150,13 +150,20 @@ exports.sendNotifyEmail = async ({ to, subject, content, callback }) => {
 };
 
 const setEmailConfig = async (data) => {
-
+	let testAccount = await nodemailer.createTestAccount();
 	return nodemailer.createTransport({
-		service: 'gmail',
+		// service: 'gmail',
+		// auth: {
+		// 	user: 'shreehariji.test1@gmail.com',
+		// 	pass: 'bmoiwbqgcyvxuhmk'
+		// }
+		host: "smtp.ethereal.email",
+		port: 587,
+		secure: false, // true for 465, false for other ports
 		auth: {
-			user: 'shreehariji.test1@gmail.com',
-			pass: 'bmoiwbqgcyvxuhmk'
-		}
+			user: testAccount.user, // generated ethereal user
+			pass: testAccount.pass, // generated ethereal password
+		},
 	});
 
 }
@@ -177,6 +184,7 @@ const sendEmail = async (data, mailOptions) => {
 			transporter.sendMail(mailOptions, function (error, info) {
 				if (error) {
 					console.log(error);
+					console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 					reject(error)
 				} else {
 					console.log('Email sent: ' + info.response);
