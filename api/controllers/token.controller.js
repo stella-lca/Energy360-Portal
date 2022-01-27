@@ -21,7 +21,7 @@ const xml2jsObj = require('xml-js');
 
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_JWT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
 
-const handleToken = async function (SlackHook, authCode, tokenData) {
+const handleToken = async function (authCode, tokenData) {
   try {
     console.log("handleToken Call", authCode)
     let token = await findByToken(authCode)
@@ -29,13 +29,13 @@ const handleToken = async function (SlackHook, authCode, tokenData) {
     const expiryDate = moment().add(1, 'hours').format()
 
     var msg = token !== undefined && token ? 'Token already existed' : 'Creating new token'
-    createLogItem(SlackHook, true, 'Token Management', msg)
+    // createLogItem(true, 'Token Management', msg)
 
     tokenData.expiry_date = expiryDate
     const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email, userId } = tokenData
 
     if (!access_token) {
-      createLogItem(SlackHook, true, 'Token Management', "Token API Don't have valid contents")
+      // createLogItem(true, 'Token Management', "Token API Don't have valid contents")
       return false
     }
 
@@ -75,7 +75,7 @@ const handleToken = async function (SlackHook, authCode, tokenData) {
       })
       console.log("token updateToken >>", status);
       msg = status ? 'Token updated successfully' : 'Token updating error'
-      createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
+      // createLogItem(true, 'Token Management', msg, JSON.stringify(token))
 
       return token
     } else {
@@ -104,25 +104,21 @@ const handleToken = async function (SlackHook, authCode, tokenData) {
       msg = status ? 'Token created successfully' : 'Token creating - Query Error'
 
       console.log('handleToken-token_create ===>', msg)
-      createLogItem(SlackHook, true, 'Token Management', msg, JSON.stringify(token))
+      // createLogItem(true, 'Token Management', msg, JSON.stringify(token))
 
       return tokenData
     }
   } catch (error) {
-
+    console.log('handleToken-error ===>', error)
+    console.log('handleToken-error.response ===>', error.response)
     const errorJson = error && error.response ? error.response.data : error
-    createLogItem(SlackHook, false, 'Token Management', 'Token handling issue', JSON.stringify(errorJson))
+    // createLogItem(false, 'Token Management', 'Token handling issue', JSON.stringify(errorJson))
 
     return false
   }
 }
 
 exports.authenticateToken = async function (req, res) {
-
-  let Env = await db.Env.findAll();
-  console.log(JSON.stringify(Env, null, 2))
-  let SlackHook = Env[0].SlackHook
-
   try {
     //authorization code generated & sent by Utility
     const { code } = req.query
@@ -169,7 +165,7 @@ exports.authenticateToken = async function (req, res) {
       rejectUnauthorized: false
     })
 
-    createLogItem(SlackHook, true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
+    // createLogItem(true, 'Requesting token create API', 'TOKEN CREATE API', JSON.stringify({ headers, data }))
 
     axios
       .post('https://api.coned.com/gbc/v1/oauth/v1/Token', data, {
@@ -179,7 +175,7 @@ exports.authenticateToken = async function (req, res) {
       .then(async response => {
         console.log('Token API Response', response.data || {})
 
-        createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
+        // createLogItem(true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
 
         const { data: tokenData } = response
         console.log("tokenData >>", tokenData);
@@ -187,10 +183,10 @@ exports.authenticateToken = async function (req, res) {
         tokenData.email = email
         tokenData.userId = userId
 
-        const resultData = await handleToken(SlackHook, code, tokenData)
+        const resultData = await handleToken(code, tokenData)
         console.log("resultData >>", resultData);
 
-        createLogItem(SlackHook, true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
+        // createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
 
         if (resultData && resultData.access_token) {
           res.redirect('/callback?success=true')
@@ -201,13 +197,13 @@ exports.authenticateToken = async function (req, res) {
       .catch(error => {
         console.log('Token api processing error', error)
         const errorJson = error && error.response ? error.response.data : error
-        createLogItem(SlackHook, false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
+        // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
         res.redirect('/callback?success=false')
       })
   } catch (error) {
     console.log('Catch Error', error)
     const errorJson = error && error.response ? error.response.data : error
-    createLogItem(SlackHook, false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
+    // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
     res.redirect('/callback?success=false')
   }
 }
@@ -307,11 +303,11 @@ exports.intervalBlockApi = async function (req, res) {
 }
 
 exports.intervalBlockFunction = async function (req, res) {
-  let Env = await db.Env.findAll();
-  let SlackHook = Env[0].SlackHook
   try {
     //authorization code generated & sent by Utility
     const { resourceURI, minDate, maxDate } = req.query
+
+    console.log('resource URI ===> ', resourceURI);
 
     let token = await db.Token.findOne({
       where: {
@@ -320,31 +316,86 @@ exports.intervalBlockFunction = async function (req, res) {
     })
 
     let AUTH_TOKEN = await generateThirdPartyToken(token.refresh_token, token.subscriptionId)
-
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    })
     let headers = {
       'content-type': 'application/json',
       'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
       'Authorization': 'Bearer ' + AUTH_TOKEN
     }
-
-    let optionData = {
-      subscriptionId: resourceURI,
-      usagePointId: token.usagePointId,
-      meterReadingId: token.meterReadingId,
-      startDate: minDate,
-      endDate: maxDate,
-      tokenId: token.id
+    let options = {
+      timeout: 100000,
+      headers,
+      httpsAgent: agent,
+      maxContentLength: 100000000,
+      maxBodyLength: 100000000
     }
-    let intervalBlockData = await intervalBlock(SlackHook, headers, optionData)
+    let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${resourceURI}/UsagePoint/${token.usagePointId}/MeterReading/${token.meterReadingId}/IntervalBlock?publishedMin=${minDate}&publishedMax=${maxDate}`, options)
+    let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
 
-    let response = await db.MeterReading.bulkCreate(intervalBlockData);
+    let KVARH = false
+    let dateViseIntervalBlock = {}
+    let resultArray = []
+    console.log('result.feed.entry >> ', result.feed.entry);
+    if (!result.feed.entry.length) {
+      resultArray.push(result.feed.entry);
+    } else {
+      resultArray = result.feed.entry
+    }
+    for (let j = 0; j < resultArray.length; j++) {
+      const resultArrayElement = resultArray[j];
+      let links = resultArrayElement.link
+      for (let a = 0; a < links.length; a++) {
+        const linkElement = links[a];
+        if (linkElement._attributes.href.includes('KVARH')) {
+          KVARH = true
+        } else {
+          KVARH = false
+        }
+      }
+      let intervalBlocks = resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']
+
+      if (intervalBlocks.length > 0) {
+
+        for (let a = 0; a < intervalBlocks.length; a++) {
+          const intervalBlockElement = intervalBlocks[a];
+
+          let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
+
+          let intervalReading = intervalBlockElement['espi:intervalReading']
+          intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
+
+          let intervalReadingTotal = _.sum(intervalReading);
+          console.log(intervalReadingTotal);
+          let date = moment.unix(timestamp).format('YYYY-MM-DD');
+          if (KVARH) {
+            dateViseIntervalBlock[date] = {
+              date: date,
+              KVARHReading: intervalReadingTotal,
+              tokenId: token.id,
+              KWHReading: null
+            }
+          } else {
+            dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
+          }
+        }
+      }
+    }
+    console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
+    let array = []
+    for (const property in dateViseIntervalBlock) {
+      array.push(dateViseIntervalBlock[property]);
+    }
+    console.log("array >>", array);
+
+    let response = await db.MeterReading.bulkCreate(array);
     console.log(response)
 
-    console.log("Customer intervalBlockUrl >> ", response)
-    res.status(200).send({ data: response })
+    console.log("Customer intervalBlockUrl >> ", array)
+    res.status(200).send({ data: array })
   } catch (error) {
     console.log('meterReadingAPI Error', error)
-    createLogItem(SlackHook, true, 'intervalBlockFunction', "meterReadingAPI Error", error)
     return res.status(500).send(error)
     // res.redirect('/callback?success=false')
   }
