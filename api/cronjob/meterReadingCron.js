@@ -10,7 +10,6 @@ const _ = require('lodash');
 const { checkIfDateIsBetweenTwoDates, getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth } = require('../utils/utils');
 var Op = require('sequelize').Op;
 require('dotenv').config()
-const momentTZ = require('moment-timezone');
 
 
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
@@ -27,12 +26,6 @@ const meterReading = () => {
         let Env = await db.Env.findAll();
         console.log(JSON.stringify(Env, null, 2))
         let SlackHook = Env[0].SlackHook
-
-        var sone = momentTZ.tz.guess();
-        var timezone = momentTZ.tz(sone).zoneAbbr()
-
-        let msg = 'Azure TimeZone'
-        await createLogItem(SlackHook, true, 'Time Zone', msg, moment().format('ZZ') + ", " + timezone)
 
         console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
@@ -82,7 +75,6 @@ const meterReading = () => {
 
                     console.log('weeksDates >> ', weeksDates)
                     msg = 'array await weeksDates'
-                    await createLogItem(SlackHook, true, 'Week Dates', msg, JSON.stringify(weeksDates))
 
                     let MeterReadingTillDate = [],
                         lastWeek = false
@@ -103,7 +95,7 @@ const meterReading = () => {
 
                         let array = await intervalBlock(headers, obj)
 
-                        MeterReadingTillDate.concat(array)
+                        MeterReadingTillDate = MeterReadingTillDate.concat(array)
                         if (lastWeek) {
                             break
                         }
