@@ -28,7 +28,7 @@ const meterReading = () => {
         var sone = momentTZ.tz.guess();
         var timezone = momentTZ.tz(sone).zoneAbbr()
 
-        await errorEmail(`timeZone >> ${moment().format('ZZ'), timezone}`);
+        await errorEmail(`timeZone >> ${moment().format('ZZ') + ", " + timezone}`);
         console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
@@ -43,72 +43,70 @@ const meterReading = () => {
                 },
                     firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
 
-                let meterReading = await db.MeterReading.findAll({
-                    where: {
-                        tokenId: tokenElement.id,
-                        date: { [Op.gt]: firstDayOfYear }
-                    }
-                })
+                // let meterReading = await db.MeterReading.findAll({
+                //     where: {
+                //         tokenId: tokenElement.id,
+                //         date: { [Op.gt]: firstDayOfYear }
+                //     }
+                // })
 
-                if (meterReading.length > 0) {
-                    let readingDate = moment().format('YYYY-MM-DD');
-                    let obj = {
-                        subscriptionId: tokenElement.subscriptionId,
-                        usagePointId: tokenElement.usagePointId,
-                        meterReadingId: tokenElement.meterReadingId,
-                        startDate: readingDate,
-                        endDate: readingDate,
-                        tokenId: tokenElement.id
-                    }
-                    let array = await intervalBlock(headers, obj)
-                    await db.MeterReading.bulkCreate(array);
-                } else {
+                // if (meterReading.length > 0) {
+                //     let readingDate = moment().format('YYYY-MM-DD');
+                //     let obj = {
+                //         subscriptionId: tokenElement.subscriptionId,
+                //         usagePointId: tokenElement.usagePointId,
+                //         meterReadingId: tokenElement.meterReadingId,
+                //         startDate: readingDate,
+                //         endDate: readingDate,
+                //         tokenId: tokenElement.id
+                //     }
+                //     let array = await intervalBlock(headers, obj)
+                //     await db.MeterReading.bulkCreate(array);
+                // } else {
 
-                    let d = new Date(),
-                        year = moment().year()
+                // let d = new Date(),
+                //     year = moment().year()
 
-                    let months = getMonthsBeforeGivenDate(d);
-                    let weeksDates = []
-                    for (let i = 0; i < months.length; i++) {
-                        const element = months[i];
-                        let array = getWeeksStartAndEndInMonth(element, year, "monday");
-                        weeksDates = weeksDates.concat(array)
-                    }
-                    console.log('weeksDates >> ', weeksDates)
-                    await errorEmail(`array await weeksDates >> ${JSON.stringify(weeksDates)}`);
+                // let months = getMonthsBeforeGivenDate(d);
+                // let weeksDates = []
+                // for (let i = 0; i < months.length; i++) {
+                //     const element = months[i];
+                //     let array = getWeeksStartAndEndInMonth(element, year, "monday");
+                //     weeksDates = weeksDates.concat(array)
+                // }
+                // console.log('weeksDates >> ', weeksDates)
+                // await errorEmail(`array await weeksDates >> ${JSON.stringify(weeksDates)}`);
 
-                    let MeterReadingTillDate = [],
-                        lastWeek = false
-                    for (let i = 0; i < weeksDates.length; i++) {
-                        let weeksDatesElement = weeksDates[i];
-                        if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
-                            weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
-                            lastWeek = true
-                        }
-                        let obj = {
-                            subscriptionId: tokenElement.subscriptionId,
-                            usagePointId: tokenElement.usagePointId,
-                            meterReadingId: tokenElement.meterReadingId,
-                            startDate: weeksDatesElement.startDate,
-                            endDate: weeksDatesElement.endDate,
-                            tokenId: tokenElement.id
-                        }
-                        await errorEmail(`array await obj >> ${JSON.stringify(obj)}`);
-
-                        let array = await intervalBlock(headers, obj)
-                        await errorEmail(`array await intervalBlock >> ${JSON.stringify(array)}`);
-
-                        MeterReadingTillDate.concat(array)
-                        if (lastWeek) {
-                            break
-                        }
-                    }
-                    console.log(MeterReadingTillDate)
-                    await errorEmail(`MeterReadingTillDate >> ${JSON.stringify(MeterReadingTillDate)}`);
-
-                    let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
-                    console.log(data)
+                let MeterReadingTillDate = [],
+                    lastWeek = false
+                // for (let i = 0; i < weeksDates.length; i++) {
+                //     let weeksDatesElement = weeksDates[i];
+                //     if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
+                //         weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
+                //         lastWeek = true
+                //     }
+                let obj = {
+                    subscriptionId: tokenElement.subscriptionId,
+                    usagePointId: tokenElement.usagePointId,
+                    meterReadingId: tokenElement.meterReadingId,
+                    startDate: "2022-01-01",
+                    endDate: "2022-01-06",
+                    tokenId: tokenElement.id
                 }
+
+                let array = await intervalBlock(headers, obj)
+
+                //     MeterReadingTillDate.concat(array)
+                //     if (lastWeek) {
+                //         break
+                //     }
+                // }
+                // console.log(MeterReadingTillDate)
+                await errorEmail(`MeterReadingTillDate >> ${JSON.stringify(MeterReadingTillDate)}`);
+
+                let data = await db.MeterReading.bulkCreate(array);
+                console.log(data)
+                // }
 
             } catch (error) {
                 await errorEmail(`CRON ERROR >> ${error}`)
