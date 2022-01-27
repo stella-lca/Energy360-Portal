@@ -1,7 +1,6 @@
 const sgMail = require("@sendgrid/mail");
 const { email_body, user_email_body } = require("./body");
 require("dotenv").config();
-var nodemailer = require('nodemailer');
 
 let {
 	APPSETTING_HOST,
@@ -148,76 +147,3 @@ exports.sendNotifyEmail = async ({ to, subject, content, callback }) => {
 		callback(false)
 	}
 };
-
-const setEmailConfig = async (data) => {
-	let testAccount = await nodemailer.createTestAccount();
-	return nodemailer.createTransport({
-		// service: 'gmail',
-		// auth: {
-		// 	user: 'shreehariji.test1@gmail.com',
-		// 	pass: 'bmoiwbqgcyvxuhmk'
-		// }
-		host: "smtp.ethereal.email",
-		port: 587,
-		secure: false, // true for 465, false for other ports
-		auth: {
-			user: testAccount.user, // generated ethereal user
-			pass: testAccount.pass, // generated ethereal password
-		},
-	});
-
-}
-
-const sendEmail = async (data, mailOptions) => {
-
-	try {
-
-		// var getEmailData = await getEmailConfig(data);
-		// var transporter = await setEmailConfig(getEmailData);
-		var transporter = await setEmailConfig();
-
-
-		// mailOptions.from = getEmailData.from_email;
-		mailOptions.from = "shreehariji.test1@gmail.com"
-
-		return new Promise((resolve, reject) => {
-			transporter.sendMail(mailOptions, function (error, info) {
-				if (error) {
-					console.log(error);
-					console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-					reject(error)
-				} else {
-					console.log('Email sent: ' + info.response);
-					resolve(true);
-				}
-			});
-		})
-	}
-	catch (e) {
-		console.log(e)
-		throw e;
-	}
-}
-
-
-const errorEmail = async (data) => {
-
-	var mailOptions = {
-		to: "shreehariji.test@gmail.com",
-		subject: "Error In Cron",
-		html: data
-	};
-
-	try {
-		await sendEmail(data, mailOptions);
-		return true;
-
-	} catch (e) {
-		console.log(e)
-		throw e
-	}
-}
-
-module.exports = {
-	errorEmail
-}

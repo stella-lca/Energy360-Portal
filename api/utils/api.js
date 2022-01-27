@@ -7,7 +7,6 @@ const _ = require('lodash');
 const db = require('../models');
 var Op = require('sequelize').Op;
 var { getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth, checkIfDateIsBetweenTwoDates } = require('../utils/utils');
-const { errorEmail } = require('./email');
 
 var LocalStorage = require('node-localstorage').LocalStorage,
   localStorage = new LocalStorage('./scratch')
@@ -301,7 +300,7 @@ const intervalBlock = async (headers, data) => {
     }
     let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`, options)
     let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
-    // await errorEmail(`XMLDATA >> ${data}`);
+
     let KVARH = false
     let dateViseIntervalBlock = {}
     let resultArray = []
@@ -351,18 +350,16 @@ const intervalBlock = async (headers, data) => {
       }
     }
     console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
-    // await errorEmail(`dateViseIntervalBlock >> ${JSON.stringify(dateViseIntervalBlock)}`)
 
     let array = []
     for (const property in dateViseIntervalBlock) {
       array.push(dateViseIntervalBlock[property]);
     }
     console.log("array >>", array);
-    // await errorEmail(`array >> ${JSON.stringify(array)}`)
+
     return array
   }
   catch (error) {
-    // await errorEmail(`intervalBlock ERROR >> ${error}`)
     console.log('intervalBlock error =', error)
     throw error
   }
