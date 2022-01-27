@@ -168,11 +168,12 @@ exports.createLogItem = (status, url, msg, data = "") => {
 
   axios
     .post(
-      "https://hooks.slack.com/services/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",
+      "https://hooks.slack.com/services/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",
       body,
       { "content-type": "application/json" }
     )
     .then((res) => {
+      // "https://hooks.slack.com/services/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",
       console.log("log created");
     })
     .catch((err) => {
