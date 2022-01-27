@@ -93,7 +93,7 @@ const meterReading = () => {
                             tokenId: tokenElement.id
                         }
 
-                        let array = await intervalBlock(headers, obj)
+                        let array = await intervalBlock(SlackHook, headers, obj)
 
                         MeterReadingTillDate = MeterReadingTillDate.concat(array)
                         if (lastWeek) {

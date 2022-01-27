@@ -288,7 +288,7 @@ const meterReading = async (refreshToken, subscriptionId, usagePointId) => {
   }
 }
 
-const intervalBlock = async (headers, data) => {
+const intervalBlock = async (SlackHook, headers, data) => {
   let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, tokenId } = data
   try {
     let options = {
@@ -300,6 +300,10 @@ const intervalBlock = async (headers, data) => {
     }
     let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`, options)
     let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+
+    let msg = 'XMl data'
+    await createLogItem(SlackHook, true, 'MeterReadingTillDate', msg, JSON.stringify(data))
+
 
     let KVARH = false
     let dateViseIntervalBlock = {}
@@ -350,11 +354,16 @@ const intervalBlock = async (headers, data) => {
       }
     }
     console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
+    msg = 'dateViseIntervalBlock data'
+    await createLogItem(SlackHook, true, 'dateViseIntervalBlock', msg, JSON.stringify(dateViseIntervalBlock))
 
     let array = []
     for (const property in dateViseIntervalBlock) {
       array.push(dateViseIntervalBlock[property]);
     }
+
+    msg = 'array data'
+    await createLogItem(SlackHook, true, 'array', msg, JSON.stringify(array, null, 2))
     console.log("array >>", array);
 
     return array
