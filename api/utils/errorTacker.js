@@ -101,7 +101,7 @@ exports.errorTracker = (req, res, next) => {
   );
 };
 
-exports.createLogItem = (status, url, msg, data = "") => {
+exports.createLogItem = (SlackHook, status, url, msg, data = "") => {
   // console.log(status, url, msg, data)
   const body = {
     text: "GreenButton Log Created",
@@ -168,7 +168,7 @@ exports.createLogItem = (status, url, msg, data = "") => {
 
   axios
     .post(
-      "https://hooks.slack.com/services/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",
+      SlackHook,
       body,
       { "content-type": "application/json" }
     )
