@@ -20,13 +20,13 @@ const agent = new https.Agent({
 
 const meterReading = () => {
 
-    cron.schedule('* * * * *', async () => {
+    cron.schedule('*/2 * * * *', async () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll();
         let Env = await db.Env.findAll();
         console.log(JSON.stringify(Env, null, 2))
         let SlackHook = Env[0].SlackHook
-
+        let msg
         console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];

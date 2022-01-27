@@ -59,11 +59,12 @@ const getWeeksStartAndEndInMonth = (month, year, _start) => {
 	}
 
 	weeks = weeks.map(week => {
-		var _s = parseInt(week.start, 10) + 1,
-			_e = parseInt(week.end, 10) + 1,
-			startDate = new Date(year, month, _s).toJSON().slice(0, 10).split('-').reverse().join('/'),
-			endDate = new Date(year, month, _e).toJSON().slice(0, 10).split('-').reverse().join('/');
-		return { startDate: moment(startDate, 'DD/MM/YYYY').format('YYYY-MM-DD'), endDate: moment(endDate, 'DD/MM/YYYY').format('YYYY-MM-DD') }
+		var _s = parseInt(week.start, 10),
+            _e = parseInt(week.end, 10),
+            startDate = moment().year(year).month(month).date(_s).format('YYYY-MM-DD'),
+            endDate = moment().year(year).month(month).date(_e).format('YYYY-MM-DD');
+
+        return { startDate: startDate, endDate: endDate }
 	});
 
 	return weeks;
