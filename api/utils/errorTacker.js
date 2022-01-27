@@ -52,7 +52,7 @@ exports.errorTracker = (req, res, next) => {
     url: originalUrl,
     method,
     query,
-    body: _.isEmpty(body)? testBody : body,
+    body: _.isEmpty(body) ? testBody : body,
     headers,
     result,
     error,
@@ -101,7 +101,7 @@ exports.errorTracker = (req, res, next) => {
   );
 };
 
-exports.createLogItem = (SlackHook, status, url, msg, data = "") => {
+exports.createLogItem = async (SlackHook, status, url, msg, data = "") => {
   // console.log(status, url, msg, data)
   const body = {
     text: "GreenButton Log Created",
@@ -121,9 +121,8 @@ exports.createLogItem = (SlackHook, status, url, msg, data = "") => {
         elements: [
           {
             type: "mrkdwn",
-            text: `*Status:* ${
-              status ? ":white_check_mark:" : ":x:"
-            } --- ${new Date().toLocaleString()}`,
+            text: `*Status:* ${status ? ":white_check_mark:" : ":x:"
+              } --- ${new Date().toLocaleString()}`,
           },
         ],
       },
@@ -166,16 +165,18 @@ exports.createLogItem = (SlackHook, status, url, msg, data = "") => {
     ],
   };
 
-  axios
-    .post(
-      SlackHook,
-      body,
-      { "content-type": "application/json" }
-    )
-    .then((res) => {
-      console.log("log created");
-    })
-    .catch((err) => {
-      console.log("log creating error");
-    });
+  return new Promise((resolve, reject) => {
+    axios
+      .post(
+        SlackHook,
+        body,
+        { "content-type": "application/json" }
+      )
+      .then((res) => {
+        console.log("log created");
+      })
+      .catch((err) => {
+        console.log("log creating error");
+      });
+  })
 };

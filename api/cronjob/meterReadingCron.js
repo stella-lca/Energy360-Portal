@@ -32,7 +32,7 @@ const meterReading = () => {
         var timezone = momentTZ.tz(sone).zoneAbbr()
 
         let msg = 'Azure TimeZone'
-        createLogItem(SlackHook, true, 'Time Zone', msg, moment().format('ZZ') + ", " + timezone)
+        await createLogItem(SlackHook, true, 'Time Zone', msg, moment().format('ZZ') + ", " + timezone)
 
         console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
@@ -82,7 +82,7 @@ const meterReading = () => {
 
                     console.log('weeksDates >> ', weeksDates)
                     msg = 'array await weeksDates'
-                    createLogItem(SlackHook, true, 'Week Dates', msg, JSON.stringify(weeksDates))
+                    await createLogItem(SlackHook, true, 'Week Dates', msg, JSON.stringify(weeksDates))
 
                     let MeterReadingTillDate = [],
                         lastWeek = false
@@ -110,7 +110,7 @@ const meterReading = () => {
                     }
                     console.log(MeterReadingTillDate)
                     msg = 'MeterReadingTillDate'
-                    createLogItem(SlackHook, true, 'MeterReadingTillDate', msg, JSON.stringify(MeterReadingTillDate))
+                    await createLogItem(SlackHook, true, 'MeterReadingTillDate', msg, JSON.stringify(MeterReadingTillDate))
 
                     let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
                     console.log(data)
@@ -118,7 +118,7 @@ const meterReading = () => {
 
             } catch (error) {
                 let msg = 'CRON ERROR'
-                createLogItem(SlackHook, true, 'CRON ERROR', msg, error)
+                await createLogItem(SlackHook, true, 'CRON ERROR', msg, error)
                 console.log('intervalBlock Error ', error)
             }
         }
