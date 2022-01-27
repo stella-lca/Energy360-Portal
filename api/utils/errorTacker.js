@@ -101,7 +101,7 @@ exports.errorTracker = (req, res, next) => {
   );
 };
 
-exports.createLogItem = async (SlackHook, status, url, msg, data = "") => {
+exports.createLogItem = (SlackHook, status, url, msg, data = "") => {
   // console.log(status, url, msg, data)
   const body = {
     text: "GreenButton Log Created",
@@ -165,18 +165,17 @@ exports.createLogItem = async (SlackHook, status, url, msg, data = "") => {
     ],
   };
 
-  return new Promise((resolve, reject) => {
-    axios
-      .post(
-        SlackHook,
-        body,
-        { "content-type": "application/json" }
-      )
-      .then((res) => {
-        console.log("log created");
-      })
-      .catch((err) => {
-        console.log("log creating error");
-      });
-  })
+  axios
+    .post(
+      SlackHook,
+      body,
+      { "content-type": "application/json" }
+    )
+    .then((res) => {
+      console.log("log created");
+    })
+    .catch((err) => {
+      console.log("log creating error");
+    });
+
 };
