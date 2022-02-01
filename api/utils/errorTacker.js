@@ -4,8 +4,10 @@ const moment = require("moment");
 const { sendNotifyEmail } = require("./email");
 const uniqueString = require("unique-string");
 const _ = require("lodash");
+const db = require("../models");
 require("dotenv").config();
 let { APPSETTING_HOST } = process.env;
+var SlackHookUrl = '';
 
 exports.addLog = (text, json, error) => {
   module.exports.errorTracker({
@@ -101,7 +103,7 @@ exports.errorTracker = (req, res, next) => {
   );
 };
 
-exports.createLogItem = (SlackHook, status, url, msg, data = "") => {
+exports.createLogItem = (status, url, msg, data = "") => {
   // console.log(status, url, msg, data)
   const body = {
     text: "GreenButton Log Created",
@@ -167,7 +169,7 @@ exports.createLogItem = (SlackHook, status, url, msg, data = "") => {
 
   axios
     .post(
-      SlackHook,
+      SlackHookUrl,
       body,
       { "content-type": "application/json" }
     )
@@ -179,3 +181,10 @@ exports.createLogItem = (SlackHook, status, url, msg, data = "") => {
     });
 
 };
+
+
+exports.EnvCall = async function (req, res) {
+  let Env = await db.Env.findAll();
+  console.log(JSON.stringify(Env, null, 2))
+  SlackHookUrl = Env[0].SlackHook
+}

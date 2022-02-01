@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const cors = require("cors");
 const app = express();
-const { errorTracker } = require("./api/utils/errorTacker");
+const { errorTracker, EnvCall } = require("./api/utils/errorTacker");
 require("dotenv").config();
 const session = require('express-session');
 
@@ -20,9 +20,10 @@ const db_sync = () => {
 	db.sequelize
 		.sync()
 		// .sync({ alter: true })
-		.then(msg => {
+		.then(async msg => {
 			console.log("DB connected successfully!");
 			dbState.status = true;
+			await EnvCall()
 		})
 		.catch(err => {
 			console.log("Datbase connection error!!!!", err);
@@ -80,7 +81,7 @@ app.use((req, res, next) => {
 
 
 
-//meterReading()
+meterReading()
 
 // Express Routing
 app.use("/", router);
