@@ -19,9 +19,6 @@ const meterReading = () => {
     cron.schedule('*/2 * * * *', async () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll();
-        let Env = await db.Env.findAll();
-        console.log(JSON.stringify(Env, null, 2))
-        let SlackHook = Env[0].SlackHook
 
         console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
@@ -88,7 +85,7 @@ const meterReading = () => {
                             tokenId: tokenElement.id
                         }
 
-                        let array = await intervalBlock(SlackHook, headers, obj)
+                        let array = await intervalBlock(headers, obj)
 
                         MeterReadingTillDate = MeterReadingTillDate.concat(array)
                         if (lastWeek) {
@@ -96,14 +93,14 @@ const meterReading = () => {
                         }
                     }
                     console.log(MeterReadingTillDate)
-                    createLogItem(SlackHook, true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
+                    createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
 
                     let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
                     console.log(data)
                 }
 
             } catch (error) {
-                createLogItem(SlackHook, true, 'CRON ERROR', "CRON ERROR", error)
+                createLogItem(true, 'CRON ERROR', "CRON ERROR", error)
                 console.log('intervalBlock Error ', error)
             }
         }
