@@ -67,6 +67,7 @@ const meterReading = () => {
                     }
 
                     console.log('weeksDates >> ', weeksDates)
+                    createLogItem(true, 'weeksDates', "weeksDates List", JSON.stringify(MeterReadingTillDate))
 
                     let MeterReadingTillDate = [],
                         lastWeek = false
@@ -75,13 +76,14 @@ const meterReading = () => {
                         if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
                             weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
                             lastWeek = true
+                            createLogItem(true, 'weeksDatesElement', "Data For weeksDatesElement", `${JSON.stringify(MeterReadingTillDate)}, lastWeek = ${lastWeek}`)
                         }
                         let obj = {
                             subscriptionId: tokenElement.subscriptionId,
                             usagePointId: tokenElement.usagePointId,
                             meterReadingId: tokenElement.meterReadingId,
-                            startDate: "2022-01-01",
-                            endDate: "2022-01-06",
+                            startDate: weeksDatesElement.startDate,
+                            endDate: weeksDatesElement.endDate,
                             tokenId: tokenElement.id
                         }
 
@@ -89,6 +91,7 @@ const meterReading = () => {
 
                         MeterReadingTillDate = MeterReadingTillDate.concat(array)
                         if (lastWeek) {
+                            createLogItem(true, 'LastWeek', "weeksDatesElement Last Week", `${JSON.stringify(MeterReadingTillDate)}, lastWeek = ${lastWeek}`)
                             break
                         }
                     }
