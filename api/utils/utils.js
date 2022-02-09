@@ -16,7 +16,7 @@ const findNestedObj = (entireObj, keyToFind) => {
  * @param {*} month number
  * @param {*} year number
  * @param {*} _start monday
- * @returns 
+ * @returns array of objects with start and and date of weeks of given month
  */
 
 const getWeeksStartAndEndInMonth = (month, year, _start) => {
@@ -60,11 +60,15 @@ const getWeeksStartAndEndInMonth = (month, year, _start) => {
 
 	weeks = weeks.map(week => {
 		var _s = parseInt(week.start, 10),
-            _e = parseInt(week.end, 10),
-            startDate = moment().year(year).month(month).date(_s).format('YYYY-MM-DD'),
-            endDate = moment().year(year).month(month).date(_e).format('YYYY-MM-DD');
+			_e = parseInt(week.end, 10),
+			startDate = moment().year(year).month(month).date(_s).format('YYYY-MM-DD'),
+			endDate = moment().year(year).month(month).date(_e).format('YYYY-MM-DD');
 
-        return { startDate: startDate, endDate: endDate }
+		if (startDate == endDate) {
+			startDate = subtractDay(endDate)
+		}
+
+		return { startDate: startDate, endDate: endDate }
 	});
 
 	return weeks;
@@ -107,9 +111,35 @@ const checkIfDateIsBetweenTwoDates = (currentDate, datesObj) => {
 	}
 }
 
+const subtractDay = (date) => {
+	date = moment(date);
+	date = date.subtract(1, "days").format("YYYY-MM-DD");
+	return date
+}
+/**
+ * 
+ * @param {*} array1 
+ * @param {*} array2 
+ * @returns object from array2 which is only present in array2 
+ */
+const comparerArray = (array1, array2) => {
+	function comparer(otherArray) {
+		return function (current) {
+			return otherArray.filter(function (other) {
+				return other.date == current.date
+			}).length == 0;
+		}
+	}
+
+	var onlyInArray2 = array2.filter(comparer(array1));
+	return onlyInArray2
+}
+
 module.exports = {
 	findNestedObj,
 	getWeeksStartAndEndInMonth,
 	getMonthsBeforeGivenDate,
-	checkIfDateIsBetweenTwoDates
+	checkIfDateIsBetweenTwoDates,
+	subtractDay,
+	comparerArray
 }
