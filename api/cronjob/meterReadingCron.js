@@ -57,7 +57,7 @@ const meterReading = () => {
 
                     let todayReading = meterReading.filter(e => e.date === readingEndDate)
                     let intervalBlockData = await intervalBlock(headers, obj)
-                    if (todayReading && todayReading.length <= 0) {
+                    if (todayReading && todayReading.length < 0) {
                         let intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate)
                         await db.MeterReading.create(intervalBlockToday[0]);
                     }
