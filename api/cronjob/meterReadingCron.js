@@ -7,7 +7,7 @@ const { addLog, createLogItem } = require('../utils/errorTacker');
 const xml2jsObj = require('xml-js');
 const moment = require('moment');
 const _ = require('lodash');
-const { checkIfDateIsBetweenTwoDates, getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth } = require('../utils/utils');
+const { checkIfDateIsBetweenTwoDates, getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth, subtractDay, comparerArray } = require('../utils/utils');
 var Op = require('sequelize').Op;
 require('dotenv').config()
 
@@ -42,17 +42,25 @@ const meterReading = () => {
                 })
 
                 if (meterReading.length > 0) {
-                    let readingDate = moment().format('YYYY-MM-DD');
+
+                    let readingEndDate = moment().format('YYYY-MM-DD');
+                    let readingStartDate = subtractDay(readingEndDate)
+
                     let obj = {
                         subscriptionId: tokenElement.subscriptionId,
                         usagePointId: tokenElement.usagePointId,
                         meterReadingId: tokenElement.meterReadingId,
-                        startDate: readingDate,
-                        endDate: readingDate,
+                        startDate: readingStartDate,
+                        endDate: readingEndDate,
                         tokenId: tokenElement.id
                     }
-                    let array = await intervalBlock(headers, obj)
-                    await db.MeterReading.bulkCreate(array);
+
+                    let todayReading = meterReading.filter(e => e.date === readingEndDate)
+                    let intervalBlockData = await intervalBlock(headers, obj)
+                    if (todayReading && todayReading.length <= 0) {
+                        let intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate)
+                        await db.MeterReading.create(intervalBlockToday[0]);
+                    }
                 } else {
 
                     let d = new Date(),
@@ -67,7 +75,7 @@ const meterReading = () => {
                     }
 
                     console.log('weeksDates >> ', weeksDates)
-                    createLogItem(true, 'weeksDates', "weeksDates List", JSON.stringify(MeterReadingTillDate))
+                    createLogItem(true, 'weeksDates', "weeksDates List", JSON.stringify(weeksDates))
 
                     let MeterReadingTillDate = [],
                         lastWeek = false
@@ -75,6 +83,9 @@ const meterReading = () => {
                         let weeksDatesElement = weeksDates[i];
                         if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
                             weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
+                            if (weeksDatesElement.startDate == weeksDatesElement.endDate) {
+                                weeksDatesElement.startDate = subtractDay(weeksDatesElement.endDate)
+                            }
                             lastWeek = true
                             createLogItem(true, 'weeksDatesElement', "Data For weeksDatesElement", `${JSON.stringify(MeterReadingTillDate)}, lastWeek = ${lastWeek}`)
                         }
@@ -88,6 +99,7 @@ const meterReading = () => {
                         }
 
                         let array = await intervalBlock(headers, obj)
+                        array = comparerArray(MeterReadingTillDate, array)
 
                         MeterReadingTillDate = MeterReadingTillDate.concat(array)
                         if (lastWeek) {
