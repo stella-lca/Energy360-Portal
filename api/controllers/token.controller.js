@@ -100,6 +100,8 @@ const handleToken = async function (authCode, tokenData) {
         accountNumber,
         expiry_date
       })
+
+      await db.Meter.create({ userId, conedSub, conedAddress, meterAccountId })
       console.log("token createToken >>", status);
       msg = status ? 'Token created successfully' : 'Token creating - Query Error'
 

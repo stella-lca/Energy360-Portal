@@ -56,10 +56,17 @@ const meterReading = () => {
                     }
 
                     let todayReading = meterReading.filter(e => e.date === readingEndDate)
+                    let yesterdayReading = meterReading.filter(e => e.date === readingStartDate)
+
                     let intervalBlockData = await intervalBlock(headers, obj)
-                    if (todayReading && todayReading.length < 0) {
-                        let intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate)
-                        await db.MeterReading.create(intervalBlockToday[0]);
+                    if (todayReading && todayReading.length < 0 || yesterdayReading && yesterdayReading.length < 0) {
+                        let intervalBlockToday
+                        if (yesterdayReading.length > 0) {
+                            intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate)
+                        } else {
+                            intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate || e.date == readingStartDate)
+                        }
+                        await db.MeterReading.bulkCreate(intervalBlockToday);
                     }
                 } else {
 
@@ -75,7 +82,6 @@ const meterReading = () => {
                     }
 
                     console.log('weeksDates >> ', weeksDates)
-                    createLogItem(true, 'weeksDates', "weeksDates List", JSON.stringify(weeksDates))
 
                     let MeterReadingTillDate = [],
                         lastWeek = false
@@ -87,7 +93,6 @@ const meterReading = () => {
                                 weeksDatesElement.startDate = subtractDay(weeksDatesElement.endDate)
                             }
                             lastWeek = true
-                            createLogItem(true, 'weeksDatesElement', "Data For weeksDatesElement", `${JSON.stringify(MeterReadingTillDate)}, lastWeek = ${lastWeek}`)
                         }
                         let obj = {
                             subscriptionId: tokenElement.subscriptionId,
@@ -103,7 +108,6 @@ const meterReading = () => {
 
                         MeterReadingTillDate = MeterReadingTillDate.concat(array)
                         if (lastWeek) {
-                            createLogItem(true, 'LastWeek', "weeksDatesElement Last Week", `${JSON.stringify(MeterReadingTillDate)}, lastWeek = ${lastWeek}`)
                             break
                         }
                     }
@@ -111,7 +115,7 @@ const meterReading = () => {
                     createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
 
                     let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
-                    console.log(data)
+                    console.log("Data 111 >>> ", data)
                 }
 
             } catch (error) {
@@ -119,6 +123,9 @@ const meterReading = () => {
                 console.log('intervalBlock Error ', error)
             }
         }
+    }, {
+        scheduled: true,
+        timezone: "America/New_York"
     });
 }
 
