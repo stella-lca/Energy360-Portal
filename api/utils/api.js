@@ -324,12 +324,19 @@ const intervalBlock = async (headers, data) => {
           KVARH = false
         }
       }
+
+      let intervalBlocksArray = []
       let intervalBlocks = resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']
+      if (!Array.isArray(intervalBlocks)) {
+        intervalBlocksArray.push(intervalBlocks)
+      } else {
+        intervalBlocksArray = intervalBlocks
+      }
 
-      if (intervalBlocks.length > 0) {
+      if (intervalBlocksArray.length > 0) {
 
-        for (let a = 0; a < intervalBlocks.length; a++) {
-          const intervalBlockElement = intervalBlocks[a];
+        for (let a = 0; a < intervalBlocksArray.length; a++) {
+          const intervalBlockElement = intervalBlocksArray[a];
 
           let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
 
