@@ -59,14 +59,16 @@ const meterReading = () => {
                     let yesterdayReading = meterReading.filter(e => e.date === readingStartDate)
 
                     let intervalBlockData = await intervalBlock(headers, obj)
-                    if (todayReading && todayReading.length < 0 || yesterdayReading && yesterdayReading.length < 0) {
+                    if (todayReading && todayReading.length === 0 || yesterdayReading && yesterdayReading.length === 0) {
                         let intervalBlockToday
                         if (yesterdayReading.length > 0) {
                             intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate)
                         } else {
                             intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate || e.date == readingStartDate)
                         }
-                        await db.MeterReading.bulkCreate(intervalBlockToday);
+                        let data = await db.MeterReading.bulkCreate(intervalBlockToday);
+                        createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
+
                     }
                 } else {
 
