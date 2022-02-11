@@ -35,6 +35,7 @@ db.Log = sequelize.import('./log.model');
 db.MeterReading = sequelize.import('./meterReading.model');
 db.Env = sequelize.import('./env.model');
 db.Meter = sequelize.import('./meter.model');
+db.MeterCronError = sequelize.import('./meterCronError.model');
 
 db.User.hasOne(db.Token, { onDelete: "cascade", foreignKey: 'userId' })
 db.Token.hasMany(db.MeterReading, { onDelete: "cascade", foreignKey: 'tokenId' })

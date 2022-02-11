@@ -122,7 +122,7 @@ const meterReading = () => {
                 }
 
             } catch (error) {
-                createLogItem(true, 'CRON ERROR', "CRON ERROR", error)
+                // createLogItem(true, 'CRON ERROR', "CRON ERROR", error)
                 console.log('intervalBlock Error ', error)
             }
         }
