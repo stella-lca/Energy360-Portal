@@ -301,8 +301,6 @@ const intervalBlock = async (headers, data) => {
     let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`, options)
     let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
 
-    createLogItem(true, 'intervalBlock Function', "XMl data", JSON.stringify(data))
-
 
     let KVARH = false
     let dateViseIntervalBlock = {}
@@ -361,14 +359,10 @@ const intervalBlock = async (headers, data) => {
     }
     console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
 
-    createLogItem(true, 'dateViseIntervalBlock', "dateViseIntervalBlock data", JSON.stringify(dateViseIntervalBlock))
-
     let array = []
     for (const property in dateViseIntervalBlock) {
       array.push(dateViseIntervalBlock[property]);
     }
-
-    createLogItem(true, 'array', "array data", JSON.stringify(array, null, 2))
     console.log("array >>", array);
 
     return array

@@ -66,9 +66,10 @@ const meterReading = () => {
                         } else {
                             intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate || e.date == readingStartDate)
                         }
-                        let data = await db.MeterReading.bulkCreate(intervalBlockToday);
-                        createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
-
+                        if (intervalBlockToday.length > 0) {
+                            let data = await db.MeterReading.bulkCreate(intervalBlockToday);
+                            createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
+                        }
                     }
                 } else {
 
@@ -121,7 +122,7 @@ const meterReading = () => {
                 }
 
             } catch (error) {
-                createLogItem(true, 'CRON ERROR', "CRON ERROR", error)
+                // createLogItem(true, 'CRON ERROR', "CRON ERROR", error)
                 console.log('intervalBlock Error ', error)
             }
         }
