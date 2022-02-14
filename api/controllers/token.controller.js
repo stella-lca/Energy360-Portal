@@ -18,7 +18,6 @@ const {
 } = require('../models')
 const QueryTypes = require('sequelize').QueryTypes
 const xml2jsObj = require('xml-js');
-const { meterErrorDataInput } = require('../cronjob/meterReadingCron')
 
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_JWT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
 
@@ -120,16 +119,6 @@ const handleToken = async function (authCode, tokenData) {
     // createLogItem(false, 'Token Management', 'Token handling issue', JSON.stringify(errorJson))
 
     return false
-  }
-}
-
-exports.MeterErrorCron = async function (req, res) {
-  try {
-    let data = await meterErrorDataInput()
-    return res.json({ data })
-
-  } catch (error) {
-    return res.json(error)
   }
 }
 
