@@ -168,6 +168,7 @@ const meterErrorDataInput = async () => {
                     if (intervalBlockToday.length > 0) {
                         let data = await db.MeterReading.bulkCreate(intervalBlockToday);
                         createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
+                        return data
                     }
                 }
             }
@@ -186,6 +187,7 @@ const meterErrorDataInput = async () => {
                 }
                 await db.MeterCronError.create(payload)
             }
+            throw error
         }
     }
 }

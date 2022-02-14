@@ -124,8 +124,13 @@ const handleToken = async function (authCode, tokenData) {
 }
 
 exports.MeterErrorCron = async function (req, res) {
-  let data = await meterErrorDataInput()
-  return res.json({ data })
+  try {
+    let data = await meterErrorDataInput()
+    return res.json({ data })
+
+  } catch (error) {
+    return res.json(error)
+  }
 }
 
 exports.authenticateToken = async function (req, res) {
