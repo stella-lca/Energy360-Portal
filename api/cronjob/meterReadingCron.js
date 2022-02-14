@@ -168,27 +168,17 @@ const meterErrorDataInput = async () => {
                         }
                         if (intervalBlockToday.length > 0) {
                             let data = await db.MeterReading.bulkCreate(intervalBlockToday);
+                            await db.MeterCronError.delete({
+                                where: { tokenId: token.id, maxDate: meterErrorElement.maxDate, minDate: meterErrorElement.minDate }
+                            })
                             createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
                             return data
                         }
                     }
                 }
-
             } catch (error) {
                 createLogItem(true, 'Error in error data input', "Error in error data input cron", error)
                 console.log('Cron Error ', error)
-                if (error.payload) {
-                    let payload = {
-                        errorMessage: error?.error?.message, tokenId: error.payload.tokenId, minDate: error.payload.startDate, maxDate: error.payload.endDate
-                    }
-                    await db.MeterCronError.create(payload)
-                } else {
-                    let payload = {
-                        errorMessage: error?.message, tokenId: token.id, minDate: meterErrorElement.minDate, maxDate: meterErrorElement.maxDate
-                    }
-                    await db.MeterCronError.create(payload)
-                }
-                throw error
             }
         }
     }
