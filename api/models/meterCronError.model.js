@@ -7,9 +7,13 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             field: "errorMessage"
         },
-        tokeId: {
-            type: DataTypes.STRING,
-            field: "tokeId"
+        tokenId: {
+            type: DataTypes.INTEGER(),
+            field: "tokenId",
+            references: {
+                model: 'GCEP_Tokens',
+                key: 'id'
+            }
         },
         minDate: {
             type: DataTypes.STRING,

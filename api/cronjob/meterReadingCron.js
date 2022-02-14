@@ -1,26 +1,24 @@
 const cron = require('node-cron');
 var db = require('../models')
 const { generateThirdPartyToken, intervalBlock } = require('../utils/api')
-const axios = require('axios')
-const https = require('https')
-const { addLog, createLogItem } = require('../utils/errorTacker');
-const xml2jsObj = require('xml-js');
+const { createLogItem } = require('../utils/errorTacker');
 const moment = require('moment');
-const _ = require('lodash');
-const { checkIfDateIsBetweenTwoDates, getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth, subtractDay, comparerArray } = require('../utils/utils');
+const { subtractDay, comparerArray, weekDatesArrayTillToday } = require('../utils/utils');
+const { sequelize } = require('../models');
 var Op = require('sequelize').Op;
 require('dotenv').config()
 
-
-const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
+const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const meterReading = () => {
 
-    cron.schedule('*/2 * * * *', async () => {
+    cron.schedule('45 23 * * *', async () => {
         console.log('running a task every two minutes  ');
-        let Token = await db.Token.findAll();
+        let Token = await db.Token.findAll(),
+            readingEndDate = moment().format('YYYY-MM-DD'),
+            d = new Date(),
+            year = moment().year()
 
-        console.log("Tokens >>", JSON.stringify(Token));
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
 
@@ -43,7 +41,6 @@ const meterReading = () => {
 
                 if (meterReading.length > 0) {
 
-                    let readingEndDate = moment().format('YYYY-MM-DD');
                     let readingStartDate = subtractDay(readingEndDate)
 
                     let obj = {
@@ -72,31 +69,12 @@ const meterReading = () => {
                         }
                     }
                 } else {
+                    let weeksDates = weekDatesArrayTillToday(d, year),
+                        MeterReadingTillDate = []
 
-                    let d = new Date(),
-                        year = moment().year()
-
-                    let months = getMonthsBeforeGivenDate(d);
-                    let weeksDates = []
-                    for (let i = 0; i < months.length; i++) {
-                        const element = months[i];
-                        let array = getWeeksStartAndEndInMonth(element, year, "monday");
-                        weeksDates = weeksDates.concat(array)
-                    }
-
-                    console.log('weeksDates >> ', weeksDates)
-
-                    let MeterReadingTillDate = [],
-                        lastWeek = false
                     for (let i = 0; i < weeksDates.length; i++) {
                         let weeksDatesElement = weeksDates[i];
-                        if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
-                            weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
-                            if (weeksDatesElement.startDate == weeksDatesElement.endDate) {
-                                weeksDatesElement.startDate = subtractDay(weeksDatesElement.endDate)
-                            }
-                            lastWeek = true
-                        }
+
                         let obj = {
                             subscriptionId: tokenElement.subscriptionId,
                             usagePointId: tokenElement.usagePointId,
@@ -107,23 +85,26 @@ const meterReading = () => {
                         }
 
                         let array = await intervalBlock(headers, obj)
-                        array = comparerArray(MeterReadingTillDate, array)
+                        array = comparerArray(MeterReadingTillDate, array)     // compare and return unique object from second array 
 
                         MeterReadingTillDate = MeterReadingTillDate.concat(array)
-                        if (lastWeek) {
-                            break
-                        }
                     }
                     console.log(MeterReadingTillDate)
                     createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
 
                     let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
-                    console.log("Data 111 >>> ", data)
+                    console.log("MeterReading BulkCreate >>> ", data)
                 }
 
             } catch (error) {
-                // createLogItem(true, 'CRON ERROR', "CRON ERROR", error)
-                console.log('intervalBlock Error ', error)
+                createLogItem(true, 'CRON ERROR', "error in cron", error)
+                console.log('Cron Error ', error)
+                if (error.payload) {
+                    let payload = {
+                        errorMessage: error?.error?.message, tokenId: error.payload.tokenId, minDate: error.payload.startDate, maxDate: error.payload.endDate
+                    }
+                    await db.MeterCronError.create(payload)
+                }
             }
         }
     }, {
@@ -132,6 +113,87 @@ const meterReading = () => {
     });
 }
 
+const meterErrorDataInput = async () => {
+    let tokens = await db.Token.findAll({
+        include: {
+            model: db.MeterCronError, where: {
+                tokenId: { [Op.ne]: null }
+            }
+        }
+    })
+
+    for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        const meterError = token.GCEP_MeterCronErrors;
+
+        try {
+            let AUTH_TOKEN = await generateThirdPartyToken(token.refresh_token, token.subscriptionId)
+
+            let headers = {
+                'content-type': 'application/json',
+                'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
+                'Authorization': 'Bearer ' + AUTH_TOKEN
+            },
+                firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
+
+            let meterReading = await db.MeterReading.findAll({
+                where: {
+                    tokenId: token.id,
+                    date: { [Op.gt]: firstDayOfYear }
+                }
+            })
+
+            if (meterReading.length > 0) {
+
+                let obj = {
+                    subscriptionId: token.subscriptionId,
+                    usagePointId: token.usagePointId,
+                    meterReadingId: token.meterReadingId,
+                    startDate: meterError.minDate,
+                    endDate: meterError.maxDate,
+                    tokenId: token.id
+                }
+
+                let todayReading = meterReading.filter(e => e.date === meterError.maxDate)
+                let yesterdayReading = meterReading.filter(e => e.date === meterError.minDate)
+
+                let intervalBlockData = await intervalBlock(headers, obj)
+                if (todayReading && todayReading.length === 0 || yesterdayReading && yesterdayReading.length === 0) {
+                    let intervalBlockToday
+                    if (yesterdayReading.length > 0) {
+                        intervalBlockToday = intervalBlockData.filter(e => e.date == meterError.maxDate)
+                    } else {
+                        intervalBlockToday = intervalBlockData.filter(e => e.date == meterError.maxDate || e.date == meterError.minDate)
+                    }
+                    if (intervalBlockToday.length > 0) {
+                        let data = await db.MeterReading.bulkCreate(intervalBlockToday);
+                        createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
+                        return data
+                    }
+                }
+            }
+
+        } catch (error) {
+            createLogItem(true, 'Error in error data input', "Error in error data input cron", error)
+            console.log('Cron Error ', error)
+            if (error.payload) {
+                let payload = {
+                    errorMessage: error?.error?.message, tokenId: error.payload.tokenId, minDate: error.payload.startDate, maxDate: error.payload.endDate
+                }
+                await db.MeterCronError.create(payload)
+            } else {
+                let payload = {
+                    errorMessage: error?.message, tokenId: token.id, minDate: meterError.minDate, maxDate: meterError.maxDate
+                }
+                await db.MeterCronError.create(payload)
+            }
+            throw error
+        }
+    }
+}
+
+
 module.exports = {
-    meterReading
+    meterReading,
+    meterErrorDataInput
 }

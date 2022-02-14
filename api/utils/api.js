@@ -124,12 +124,10 @@ const generateThirdPartyToken = async function (refreshToken, subscriptionId) {
         return null
       })
       .catch(error => {
-        console.log('Third Party Token creating error =', error)
-        return null
+        throw error
       })
   } catch (error) {
-    console.log('Third Party Token Creating Error ', error)
-    return null
+    throw error
   }
 }
 
@@ -369,7 +367,7 @@ const intervalBlock = async (headers, data) => {
   }
   catch (error) {
     console.log('intervalBlock error =', error)
-    throw error
+    throw { error, payload: data }
   }
 }
 
