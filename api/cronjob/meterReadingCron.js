@@ -168,7 +168,7 @@ const meterErrorDataInput = async () => {
                         }
                         if (intervalBlockToday.length > 0) {
                             let data = await db.MeterReading.bulkCreate(intervalBlockToday);
-                            await db.MeterCronError.delete({
+                            await db.MeterCronError.destroy({
                                 where: { tokenId: token.id, maxDate: meterErrorElement.maxDate, minDate: meterErrorElement.minDate }
                             })
                             createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
@@ -177,7 +177,7 @@ const meterErrorDataInput = async () => {
                     }
                 }
             } catch (error) {
-                createLogItem(true, 'Error in error data input', "Error in error data input cron", error)
+                createLogItem(true, 'Error in error data input', "Error in error data input cron", JSON.stringify(error))
                 console.log('Cron Error ', error)
             }
         }
