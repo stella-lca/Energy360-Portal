@@ -116,6 +116,41 @@ const subtractDay = (date) => {
 	date = date.subtract(1, "days").format("YYYY-MM-DD");
 	return date
 }
+
+const weekDatesArrayTillToday = (d, year) => {
+	let months = getMonthsBeforeGivenDate(d);
+
+	let weeks = []
+	// get every weeks start date and end date of month
+	for (let i = 0; i < months.length; i++) {
+		const element = months[i];
+		let array = getWeeksStartAndEndInMonth(element, year, "monday");
+		weeks = weeks.concat(array)
+	}
+	let weeksDatesTillTodaysWeek = []
+	for (let i = 0; i < weeks.length; i++) {
+		let weeksDatesElement = weeks[i];
+		// change end date of week if current date fall between given week
+		if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
+			weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
+			if (weeksDatesElement.startDate == weeksDatesElement.endDate) {
+				weeksDatesElement.startDate = subtractDay(weeksDatesElement.endDate)
+			}
+			weeksDatesTillTodaysWeek.push(weeksDatesElement)
+			break
+		} else {
+			if (weeksDatesElement.startDate == weeksDatesElement.endDate) {
+				weeksDatesElement.startDate = subtractDay(weeksDatesElement.endDate)
+			}
+			weeksDatesTillTodaysWeek.push(weeksDatesElement)
+		}
+	}
+
+	return weeksDatesTillTodaysWeek
+
+}
+
+
 /**
  * 
  * @param {*} array1 
@@ -140,6 +175,7 @@ module.exports = {
 	getWeeksStartAndEndInMonth,
 	getMonthsBeforeGivenDate,
 	checkIfDateIsBetweenTwoDates,
+	weekDatesArrayTillToday,
 	subtractDay,
 	comparerArray
 }

@@ -39,8 +39,13 @@ db.MeterCronError = sequelize.import('./meterCronError.model');
 
 db.User.hasOne(db.Token, { onDelete: "cascade", foreignKey: 'userId' })
 db.Token.hasMany(db.MeterReading, { onDelete: "cascade", foreignKey: 'tokenId' })
+
 db.User.hasMany(db.Meter, { onDelete: "cascade", foreignKey: 'userId' })
 db.Meter.belongsTo(db.User, { onDelete: "cascade", foreignKey: 'userId' })
+
+db.Token.hasMany(db.MeterCronError, { onDelete: "cascade", foreignKey: 'tokenId' })
+db.MeterCronError.belongsTo(db.Token, { onDelete: "cascade", foreignKey: 'tokenId' })
+
 
 
 db.Sequelize = Sequelize;

@@ -179,7 +179,6 @@ exports.createLogItem = (status, url, msg, data = "") => {
     .catch((err) => {
       console.log("log creating error");
     });
-
 };
 
 
