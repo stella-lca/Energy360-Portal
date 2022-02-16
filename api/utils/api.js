@@ -3,10 +3,11 @@ const https = require('https')
 const { addLog, createLogItem } = require('./errorTacker');
 const xml2jsObj = require('xml-js');
 const moment = require('moment');
+const momentTZ = require('moment-timezone');
 const _ = require('lodash');
 const db = require('../models');
 var Op = require('sequelize').Op;
-var { getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth, checkIfDateIsBetweenTwoDates } = require('../utils/utils');
+var { getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth, checkIfDateIsBetweenTwoDates, splitArrayIntoChunksOfLen } = require('../utils/utils');
 
 var LocalStorage = require('node-localstorage').LocalStorage,
   localStorage = new LocalStorage('./scratch')
