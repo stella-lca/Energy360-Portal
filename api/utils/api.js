@@ -439,6 +439,7 @@ const intervalBlockHourly = async (headers, data) => {
               dateViseIntervalBlock[key] = {
                 date: date,
                 time: time,
+                tokenId,
                 totalUsageInKVARH: intervalReadingTotal,
                 KWHReading: null
               }

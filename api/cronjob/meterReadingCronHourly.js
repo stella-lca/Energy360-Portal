@@ -14,6 +14,8 @@ const meterReadingHourly = () => {
 
     cron.schedule('*/2 * * * *', async () => {
         console.log('running a task every two minutes  ');
+        createLogItem(true, 'meterReadingHourly', "meterReadingHourly started", "running a task every two minutes  ")
+
         let Token = await db.Token.findAll(),
             readingEndDate = moment().format('YYYY-MM-DD'),
             d = new Date(),
@@ -116,6 +118,8 @@ const meterReadingHourly = () => {
 const meterHourlyErrorDataInput = async () => {
 
     cron.schedule('*/2 * * * *', async () => {
+        createLogItem(true, 'meterHourlyErrorDataInput', "meterHourlyErrorDataInput started", "running a task every two minutes  ")
+
         let tokens = await db.Token.findAll({
             include: {
                 model: db.MeterHourlyCronError, where: {
@@ -160,7 +164,7 @@ const meterHourlyErrorDataInput = async () => {
                         let todayReading = meterReading.filter(e => e.date === meterErrorElement.maxDate)
                         let yesterdayReading = meterReading.filter(e => e.date === meterErrorElement.minDate)
 
-                        let intervalBlockData = await intervalBlock(headers, obj)
+                        let intervalBlockData = await intervalBlockHourly(headers, obj)
                         if (todayReading && todayReading.length === 0 || yesterdayReading && yesterdayReading.length === 0) {
                             let intervalBlockToday
                             if (yesterdayReading.length > 0) {
