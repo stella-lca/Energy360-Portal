@@ -371,6 +371,98 @@ const intervalBlock = async (headers, data) => {
   }
 }
 
+
+const intervalBlockHourly = async (headers, data) => {
+  let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, tokenId } = data
+  try {
+    let options = {
+      timeout: 100000,
+      headers,
+      httpsAgent: agent,
+      maxContentLength: 100000000,
+      maxBodyLength: 100000000
+    }
+    let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`, options)
+    let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+
+    let KVARH = false
+    let dateViseIntervalBlock = {}
+    let resultArray = []
+    if (!result.feed.entry.length) {
+      resultArray.push(result.feed.entry);
+    } else {
+      resultArray = result.feed.entry
+    }
+    for (let j = 0; j < resultArray.length; j++) {
+      const element = resultArray[j];
+      let links = element.link
+      for (let a = 0; a < links.length; a++) {
+        const linkElement = links[a];
+        if (linkElement._attributes.href.includes('KVARH')) {
+          KVARH = true
+        } else {
+          KVARH = false
+        }
+      }
+      let intervalBlocksArray = []
+      let intervalBlocks = element.content['espi:intervalBlocks']['espi:intervalBlock']
+      if (!Array.isArray(intervalBlocks)) {
+        intervalBlocksArray.push(intervalBlocks)
+      } else {
+        intervalBlocksArray = intervalBlocks
+      }
+
+      if (intervalBlocksArray.length > 0) {
+
+        for (let i = 0; i < intervalBlocksArray.length; i++) {
+
+          const intervalBlockElement = intervalBlocksArray[i];
+
+          let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
+          let date = moment.unix(timestamp).format('YYYY-MM-DD');
+
+          let intervalReading = intervalBlockElement['espi:intervalReading']
+
+          let arrayData = splitArrayIntoChunksOfLen(intervalReading, 12)
+          console.log(Object.keys(arrayData).length);
+          for (let a = 0; a < arrayData.length; a++) {
+            let element = arrayData[a];
+
+            let time = element[0]['espi:timePeriod']['espi:start']._text
+            time = moment.unix(time).tz("America/New_York").format("HH");
+            element = element.map(e => Number(e['espi:value']._text));
+
+            let intervalReadingTotal = _.sum(element);
+            console.log("date ", date, "HH :- ", time, " ", intervalReadingTotal);
+            if (KVARH) {
+              let key = date + ":" + time
+              dateViseIntervalBlock[key] = {
+                date: date,
+                time: time,
+                totalUsageInKVARH: intervalReadingTotal,
+                KWHReading: null
+              }
+            } else {
+              let key = date + ":" + time
+              dateViseIntervalBlock[key].KWHReading = intervalReadingTotal
+            }
+          }
+        }
+      }
+    }
+    let array = []
+    for (const property in dateViseIntervalBlock) {
+      array.push(dateViseIntervalBlock[property]);
+    }
+
+    return array
+  }
+  catch (error) {
+    console.log('intervalBlock error =', error)
+    throw { error, payload: data }
+  }
+}
+
 const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, meterReadingId, tokenId, res) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
@@ -454,5 +546,6 @@ module.exports = {
   usagePointDetails,
   meterReading,
   intervalBlockTest,
-  intervalBlock
+  intervalBlock,
+  intervalBlockHourly
 }
