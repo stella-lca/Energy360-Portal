@@ -16,6 +16,7 @@ let dbState = {};
 
 const db = require("./api/models");
 const { meterReading, meterErrorDataInput } = require("./api/cronjob/meterReadingCron");
+const { meterHourlyErrorDataInput, meterReadingHourly } = require("./api/cronjob/meterReadingCronHourly");
 const db_sync = () => {
 	db.sequelize
 		.sync()
@@ -80,9 +81,14 @@ app.use((req, res, next) => {
 });
 
 
+/**
+ * Cron
+ */
+meterReading();
+meterErrorDataInput();
+meterHourlyErrorDataInput();
+meterReadingHourly();
 
-meterReading()
-meterErrorDataInput()
 // Express Routing
 app.use("/", router);
 
