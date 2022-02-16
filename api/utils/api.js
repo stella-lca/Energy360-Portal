@@ -6,7 +6,7 @@ const moment = require('moment');
 const _ = require('lodash');
 const db = require('../models');
 var Op = require('sequelize').Op;
-var { getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth, checkIfDateIsBetweenTwoDates } = require('../utils/utils');
+var { getMonthsBeforeGivenDate, getWeeksStartAndEndInMonth, checkIfDateIsBetweenTwoDates, splitArrayIntoChunksOfLen } = require('../utils/utils');
 
 var LocalStorage = require('node-localstorage').LocalStorage,
   localStorage = new LocalStorage('./scratch')

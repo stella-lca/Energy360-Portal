@@ -150,6 +150,14 @@ const weekDatesArrayTillToday = (d, year) => {
 
 }
 
+const splitArrayIntoChunksOfLen = (arr, len) => {
+	var chunks = [], i = 0, n = arr.length;
+	while (i < n) {
+		chunks.push(arr.slice(i, i += len));
+	}
+	return chunks;
+}
+
 
 /**
  * 
@@ -173,6 +181,7 @@ const comparerArray = (array1, array2) => {
 module.exports = {
 	findNestedObj,
 	getWeeksStartAndEndInMonth,
+	splitArrayIntoChunksOfLen,
 	getMonthsBeforeGivenDate,
 	checkIfDateIsBetweenTwoDates,
 	weekDatesArrayTillToday,
