@@ -99,8 +99,8 @@ const meterReadingHourly = () => {
                 }
 
             } catch (error) {
-                createLogItem(true, 'CRON ERROR', "error in cron", error)
-                console.log('Cron Error ', error)
+                createLogItem(true, 'meterReadingHourly CRON ERROR', "error in meterReadingHourly cron", error)
+                console.log('meterReadingHourly Cron Error ', error)
                 if (error.payload) {
                     let payload = {
                         errorMessage: error?.error?.message, tokenId: error.payload.tokenId, minDate: error.payload.startDate, maxDate: error.payload.endDate
@@ -182,8 +182,8 @@ const meterHourlyErrorDataInput = async () => {
                         }
                     }
                 } catch (error) {
-                    createLogItem(true, 'Error in error data input', "Error in error data input cron", JSON.stringify(error))
-                    console.log('Cron Error ', error)
+                    createLogItem(true, 'Error in meterHourlyErrorData data input', "Error in error meterHourlyError input cron", JSON.stringify(error))
+                    console.log('meterHourlyErrorDataInput Cron Error ', error)
                 }
             }
         }
