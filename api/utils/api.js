@@ -540,6 +540,106 @@ const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, met
     return new Error(error)
   }
 }
+const intervalBlockHourlyTest = async (refreshToken, subscriptionId, usagePointId, meterReadingId, tokenId) => {
+  let readingEndDate = moment().format('YYYY-MM-DD'),
+    d = new Date(),
+    year = moment().year()
+
+
+  try {
+    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
+
+    let headers = {
+      'content-type': 'application/json',
+      'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
+      'Authorization': 'Bearer ' + AUTH_TOKEN
+    },
+      firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
+
+    let meterReading = await db.MeterReadingHourly.findAll({
+      where: {
+        tokenId: tokenId,
+        date: { [Op.gt]: firstDayOfYear }
+      }
+    })
+
+    if (meterReading.length > 0) {
+
+      let readingStartDate = subtractDay(readingEndDate)
+
+      let obj = {
+        subscriptionId: subscriptionId,
+        usagePointId: usagePointId,
+        meterReadingId: meterReadingId,
+        startDate: readingStartDate,
+        endDate: readingEndDate,
+        tokenId: tokenId
+      }
+
+      let todayReading = meterReading.filter(e => e.date === readingEndDate)
+      let yesterdayReading = meterReading.filter(e => e.date === readingStartDate)
+
+      let intervalBlockData = await intervalBlockHourly(headers, obj)
+      if (todayReading && todayReading.length === 0 || yesterdayReading && yesterdayReading.length === 0) {
+        let intervalBlockToday
+        if (yesterdayReading.length > 0) {
+          intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate)
+        } else {
+          intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate || e.date == readingStartDate)
+        }
+        if (intervalBlockToday.length > 0) {
+          let data = await db.MeterReadingHourly.bulkCreate(intervalBlockToday);
+          createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
+          return data
+        }
+      }
+    } else {
+      let weeksDates = weekDatesArrayTillToday(d, year),
+        MeterReadingTillDate = []
+
+      for (let i = 0; i < weeksDates.length; i++) {
+        let weeksDatesElement = weeksDates[i];
+
+        let obj = {
+          subscriptionId: subscriptionId,
+          usagePointId: usagePointId,
+          meterReadingId: meterReadingId,
+          startDate: weeksDatesElement.startDate,
+          endDate: weeksDatesElement.endDate,
+          tokenId: tokenId
+        }
+
+        let array = await intervalBlockHourly(headers, obj)
+        array = comparerArray(MeterReadingTillDate, array)     // compare and return unique object from second array 
+
+        MeterReadingTillDate = MeterReadingTillDate.concat(array)
+      }
+      console.log(MeterReadingTillDate)
+      let MeterReadingTillDateChunks = splitArrayIntoChunksOfLen(MeterReadingTillDate, 1000)
+      createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
+      let data = []
+      for (let index = 0; index < MeterReadingTillDateChunks.length; index++) {
+        const element = MeterReadingTillDateChunks[index];
+        let d = await db.MeterReadingHourly.bulkCreate(element);
+        data.push(d)
+      }
+
+      console.log("MeterReadingHourly BulkCreate >>> ", data)
+      return data
+    }
+
+  } catch (error) {
+    createLogItem(true, 'meterReadingHourly CRON ERROR', "error in meterReadingHourly cron", JSON.stringify(error))
+    console.log('meterReadingHourly Cron Error ', error)
+    if (error.payload) {
+      let payload = {
+        errorMessage: error?.error?.message, tokenId: error.payload.tokenId, minDate: error.payload.startDate, maxDate: error.payload.endDate
+      }
+      await db.MeterCronError.create(payload)
+    }
+    throw error
+  }
+}
 
 module.exports = {
   generateThirdPartyToken,
@@ -549,5 +649,6 @@ module.exports = {
   meterReading,
   intervalBlockTest,
   intervalBlock,
-  intervalBlockHourly
+  intervalBlockHourly,
+  intervalBlockHourlyTest
 }

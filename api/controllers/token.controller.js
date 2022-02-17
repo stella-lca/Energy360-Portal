@@ -5,7 +5,7 @@ const async = require('async')
 const { sendAdminEmail, sendNotifyEmail, sendUserEmail } = require('../utils/email')
 const { downloadFile, saveAsTxt, downloadContents } = require('../utils/downloadFile')
 const { addLog, createLogItem } = require('../utils/errorTacker')
-const { apiClient, retailCustomerDetails, usagePointDetails, meterReading, intervalBlockTest, intervalBlock, generateThirdPartyToken } = require('../utils/api')
+const { apiClient, retailCustomerDetails, usagePointDetails, meterReading, intervalBlockTest, intervalBlock, generateThirdPartyToken, intervalBlockHourlyTest } = require('../utils/api')
 const { findNestedObj } = require('../utils/utils')
 const https = require('https')
 var convert = require('xml-js')
@@ -16,8 +16,6 @@ const {
   Token: { findByToken, createToken, updateToken },
   Log: { findAllLog, createLog, findLog }
 } = require('../models')
-const QueryTypes = require('sequelize').QueryTypes
-const xml2jsObj = require('xml-js');
 
 const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETTING_JWT_SECRET, APPSETTING_SUBSCRIPTION_KEY } = process.env
 
@@ -212,74 +210,6 @@ exports.authenticateToken = async function (req, res) {
   }
 }
 
-
-exports.externalAPI = async function (req, res) {
-  try {
-    //authorization code generated & sent by Utility
-    const { refresh_token, resourceURI } = req.query
-
-    console.log("refresh token ===> ", refresh_token);
-    console.log('resource URI ===> ', resourceURI);
-
-
-    let data1 = await retailCustomerDetails(refresh_token, resourceURI);
-    console.log("Customer Details DATA >> ", data1)
-
-    let usagePointDetailsData = await usagePointDetails(refresh_token, resourceURI)
-
-    if (usagePointDetailsData) {
-      let data = {
-        conedAddress: data1.address,
-        meterAccountId: data1.meterAccountNumber,
-        usagePointId: usagePointDetailsData
-      }
-      data = await db.Token.update(data, {
-        where: {
-          subscriptionId: resourceURI
-        }
-      });
-      console.log("update Usage id and address >>", data)
-    }
-    console.log("Customer Details usagePointDetailsData >> ", usagePointDetailsData)
-
-    res.redirect(`/callback?success=true&usagePointDetailsData=${usagePointDetailsData}`)
-  } catch (error) {
-    console.log('externalAPI Error', error)
-    res.redirect('/callback?success=false')
-  }
-}
-
-exports.meterReadingAPI = async function (req, res) {
-  try {
-    //authorization code generated & sent by Utility
-    const { refresh_token, resourceURI, usagePointId } = req.query
-
-    console.log("refresh token ===> ", refresh_token);
-    console.log('resource URI ===> ', resourceURI);
-    console.log('usagePointId URI ===> ', usagePointId);
-
-    let meterReadingId = await meterReading(refresh_token, resourceURI, usagePointId)
-    console.log("Customer meterReadingId >> ", meterReadingId)
-
-    if (meterReadingId) {
-      let data = {
-        meterReadingId: meterReadingId
-      }
-      data = await db.Token.update(data, {
-        where: {
-          subscriptionId: resourceURI
-        }
-      });
-      console.log("update Meter id >> ", data)
-    }
-
-    res.redirect(`/callback?success=true&meterReadingId=${meterReadingId}`)
-  } catch (error) {
-    console.log('meterReadingAPI Error', error)
-    res.redirect('/callback?success=false')
-  }
-}
-
 exports.intervalBlockApi = async function (req, res) {
   try {
     //authorization code generated & sent by Utility
@@ -306,10 +236,10 @@ exports.intervalBlockApi = async function (req, res) {
   }
 }
 
-exports.intervalBlockFunction = async function (req, res) {
+exports.intervalBlockHourlyApi = async function (req, res) {
   try {
     //authorization code generated & sent by Utility
-    const { resourceURI, minDate, maxDate } = req.query
+    const { resourceURI } = req.query
 
     console.log('resource URI ===> ', resourceURI);
 
@@ -318,89 +248,13 @@ exports.intervalBlockFunction = async function (req, res) {
         subscriptionId: resourceURI
       }
     })
+    let intervalBlockData = await intervalBlockHourlyTest(token.refresh_token, resourceURI, token.usagePointId, token.meterReadingId, token.id)
 
-    let AUTH_TOKEN = await generateThirdPartyToken(token.refresh_token, token.subscriptionId)
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    })
-    let headers = {
-      'content-type': 'application/json',
-      'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
-      'Authorization': 'Bearer ' + AUTH_TOKEN
-    }
-    let options = {
-      timeout: 100000,
-      headers,
-      httpsAgent: agent,
-      maxContentLength: 100000000,
-      maxBodyLength: 100000000
-    }
-    let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${resourceURI}/UsagePoint/${token.usagePointId}/MeterReading/${token.meterReadingId}/IntervalBlock?publishedMin=${minDate}&publishedMax=${maxDate}`, options)
-    let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
-
-    let KVARH = false
-    let dateViseIntervalBlock = {}
-    let resultArray = []
-    console.log('result.feed.entry >> ', result.feed.entry);
-    if (!result.feed.entry.length) {
-      resultArray.push(result.feed.entry);
-    } else {
-      resultArray = result.feed.entry
-    }
-    for (let j = 0; j < resultArray.length; j++) {
-      const resultArrayElement = resultArray[j];
-      let links = resultArrayElement.link
-      for (let a = 0; a < links.length; a++) {
-        const linkElement = links[a];
-        if (linkElement._attributes.href.includes('KVARH')) {
-          KVARH = true
-        } else {
-          KVARH = false
-        }
-      }
-      let intervalBlocks = resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']
-
-      if (intervalBlocks.length > 0) {
-
-        for (let a = 0; a < intervalBlocks.length; a++) {
-          const intervalBlockElement = intervalBlocks[a];
-
-          let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
-
-          let intervalReading = intervalBlockElement['espi:intervalReading']
-          intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
-
-          let intervalReadingTotal = _.sum(intervalReading);
-          console.log(intervalReadingTotal);
-          let date = moment.unix(timestamp).format('YYYY-MM-DD');
-          if (KVARH) {
-            dateViseIntervalBlock[date] = {
-              date: date,
-              KVARHReading: intervalReadingTotal,
-              tokenId: token.id,
-              KWHReading: null
-            }
-          } else {
-            dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
-          }
-        }
-      }
-    }
-    console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
-    let array = []
-    for (const property in dateViseIntervalBlock) {
-      array.push(dateViseIntervalBlock[property]);
-    }
-    console.log("array >>", array);
-
-    let response = await db.MeterReading.bulkCreate(array);
-    console.log(response)
-
-    console.log("Customer intervalBlockUrl >> ", array)
-    res.status(200).send({ data: array })
+    console.log("Customer intervalBlockUrl >> ", intervalBlockData)
+    return res.status(200).json({ data: intervalBlockData })
   } catch (error) {
     console.log('meterReadingAPI Error', error)
-    return res.status(500).send(error)
+    return res.status(500).send({ err: error, message: "error" })
     // res.redirect('/callback?success=false')
   }
 }
@@ -482,20 +336,5 @@ exports.notifyCallback = async function (req, res) {
       res.status(500).end('internal server error')
       throw e
     }
-  }
-}
-
-exports.deleteData = async function (req, res) {
-  try {
-    await db.sequelize.query(`DELETE FROM GCEP_Tokens;`, {
-      type: QueryTypes.DELETE
-    });
-
-    let Tokens = await db.Token.findAll();
-
-    return res.status(200).send({ message: "Successfully deleted", Token: Tokens })
-  } catch (error) {
-    console.log(error)
-    return res.status(403).send({ message: "Error", error: error })
   }
 }

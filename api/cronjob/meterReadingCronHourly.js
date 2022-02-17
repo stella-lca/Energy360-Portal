@@ -3,7 +3,7 @@ var db = require('../models')
 const { generateThirdPartyToken, intervalBlock, intervalBlockHourly } = require('../utils/api')
 const { createLogItem } = require('../utils/errorTacker');
 const moment = require('moment');
-const { subtractDay, comparerArray, weekDatesArrayTillToday } = require('../utils/utils');
+const { subtractDay, comparerArray, weekDatesArrayTillToday, splitArrayIntoChunksOfLen } = require('../utils/utils');
 const { sequelize } = require('../models');
 var Op = require('sequelize').Op;
 require('dotenv').config()
@@ -12,7 +12,7 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const meterReadingHourly = () => {
 
-    cron.schedule('*/2 * * * *', async () => {
+    cron.schedule('45 23 * * *', async () => {
         console.log('running a task every two minutes  ');
         createLogItem(true, 'meterReadingHourly', "meterReadingHourly started", "running a task every two minutes  ")
 
@@ -92,14 +92,20 @@ const meterReadingHourly = () => {
                         MeterReadingTillDate = MeterReadingTillDate.concat(array)
                     }
                     console.log(MeterReadingTillDate)
+                    let MeterReadingTillDateChunks = splitArrayIntoChunksOfLen(MeterReadingTillDate, 1000)
                     createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
+                    let data = []
+                    for (let index = 0; index < MeterReadingTillDateChunks.length; index++) {
+                        const element = MeterReadingTillDateChunks[index];
+                        let d = await db.MeterReadingHourly.bulkCreate(element);
+                        data.push(d)
+                    }
 
-                    let data = await db.MeterReadingHourly.bulkCreate(MeterReadingTillDate);
-                    console.log("MeterReading BulkCreate >>> ", data)
+                    console.log("MeterReadingHourly BulkCreate >>> ", data)
                 }
 
             } catch (error) {
-                createLogItem(true, 'meterReadingHourly CRON ERROR', "error in meterReadingHourly cron", error)
+                createLogItem(true, 'meterReadingHourly CRON ERROR', "error in meterReadingHourly cron", JSON.stringify(error))
                 console.log('meterReadingHourly Cron Error ', error)
                 if (error.payload) {
                     let payload = {
@@ -117,7 +123,7 @@ const meterReadingHourly = () => {
 
 const meterHourlyErrorDataInput = async () => {
 
-    cron.schedule('*/2 * * * *', async () => {
+    cron.schedule('45 23 * * *', async () => {
         createLogItem(true, 'meterHourlyErrorDataInput', "meterHourlyErrorDataInput started", "running a task every two minutes  ")
 
         let tokens = await db.Token.findAll({
