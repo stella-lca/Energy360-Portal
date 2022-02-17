@@ -7,11 +7,8 @@ const { errorTracker } = require('../utils/errorTacker');
 const { sendAdminEmail } = require('../utils/email');
 
 Router.get('/callback', TokenController.authenticateToken);
-Router.get('/cuscall', TokenController.externalAPI)
-Router.get('/meterread', TokenController.meterReadingAPI)
 Router.get('/intervalblock', TokenController.intervalBlockApi)
-Router.get('/intervalblocktest', TokenController.intervalBlockFunction)
-Router.get('/deletedata', TokenController.deleteData);
+Router.get('/intervalblockhourly', TokenController.intervalBlockHourlyApi)
 Router.post('/tracker', errorTracker);
 Router.get('/token-data', (req, res) => {
   res.send(req.body);
