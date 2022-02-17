@@ -441,7 +441,7 @@ const intervalBlockHourly = async (headers, data) => {
                 date: date,
                 time: time,
                 tokenId,
-                totalUsageInKVARH: intervalReadingTotal,
+                KVARHReading: intervalReadingTotal,
                 KWHReading: null
               }
             } else {
