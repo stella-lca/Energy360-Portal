@@ -16,7 +16,7 @@ const meterReadingHourly = () => {
         console.log('running a task every two minutes  ');
         createLogItem(true, 'meterReadingHourly', "meterReadingHourly started", "running a task every two minutes  ")
 
-        let Token = await db.Token.findAll(),
+        let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
             readingEndDate = moment().format('YYYY-MM-DD'),
             d = new Date(),
             year = moment().year()
