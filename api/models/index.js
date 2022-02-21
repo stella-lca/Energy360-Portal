@@ -31,6 +31,7 @@ Sequelize.DATE.prototype._stringify = function _stringify(date, options) {
 
 db.User = sequelize.import('./user.model');
 db.Token = sequelize.import('./token.model');
+db.IntervalBlockPayload = sequelize.import('./intervalBlockPayload.model');
 db.Log = sequelize.import('./log.model');
 db.MeterReading = sequelize.import('./meterReading.model');
 db.MeterReadingHourly = sequelize.import('./meterReadingHourly.model');
@@ -38,12 +39,11 @@ db.Env = sequelize.import('./env.model');
 db.Meter = sequelize.import('./meter.model');
 db.MeterCronError = sequelize.import('./meterCronError.model');
 db.MeterHourlyCronError = sequelize.import('./meterHourlyCronError.model');
-db.IntervalBlockPayload = sequelize.import('./intervalBlockPayload.model');
 
 db.User.hasOne(db.Token, { onDelete: "cascade", foreignKey: 'userId' })
 
-db.Token.hasMany(db.MeterReading, { onDelete: "cascade", foreignKey: 'tokenId' })
-db.Token.hasMany(db.MeterReadingHourly, { onDelete: "cascade", foreignKey: 'tokenId' })
+db.Token.hasMany(db.IntervalBlockPayload, { onDelete: "cascade", foreignKey: 'tokenId' })
+db.IntervalBlockPayload.belongsTo(db.Token, { onDelete: "cascade", foreignKey: 'tokenId' })
 
 db.IntervalBlockPayload.hasMany(db.MeterReading, { onDelete: "cascade", foreignKey: 'intervalBlockPayloadId' })
 db.IntervalBlockPayload.hasMany(db.MeterReadingHourly, { onDelete: "cascade", foreignKey: 'intervalBlockPayloadId' })
@@ -56,9 +56,6 @@ db.MeterCronError.belongsTo(db.Token, { onDelete: "cascade", foreignKey: 'tokenI
 
 db.Token.hasMany(db.MeterHourlyCronError, { onDelete: "cascade", foreignKey: 'tokenId' })
 db.MeterHourlyCronError.belongsTo(db.Token, { onDelete: "cascade", foreignKey: 'tokenId' })
-
-db.Token.hasMany(db.IntervalBlockPayload, { onDelete: "cascade", foreignKey: 'tokenId' })
-db.IntervalBlockPayload.belongsTo(db.Token, { onDelete: "cascade", foreignKey: 'tokenId' })
 
 
 

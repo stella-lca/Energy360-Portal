@@ -2,10 +2,9 @@
 
 module.exports = (sequelize, DataTypes) => {
 
-    let IntervalBlockPayload = sequelize.define("GCEP_IntervalBlockPayload", {
+    let IntervalBlockPayload = sequelize.define("GCEP_IntervalBlockPayloads", {
         tokenId: {
             type: DataTypes.INTEGER(),
-            allowNull: true,
             references: {
                 model: 'GCEP_Tokens',
                 key: 'id'

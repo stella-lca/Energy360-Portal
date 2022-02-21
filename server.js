@@ -19,8 +19,7 @@ const { meterReading, meterErrorDataInput } = require("./api/cronjob/meterReadin
 const { meterHourlyErrorDataInput, meterReadingHourly } = require("./api/cronjob/meterReadingCronHourly");
 const db_sync = () => {
 	db.sequelize
-		.sync()
-		// .sync({ alter: true })
+		.sync({ alter: false })
 		.then(async msg => {
 			console.log("DB connected successfully!");
 			dbState.status = true;
