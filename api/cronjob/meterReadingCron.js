@@ -41,7 +41,7 @@ const meterReading = () => {
 
                     let meterReading = await db.MeterReading.findAll({
                         where: {
-                            tokenId: tokenElement.id,
+                            intervalBlockPayloadId: intervalBlockPayloadId,
                             date: { [Op.gt]: firstDayOfYear }
                         }
                     })
@@ -56,7 +56,6 @@ const meterReading = () => {
                             meterReadingId: meterReadingId,
                             startDate: readingStartDate,
                             endDate: readingEndDate,
-                            tokenId: tokenElement.id,
                             intervalBlockPayloadId: intervalBlockPayloadId
                         }
 
@@ -89,7 +88,6 @@ const meterReading = () => {
                                 meterReadingId: tokenElement.meterReadingId,
                                 startDate: weeksDatesElement.startDate,
                                 endDate: weeksDatesElement.endDate,
-                                tokenId: tokenElement.id,
                                 intervalBlockPayloadId: intervalBlockPayloadId
 
                             }
