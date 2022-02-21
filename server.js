@@ -85,9 +85,9 @@ app.use((req, res, next) => {
  */
 
 meterReading();
-// meterErrorDataInput();
+meterErrorDataInput();
 meterReadingHourly();
-// meterHourlyErrorDataInput();
+meterHourlyErrorDataInput();
 
 // Express Routing
 app.use("/", router);
