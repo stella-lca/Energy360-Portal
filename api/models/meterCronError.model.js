@@ -7,11 +7,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             field: "errorMessage"
         },
-        tokenId: {
+        intervalBlockPayloadId: {
             type: DataTypes.INTEGER(),
-            field: "tokenId",
             references: {
-                model: 'GCEP_Tokens',
+                model: 'GCEP_IntervalBlockPayloads',
                 key: 'id'
             }
         },

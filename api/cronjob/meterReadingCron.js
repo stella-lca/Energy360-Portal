@@ -122,13 +122,14 @@ const meterReading = () => {
 
 const meterErrorDataInput = async () => {
 
-    cron.schedule('45 23 * * *', async () => {
+    cron.schedule('* * * * *', async () => {
         let tokens = await db.Token.findAll({
-            include: [{
-                model: db.MeterCronError, where: {
-                    tokenId: { [Op.ne]: null }
+            include: {
+                model: db.IntervalBlockPayload,
+                 include: {
+                    models: db.MeterCronError
                 }
-            }, { model: db.IntervalBlockPayload }]
+            }
         })
 
         for (let i = 0; i < tokens.length; i++) {

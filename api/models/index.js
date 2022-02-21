@@ -48,11 +48,12 @@ db.IntervalBlockPayload.belongsTo(db.Token, { onDelete: "cascade", foreignKey: '
 db.IntervalBlockPayload.hasMany(db.MeterReading, { onDelete: "cascade", foreignKey: 'intervalBlockPayloadId' })
 db.IntervalBlockPayload.hasMany(db.MeterReadingHourly, { onDelete: "cascade", foreignKey: 'intervalBlockPayloadId' })
 
+db.IntervalBlockPayload.hasMany(db.MeterCronError, { onDelete: "cascade", foreignKey: 'intervalBlockPayloadId' })
+db.MeterCronError.belongsTo(db.IntervalBlockPayload, { onDelete: "cascade", foreignKey: 'intervalBlockPayloadId' })
+
 db.User.hasMany(db.Meter, { onDelete: "cascade", foreignKey: 'userId' })
 db.Meter.belongsTo(db.User, { onDelete: "cascade", foreignKey: 'userId' })
 
-db.Token.hasMany(db.MeterCronError, { onDelete: "cascade", foreignKey: 'tokenId' })
-db.MeterCronError.belongsTo(db.Token, { onDelete: "cascade", foreignKey: 'tokenId' })
 
 db.Token.hasMany(db.MeterHourlyCronError, { onDelete: "cascade", foreignKey: 'tokenId' })
 db.MeterHourlyCronError.belongsTo(db.Token, { onDelete: "cascade", foreignKey: 'tokenId' })
