@@ -23,6 +23,14 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'id'
             }
         },
+        intervalBlockPayloadId: {
+            type: DataTypes.INTEGER(),
+            allowNull: true,
+            references: {
+                model: 'GCEP_IntervalBlockPayload',
+                key: 'id'
+            }
+        },
         KWHReading: {
             type: DataTypes.TEXT,
             allowNull: true,

@@ -5,13 +5,14 @@ const async = require('async')
 const { sendAdminEmail, sendNotifyEmail, sendUserEmail } = require('../utils/email')
 const { downloadFile, saveAsTxt, downloadContents } = require('../utils/downloadFile')
 const { addLog, createLogItem } = require('../utils/errorTacker')
-const { apiClient, retailCustomerDetails, usagePointDetails, meterReading, intervalBlockTest, intervalBlock, generateThirdPartyToken, intervalBlockHourlyTest } = require('../utils/api')
+const { retailCustomerDetails, usagePointDetails, meterReading, intervalBlockTest, intervalBlockHourlyTest } = require('../utils/api')
 const { findNestedObj } = require('../utils/utils')
 const https = require('https')
 var convert = require('xml-js')
 const _ = require('lodash')
 const jwt = require("jsonwebtoken");
 var db = require('../models')
+
 const {
   Token: { findByToken, createToken, updateToken },
   Log: { findAllLog, createLog, findLog }
@@ -45,21 +46,16 @@ const handleToken = async function (authCode, tokenData) {
     let subscriptionId = resourceURI.split("/").pop();
     let authorizationId = authorizationURI.split("/").pop();
     // Customer Details
-    let customerDetails = await retailCustomerDetails(refresh_token, subscriptionId);
+    let customerDetails = await retailCustomerDetails(refresh_token, subscriptionId, userId);
     console.log("Customer Details DATA >> ", customerDetails)
 
     // UsagePoint ID
+    let meterReadingIdArray = []
     let usagePointDetailsData = await usagePointDetails(refresh_token, subscriptionId)
-    let meterReadingId = await meterReading(refresh_token, subscriptionId, usagePointDetailsData)
-
-    let conedAddress
-    let meterAccountId
-    let usagePointId
-
-    if (usagePointDetailsData) {
-      conedAddress = customerDetails.address
-      meterAccountId = customerDetails.meterAccountNumber
-      usagePointId = usagePointDetailsData
+    for (let i = 0; i < usagePointDetailsData.length; i++) {
+      const element = usagePointDetailsData[i];
+      let meterReadingId = await meterReading(refresh_token, subscriptionId, element)
+      meterReadingIdArray.push(meterReadingId)
     }
 
     let status
@@ -77,8 +73,8 @@ const handleToken = async function (authCode, tokenData) {
 
       return token
     } else {
-      await db.Token.destroy({ where: { meterAccountId } })
-      await db.Meter.destroy({ where: { meterAccountId } })
+      await db.Token.destroy({ where: { userId } })
+      await db.Meter.destroy({ where: { userId } })
       //save new token.
       status = await createToken({
         authCode,
@@ -92,21 +88,23 @@ const handleToken = async function (authCode, tokenData) {
         userId,
         conedSub,
         resourceURI,
-        conedAddress,
-        meterAccountId,
-        usagePointId,
-        meterReadingId,
         authorizationURI,
         accountNumber,
         expiry_date
       })
 
-      await db.Meter.create({ userId, conedSub, conedAddress, meterAccountId })
+      await db.Meter.bulkCreate(customerDetails)
       console.log("token createToken >>", status);
       msg = status ? 'Token created successfully' : 'Token creating - Query Error'
 
       console.log('handleToken-token_create ===>', msg)
       // createLogItem(true, 'Token Management', msg, JSON.stringify(token))
+      meterReadingIdArray = meterReadingIdArray.map((e) => {
+        let obj = { ...e, tokenId: status.id }
+        return obj
+      })
+
+      await db.IntervalBlockPayload.bulkCreate(meterReadingIdArray)
 
       return tokenData
     }

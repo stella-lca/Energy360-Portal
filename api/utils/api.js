@@ -143,7 +143,7 @@ const ThirdPartyApiClient = async (refreshToken, subscriptionId) => {
   } catch (error) { }
 }
 
-const retailCustomerDetails = async (refreshToken, subscriptionId) => {
+const retailCustomerDetails = async (refreshToken, subscriptionId, userId) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
@@ -163,25 +163,43 @@ const retailCustomerDetails = async (refreshToken, subscriptionId) => {
       maxBodyLength: 100000000
     }).then(async ({ data }) => {
       let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
-      let retailCustomer = result.feed.entry.content["cust:retailCustomer"]
 
-      if (retailCustomer) {
-        let meterAccountNumber = retailCustomer['cust:accountNumber']._text
-        let mainAddress = retailCustomer['cust:mainAddress']
-        let address = mainAddress['cust:streetDetail']._text + ' ' + mainAddress['cust:cityDetail']._text + ', ' + mainAddress['cust:stateDetail']._text + ' ' + mainAddress['cust:postalCode']._text
-
-        console.log("meterAccountNumber >> ", meterAccountNumber, "Address >> ", address);
-        result = {
-          meterAccountNumber,
-          address
-        }
-        console.log("Customer Details DATA >> ", result)
-        return result;
+      let resultArray = []
+      if (!result.feed.entry.length) {
+        resultArray.push(result.feed.entry);
       } else {
-        console.log('Retail Customer Data =', retailCustomer)
-        return null
+        resultArray = result.feed.entry
+      }
+      let addressArray = []
+      for (let i = 0; i < resultArray.length; i++) {
+        const element = resultArray[i];
+        let retailCustomer = element.content["cust:retailCustomer"]
+
+        if (retailCustomer) {
+          let meterAccountNumber = retailCustomer['cust:accountNumber']._text
+          let mainAddress = retailCustomer['cust:mainAddress']
+          let address = mainAddress['cust:streetDetail']._text + ' ' + mainAddress['cust:cityDetail']._text + ', ' + mainAddress['cust:stateDetail']._text + ' ' + mainAddress['cust:postalCode']._text
+
+          console.log("meterAccountNumber >> ", meterAccountNumber, "Address >> ", address);
+          let obj = { userId, meterAccountNumber, address }
+          console.log("Customer Details DATA >> ", result)
+          addressArray.push(obj);
+        }
       }
 
+      addressArray = addressArray.filter((value, index, self) =>
+        index === self.findIndex((t) => (
+          t.meterAccountNumber === value.meterAccountNumber && t.address === value.address
+        ))
+      )
+
+      if (addressArray.length > 0) {
+        console.log("Customer Details DATA >> ", addressArray)
+        return addressArray;
+      } else {
+        console.log('Retail Customer Data =', addressArray)
+        return null
+      }
     })
       .catch(error => {
         console.log('Retail Customer Data error =', error)
@@ -213,22 +231,33 @@ const usagePointDetails = async (refreshToken, subscriptionId) => {
       maxBodyLength: 100000000
     }).then(async ({ data }) => {
       let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
-      let links = result.feed.entry.link
-      if (links.length > 0) {
-        let usagePointId
-        for (let i = 0; i < links.length; i++) {
-          const element = links[i];
-          if (element._attributes.rel === 'self') {
-            usagePointId = element._attributes.href.split("/").pop();
-            break
-          }
-        }
-        console.log("usagePointDetails >> ", usagePointId)
-        return usagePointId;
+
+      let resultArray = []
+      if (!result.feed.entry.length) {
+        resultArray.push(result.feed.entry)
       } else {
-        console.log("usagePointDetails null >> ", links)
-        return null
+        resultArray = result.feed.entry
       }
+
+      let usagePoints = []
+      for (let a = 0; a < resultArray.length; a++) {
+        const links = resultArray[a].link;
+        if (links.length > 0) {
+          let usagePointId
+
+          for (let i = 0; i < links.length; i++) {
+            const element = links[i];
+            if (element._attributes.rel === 'self') {
+              usagePointId = element._attributes.href.split("/").pop();
+            }
+          }
+
+          console.log("usagePointDetails >> ", usagePointId)
+          usagePoints.push(usagePointId);
+        }
+      }
+
+      return usagePoints
     })
       .catch(error => {
         console.log('usagePointDetails error =', error)
@@ -271,7 +300,7 @@ const meterReading = async (refreshToken, subscriptionId, usagePointId) => {
           }
         }
         console.log("MeterReading >> ", meterReadingId)
-        return meterReadingId;
+        return { meterReadingId, usagePointId };
       } else {
         console.log("MeterReading null >> ", links)
         return null
