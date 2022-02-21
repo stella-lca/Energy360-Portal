@@ -46,7 +46,7 @@ const handleToken = async function (authCode, tokenData) {
     let subscriptionId = resourceURI.split("/").pop();
     let authorizationId = authorizationURI.split("/").pop();
     // Customer Details
-    let customerDetails = await retailCustomerDetails(refresh_token, subscriptionId, userId);
+    let customerDetails = await retailCustomerDetails(refresh_token, subscriptionId, userId, conedSub);
     console.log("Customer Details DATA >> ", customerDetails)
 
     // UsagePoint ID

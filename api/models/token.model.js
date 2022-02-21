@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		userId: {
 			type: DataTypes.INTEGER(),
-			allowNull: true,
 			references: {
 				model: 'GCEP_Users',
 				key: 'id'
@@ -67,22 +66,6 @@ module.exports = (sequelize, DataTypes) => {
 		authorizationId: {
 			type: DataTypes.STRING,
 			field: "authorizationId"
-		},
-		conedAddress: {
-			type: DataTypes.STRING,
-			field: "conedAddress"
-		},
-		meterAccountId: {
-			type: DataTypes.STRING,
-			field: "meterAccountId"
-		},
-		meterReadingId: {
-			type: DataTypes.STRING,
-			field: "meterReadingId"
-		},
-		usagePointId: {
-			type: DataTypes.STRING,
-			field: "usagePointId"
 		}
 	},
 		{

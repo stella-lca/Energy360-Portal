@@ -15,19 +15,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             field: "time",
         },
-        tokenId: {
-            type: DataTypes.INTEGER(),
-            allowNull: true,
-            references: {
-                model: 'GCEP_Tokens',
-                key: 'id'
-            }
-        },
         intervalBlockPayloadId: {
             type: DataTypes.INTEGER(),
-            allowNull: true,
             references: {
-                model: 'GCEP_IntervalBlockPayload',
+                model: 'GCEP_IntervalBlockPayloads',
                 key: 'id'
             }
         },

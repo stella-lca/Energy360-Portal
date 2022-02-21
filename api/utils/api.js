@@ -143,7 +143,7 @@ const ThirdPartyApiClient = async (refreshToken, subscriptionId) => {
   } catch (error) { }
 }
 
-const retailCustomerDetails = async (refreshToken, subscriptionId, userId) => {
+const retailCustomerDetails = async (refreshToken, subscriptionId, userId, conedSub) => {
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
@@ -181,7 +181,7 @@ const retailCustomerDetails = async (refreshToken, subscriptionId, userId) => {
           let address = mainAddress['cust:streetDetail']._text + ' ' + mainAddress['cust:cityDetail']._text + ', ' + mainAddress['cust:stateDetail']._text + ' ' + mainAddress['cust:postalCode']._text
 
           console.log("meterAccountNumber >> ", meterAccountNumber, "Address >> ", address);
-          let obj = { userId, meterAccountNumber, address }
+          let obj = { userId, meterAccountId: meterAccountNumber, conedAddress: address, conedSub: conedSub }
           console.log("Customer Details DATA >> ", result)
           addressArray.push(obj);
         }
