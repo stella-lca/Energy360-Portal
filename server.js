@@ -84,9 +84,9 @@ app.use((req, res, next) => {
  * Cron
  */
 meterReading();
-meterErrorDataInput();
-meterReadingHourly();
-meterHourlyErrorDataInput();
+// meterErrorDataInput();
+// meterReadingHourly();
+// meterHourlyErrorDataInput();
 
 // Express Routing
 app.use("/", router);

@@ -20,14 +20,12 @@ const meterReading = () => {
             year = moment().year()
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
-            let meterReadingId
-            let usagePointId
-            let intervalBlockPayloadId
             for (let index = 0; index < tokenElement.GCEP_IntervalBlockPayloads.length; index++) {
+
                 let intervalBlockElement = tokenElement.GCEP_IntervalBlockPayloads[index].dataValues
-                meterReadingId = intervalBlockElement.meterReadingId;
-                usagePointId = intervalBlockElement.usagePointId;
-                intervalBlockPayloadId = intervalBlockElement.id;
+                let meterReadingId = intervalBlockElement.meterReadingId;
+                let usagePointId = intervalBlockElement.usagePointId;
+                let intervalBlockPayloadId = intervalBlockElement.id;
 
                 try {
                     let AUTH_TOKEN = await generateThirdPartyToken(tokenElement.refresh_token, tokenElement.subscriptionId)
@@ -84,8 +82,8 @@ const meterReading = () => {
 
                             let obj = {
                                 subscriptionId: tokenElement.subscriptionId,
-                                usagePointId: tokenElement.usagePointId,
-                                meterReadingId: tokenElement.meterReadingId,
+                                usagePointId: usagePointId,
+                                meterReadingId: meterReadingId,
                                 startDate: weeksDatesElement.startDate,
                                 endDate: weeksDatesElement.endDate,
                                 intervalBlockPayloadId: intervalBlockPayloadId
