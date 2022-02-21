@@ -403,7 +403,7 @@ const intervalBlock = async (headers, data) => {
 
 
 const intervalBlockHourly = async (headers, data) => {
-  let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, tokenId } = data
+  let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, intervalBlockPayloadId } = data
   try {
     let options = {
       timeout: 100000,
@@ -469,7 +469,7 @@ const intervalBlockHourly = async (headers, data) => {
               dateViseIntervalBlock[key] = {
                 date: date,
                 time: time,
-                tokenId,
+                intervalBlockPayloadId,
                 KVARHReading: intervalReadingTotal,
                 KWHReading: null
               }

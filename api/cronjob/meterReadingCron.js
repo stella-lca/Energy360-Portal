@@ -124,11 +124,11 @@ const meterErrorDataInput = async () => {
 
     cron.schedule('45 23 * * *', async () => {
         let tokens = await db.Token.findAll({
-            include: {
+            include: [{
                 model: db.MeterCronError, where: {
                     tokenId: { [Op.ne]: null }
                 }
-            }
+            }, { model: db.IntervalBlockPayload }]
         })
 
         for (let i = 0; i < tokens.length; i++) {
@@ -136,57 +136,67 @@ const meterErrorDataInput = async () => {
             const meterError = token.GCEP_MeterCronErrors;
             for (let a = 0; a < meterError.length; a++) {
                 const meterErrorElement = meterError[a];
-                try {
-                    let AUTH_TOKEN = await generateThirdPartyToken(token.refresh_token, token.subscriptionId)
 
-                    let headers = {
-                        'content-type': 'application/json',
-                        'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
-                        'Authorization': 'Bearer ' + AUTH_TOKEN
-                    },
-                        firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
+                for (let index = 0; index < token.GCEP_IntervalBlockPayloads.length; index++) {
 
-                    let meterReading = await db.MeterReading.findAll({
-                        where: {
-                            tokenId: token.id,
-                            date: { [Op.gt]: firstDayOfYear }
-                        }
-                    })
+                    let intervalBlockElement = token.GCEP_IntervalBlockPayloads[index].dataValues
+                    let meterReadingId = intervalBlockElement.meterReadingId;
+                    let usagePointId = intervalBlockElement.usagePointId;
+                    let intervalBlockPayloadId = intervalBlockElement.id;
 
-                    if (meterReading.length > 0) {
+                    try {
+                        let AUTH_TOKEN = await generateThirdPartyToken(token.refresh_token, token.subscriptionId)
 
-                        let obj = {
-                            subscriptionId: token.subscriptionId,
-                            usagePointId: token.usagePointId,
-                            meterReadingId: token.meterReadingId,
-                            startDate: meterErrorElement.minDate,
-                            endDate: meterErrorElement.maxDate,
-                            tokenId: token.id
-                        }
+                        let headers = {
+                            'content-type': 'application/json',
+                            'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
+                            'Authorization': 'Bearer ' + AUTH_TOKEN
+                        },
+                            firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
 
-                        let todayReading = meterReading.filter(e => e.date === meterErrorElement.maxDate)
-                        let yesterdayReading = meterReading.filter(e => e.date === meterErrorElement.minDate)
-
-                        let intervalBlockData = await intervalBlock(headers, obj)
-                        if (todayReading && todayReading.length === 0 || yesterdayReading && yesterdayReading.length === 0) {
-                            let intervalBlockToday
-                            if (yesterdayReading.length > 0) {
-                                intervalBlockToday = intervalBlockData.filter(e => e.date == meterErrorElement.maxDate)
-                            } else {
-                                intervalBlockToday = intervalBlockData.filter(e => e.date == meterErrorElement.maxDate || e.date == meterErrorElement.minDate)
+                        let meterReading = await db.MeterReading.findAll({
+                            where: {
+                                intervalBlockPayloadId: intervalBlockPayloadId,
+                                date: { [Op.gt]: firstDayOfYear }
                             }
-                            if (intervalBlockToday.length > 0) {
-                                let data = await db.MeterReading.bulkCreate(intervalBlockToday);
-                                await db.MeterCronError.destroy({
-                                    where: { tokenId: token.id, maxDate: meterErrorElement.maxDate, minDate: meterErrorElement.minDate }
-                                })
-                                createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
+                        })
+
+                        if (meterReading.length > 0) {
+
+                            let obj = {
+                                subscriptionId: token.subscriptionId,
+                                usagePointId: usagePointId,
+                                meterReadingId: meterReadingId,
+                                startDate: meterErrorElement.minDate,
+                                endDate: meterErrorElement.maxDate,
+                                intervalBlockPayloadId: intervalBlockPayloadId
+
+                            }
+
+                            let todayReading = meterReading.filter(e => e.date === meterErrorElement.maxDate)
+                            let yesterdayReading = meterReading.filter(e => e.date === meterErrorElement.minDate)
+
+                            let intervalBlockData = await intervalBlock(headers, obj)
+                            if (todayReading && todayReading.length === 0 || yesterdayReading && yesterdayReading.length === 0) {
+                                let intervalBlockToday
+                                if (yesterdayReading.length > 0) {
+                                    intervalBlockToday = intervalBlockData.filter(e => e.date == meterErrorElement.maxDate)
+                                } else {
+                                    intervalBlockToday = intervalBlockData.filter(e => e.date == meterErrorElement.maxDate || e.date == meterErrorElement.minDate)
+                                }
+                                if (intervalBlockToday.length > 0) {
+                                    let data = await db.MeterReading.bulkCreate(intervalBlockToday);
+                                    await db.MeterCronError.destroy({
+                                        where: { tokenId: token.id, maxDate: meterErrorElement.maxDate, minDate: meterErrorElement.minDate }
+                                    })
+                                    createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
+                                }
                             }
                         }
+                    } catch (error) {
+                        createLogItem(true, 'Error in error data input', "Error in error data input cron", JSON.stringify(error))
+                        console.log('Cron Error ', error)
                     }
-                } catch (error) {
-                    createLogItem(true, 'Error in error data input', "Error in error data input cron", JSON.stringify(error))
-                    console.log('Cron Error ', error)
                 }
             }
         }
