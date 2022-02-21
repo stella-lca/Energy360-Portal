@@ -317,7 +317,7 @@ const meterReading = async (refreshToken, subscriptionId, usagePointId) => {
 }
 
 const intervalBlock = async (headers, data) => {
-  let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, tokenId } = data
+  let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, tokenId, intervalBlockPayloadId } = data
   try {
     let options = {
       timeout: 100000,
@@ -377,6 +377,7 @@ const intervalBlock = async (headers, data) => {
               date: date,
               KVARHReading: intervalReadingTotal,
               tokenId: tokenId,
+              intervalBlockPayloadId: intervalBlockPayloadId,
               KWHReading: null
             }
           } else {
