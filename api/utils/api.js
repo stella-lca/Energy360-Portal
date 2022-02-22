@@ -494,76 +494,94 @@ const intervalBlockHourly = async (headers, data) => {
   }
 }
 
-const intervalBlockTest = async (refreshToken, subscriptionId, usagePointId, meterReadingId, tokenId, res) => {
+const intervalBlockTest = async (refreshToken, subscriptionId, GCEP_IntervalBlockPayloads) => {
   try {
-    let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
+    let readingEndDate = moment().format('YYYY-MM-DD'),
+      d = new Date(),
+      year = moment().year(),
+      lastYear = moment().subtract(1, "years").format('YYYY')
+    let yearArray = [lastYear, year]
+    let responseArray = []
+    for (let index = 0; index < GCEP_IntervalBlockPayloads.length; index++) {
 
-    let headers = {
-      'content-type': 'application/json',
-      'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
-      'Authorization': 'Bearer ' + AUTH_TOKEN
-    },
-      firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
+      let intervalBlockElement = GCEP_IntervalBlockPayloads[index]
+      let meterReadingId = intervalBlockElement.meterReadingId;
+      let usagePointId = intervalBlockElement.usagePointId;
+      let intervalBlockPayloadId = intervalBlockElement.id;
 
-    let meterReading = await db.MeterReading.findAll({
-      where: {
-        tokenId: tokenId,
-        date: { [Op.gt]: firstDayOfYear }
-      }
-    })
+      let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
-    let readingDate = moment().format('YYYY-MM-DD');
+      let headers = {
+        'content-type': 'application/json',
+        'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
+        'Authorization': 'Bearer ' + AUTH_TOKEN
+      },
+        firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
 
-    if (meterReading.length > 0) {
-      let obj = {
-        subscriptionId: subscriptionId,
-        usagePointId: usagePointId,
-        meterReadingId: meterReadingId,
-        startDate: readingDate,
-        endDate: readingDate,
-        tokenId: tokenId
-      }
-      let array = await intervalBlock(headers, obj)
-      return array
-    } else {
-
-      let d = new Date(),
-        year = moment().year()
-
-      let months = getMonthsBeforeGivenDate(d);
-      let weeksDates = []
-      for (let i = 0; i < months.length; i++) {
-        const element = months[i];
-        let array = getWeeksStartAndEndInMonth(element, year, "monday");
-        weeksDates = weeksDates.concat(array)
-      }
-      console.log('weeksDates >> ', weeksDates)
-      let MeterReadingTillDate = [],
-        lastWeek = false
-      for (let i = 0; i < weeksDates.length; i++) {
-        let weeksDatesElement = weeksDates[i];
-        if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
-          weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
-          lastWeek = true
+      let meterReading = await db.MeterReading.findAll({
+        where: {
+          intervalBlockPayloadId: intervalBlockPayloadId,
+          date: { [Op.gt]: firstDayOfYear }
         }
+      })
+
+      if (meterReading.length < 0) {
+
+        let readingStartDate = subtractDay(readingEndDate)
+
         let obj = {
           subscriptionId: subscriptionId,
           usagePointId: usagePointId,
           meterReadingId: meterReadingId,
-          startDate: weeksDatesElement.startDate,
-          endDate: weeksDatesElement.endDate,
-          tokenId: tokenId
+          startDate: readingStartDate,
+          endDate: readingEndDate,
+          intervalBlockPayloadId: intervalBlockPayloadId
         }
-        let array = await intervalBlock(headers, obj)
-        MeterReadingTillDate.concat(array)
-        if (lastWeek) {
-          break
-        }
-      }
-      console.log(MeterReadingTillDate)
 
-      return MeterReadingTillDate
+        let todayReading = meterReading.filter(e => e.date === readingEndDate)
+        let yesterdayReading = meterReading.filter(e => e.date === readingStartDate)
+
+        let intervalBlockData = await intervalBlock(headers, obj)
+        if (todayReading && todayReading.length === 0 || yesterdayReading && yesterdayReading.length === 0) {
+          let intervalBlockToday
+          if (yesterdayReading.length > 0) {
+            intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate)
+          } else {
+            intervalBlockToday = intervalBlockData.filter(e => e.date == readingEndDate || e.date == readingStartDate)
+          }
+          if (intervalBlockToday.length > 0) {
+            // let data = await db.MeterReading.bulkCreate(intervalBlockToday);
+            createLogItem(true, 'intervalBlockTest', "intervalBlockTest Added Success", JSON.stringify(intervalBlockToday))
+            return intervalBlockToday
+          }
+        }
+      } else {
+        let weeksDates = weekDatesArrayTillToday(d, yearArray),
+          MeterReadingTillDate = []
+
+        for (let i = 0; i < weeksDates.length; i++) {
+          let weeksDatesElement = weeksDates[i];
+
+          let obj = {
+            subscriptionId: subscriptionId,
+            usagePointId: usagePointId,
+            meterReadingId: meterReadingId,
+            startDate: weeksDatesElement.startDate,
+            endDate: weeksDatesElement.endDate,
+            intervalBlockPayloadId: intervalBlockPayloadId
+          }
+
+          let array = await intervalBlock(headers, obj)
+          array = comparerArray(MeterReadingTillDate, array)     // compare and return unique object from second array 
+
+          MeterReadingTillDate = MeterReadingTillDate.concat(array)
+        }
+        console.log(MeterReadingTillDate)
+        createLogItem(true, 'intervalBlockTest MeterReadingTillDate', "intervalBlockTest MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
+        responseArray = responseArray.concat(MeterReadingTillDate)
+      }
     }
+    return responseArray
   } catch (error) {
     console.log('intervalBlock Error ', error)
     return new Error(error)

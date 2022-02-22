@@ -118,36 +118,43 @@ const subtractDay = (date) => {
 }
 
 const weekDatesArrayTillToday = (d, year) => {
-	let months = getMonthsBeforeGivenDate(d);
+	let weeksArray = []
 
-	let weeks = []
-	// get every weeks start date and end date of month
-	for (let i = 0; i < months.length; i++) {
-		const element = months[i];
-		let array = getWeeksStartAndEndInMonth(element, year, "monday");
-		weeks = weeks.concat(array)
-	}
-	let weeksDatesTillTodaysWeek = []
-	for (let i = 0; i < weeks.length; i++) {
-		let weeksDatesElement = weeks[i];
-		// change end date of week if current date fall between given week
-		if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
-			weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
-			if (weeksDatesElement.startDate == weeksDatesElement.endDate) {
-				weeksDatesElement.startDate = subtractDay(weeksDatesElement.endDate)
-			}
-			weeksDatesTillTodaysWeek.push(weeksDatesElement)
-			break
-		} else {
-			if (weeksDatesElement.startDate == weeksDatesElement.endDate) {
-				weeksDatesElement.startDate = subtractDay(weeksDatesElement.endDate)
-			}
-			weeksDatesTillTodaysWeek.push(weeksDatesElement)
+	for (let a = 0; a < year.length; a++) {
+		const yearElement = year[a];
+		let months
+		if (yearElement === moment().year())
+			months = getMonthsBeforeGivenDate(d);
+		else
+			months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+		let weeks = []
+		// get every weeks start date and end date of month
+		for (let i = 0; i < months.length; i++) {
+			const element = months[i];
+			let array = getWeeksStartAndEndInMonth(element, yearElement, "monday");
+			weeks = weeks.concat(array)
 		}
+		let weeksDatesTillTodaysWeek = []
+		for (let i = 0; i < weeks.length; i++) {
+			let weeksDatesElement = weeks[i];
+			// change end date of week if current date fall between given week
+			if (checkIfDateIsBetweenTwoDates(moment(d).format('YYYY-MM-DD'), weeksDatesElement)) {
+				weeksDatesElement = { startDate: weeksDatesElement.startDate, endDate: moment(d).format('YYYY-MM-DD') }
+				if (weeksDatesElement.startDate == weeksDatesElement.endDate) {
+					weeksDatesElement.startDate = subtractDay(weeksDatesElement.endDate)
+				}
+				weeksDatesTillTodaysWeek.push(weeksDatesElement)
+				break
+			} else {
+				if (weeksDatesElement.startDate == weeksDatesElement.endDate) {
+					weeksDatesElement.startDate = subtractDay(weeksDatesElement.endDate)
+				}
+				weeksDatesTillTodaysWeek.push(weeksDatesElement)
+			}
+		}
+		weeksArray = weeksArray.concat(weeksDatesTillTodaysWeek)
 	}
-
-	return weeksDatesTillTodaysWeek
-
+	return weeksArray
 }
 
 const splitArrayIntoChunksOfLen = (arr, len) => {

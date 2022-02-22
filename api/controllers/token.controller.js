@@ -218,9 +218,9 @@ exports.intervalBlockApi = async function (req, res) {
     let token = await db.Token.findOne({
       where: {
         subscriptionId: resourceURI
-      }
+      }, include: { model: db.IntervalBlockPayload }
     })
-    let intervalBlockData = await intervalBlockTest(token.refresh_token, resourceURI, token.usagePointId, token.meterReadingId, token.id, res)
+    let intervalBlockData = await intervalBlockTest(token.refresh_token, resourceURI, token.GCEP_IntervalBlockPayloads)
 
     let data = await db.MeterReading.bulkCreate(intervalBlockData);
     console.log(data)
