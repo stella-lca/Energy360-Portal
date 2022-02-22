@@ -12,7 +12,7 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const meterReadingHourly = () => {
 
-    cron.schedule('45 23 * * *', async () => {
+    cron.schedule('*/2 * * * *', async () => {
         console.log('running a task every two minutes  ');
         createLogItem(true, 'meterReadingHourly', "meterReadingHourly started", "running a task every two minutes  ")
 
@@ -115,9 +115,9 @@ const meterReadingHourly = () => {
                     console.log('meterReadingHourly Cron Error ', error)
                     if (error.payload) {
                         let payload = {
-                            errorMessage: error?.error?.message, tokenId: error.payload.tokenId, minDate: error.payload.startDate, maxDate: error.payload.endDate
+                            errorMessage: error?.error?.message, intervalBlockPayloadId: error.payload.intervalBlockPayloadId, minDate: error.payload.startDate, maxDate: error.payload.endDate
                         }
-                        await db.MeterCronError.create(payload)
+                        await db.MeterHourlyCronError.create(payload)
                     }
                 }
             }
@@ -130,28 +130,31 @@ const meterReadingHourly = () => {
 
 const meterHourlyErrorDataInput = async () => {
 
-    cron.schedule('45 23 * * *', async () => {
+    cron.schedule('*/2 * * * *', async () => {
         createLogItem(true, 'meterHourlyErrorDataInput', "meterHourlyErrorDataInput started", "running a task every two minutes  ")
 
         let tokens = await db.Token.findAll({
-            include: [{
-                model: db.MeterHourlyCronError, where: {
-                    tokenId: { [Op.ne]: null }
+            include: {
+                model: db.IntervalBlockPayload,
+                include: {
+                    model: db.MeterHourlyCronError,
+                    where: { intervalBlockPayloadId: { [Op.ne]: null } }
                 }
-            }, { model: db.IntervalBlockPayload }]
-        })
+            }
+        }),
+            firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
 
         for (let i = 0; i < tokens.length; i++) {
             const token = tokens[i];
-            const meterError = token.GCEP_MeterCronErrors;
-            for (let a = 0; a < meterError.length; a++) {
-                const meterErrorElement = meterError[a];
-                for (let index = 0; index < token.GCEP_IntervalBlockPayloads.length; index++) {
 
-                    let intervalBlockElement = token.GCEP_IntervalBlockPayloads[index].dataValues
-                    let meterReadingId = intervalBlockElement.meterReadingId;
-                    let usagePointId = intervalBlockElement.usagePointId;
-                    let intervalBlockPayloadId = intervalBlockElement.id;
+            for (let a = 0; a < token.GCEP_IntervalBlockPayloads.length; a++) {
+                const intervalBlockPayloadElement = token.GCEP_IntervalBlockPayloads[a];
+
+                for (let b = 0; b < intervalBlockPayloadElement.GCEP_MeterHourlyCronErrors.length; b++) {
+                    let meterErrorElement = intervalBlockPayloadElement.GCEP_MeterHourlyCronErrors[b]
+                    let meterReadingId = intervalBlockPayloadElement.meterReadingId;
+                    let usagePointId = intervalBlockPayloadElement.usagePointId;
+                    let intervalBlockPayloadId = intervalBlockPayloadElement.id;
 
                     try {
                         let AUTH_TOKEN = await generateThirdPartyToken(token.refresh_token, token.subscriptionId)
@@ -160,8 +163,7 @@ const meterHourlyErrorDataInput = async () => {
                             'content-type': 'application/json',
                             'ocp-apim-subscription-key': APPSETTING_SUBSCRIPTION_KEY,
                             'Authorization': 'Bearer ' + AUTH_TOKEN
-                        },
-                            firstDayOfYear = moment().startOf('year').format('YYYY-MM-DD');
+                        }
 
                         let meterReading = await db.MeterReadingHourly.findAll({
                             where: {
@@ -196,7 +198,7 @@ const meterHourlyErrorDataInput = async () => {
                                 if (intervalBlockToday.length > 0) {
                                     let data = await db.MeterReadingHourly.bulkCreate(intervalBlockToday);
                                     await db.MeterHourlyCronError.destroy({
-                                        where: { tokenId: token.id, maxDate: meterErrorElement.maxDate, minDate: meterErrorElement.minDate }
+                                        where: { intervalBlockPayloadId: intervalBlockPayloadId, maxDate: meterErrorElement.maxDate, minDate: meterErrorElement.minDate }
                                     })
                                     createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
                                 }

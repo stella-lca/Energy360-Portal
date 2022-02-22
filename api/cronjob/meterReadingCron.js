@@ -12,7 +12,7 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const meterReading = () => {
 
-    cron.schedule('45 23 * * *', async () => {
+    cron.schedule('*/2 * * * *', async () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
             readingEndDate = moment().format('YYYY-MM-DD'),
@@ -107,7 +107,7 @@ const meterReading = () => {
                     console.log('Cron Error ', error)
                     if (error.payload) {
                         let payload = {
-                            errorMessage: error?.error?.message, tokenId: error.payload.tokenId, minDate: error.payload.startDate, maxDate: error.payload.endDate
+                            errorMessage: error?.error?.message, intervalBlockPayloadId: error.payload.intervalBlockPayloadId, minDate: error.payload.startDate, maxDate: error.payload.endDate
                         }
                         await db.MeterCronError.create(payload)
                     }
@@ -122,30 +122,28 @@ const meterReading = () => {
 
 const meterErrorDataInput = async () => {
 
-    cron.schedule('45 23 * * *', async () => {
+    cron.schedule('*/2 * * * *', async () => {
         let tokens = await db.Token.findAll({
             include: {
                 model: db.IntervalBlockPayload,
                 include: {
-                    models: db.MeterCronError,
+                    model: db.MeterCronError,
                     where: { intervalBlockPayloadId: { [Op.ne]: null } }
-
                 }
             }
         })
 
         for (let i = 0; i < tokens.length; i++) {
             const token = tokens[i];
-            const meterError = token.GCEP_MeterCronErrors;
-            for (let a = 0; a < meterError.length; a++) {
-                const meterErrorElement = meterError[a];
 
-                for (let index = 0; index < token.GCEP_IntervalBlockPayloads.length; index++) {
+            for (let a = 0; a < token.GCEP_IntervalBlockPayloads.length; a++) {
+                const intervalBlockPayloadElement = token.GCEP_IntervalBlockPayloads[a];
 
-                    let intervalBlockElement = token.GCEP_IntervalBlockPayloads[index].dataValues
-                    let meterReadingId = intervalBlockElement.meterReadingId;
-                    let usagePointId = intervalBlockElement.usagePointId;
-                    let intervalBlockPayloadId = intervalBlockElement.id;
+                for (let b = 0; b < intervalBlockPayloadElement.GCEP_MeterCronErrors.length; b++) {
+                    let meterErrorElement = intervalBlockPayloadElement.GCEP_MeterCronErrors[b]
+                    let meterReadingId = intervalBlockPayloadElement.meterReadingId;
+                    let usagePointId = intervalBlockPayloadElement.usagePointId;
+                    let intervalBlockPayloadId = intervalBlockPayloadElement.id;
 
                     try {
                         let AUTH_TOKEN = await generateThirdPartyToken(token.refresh_token, token.subscriptionId)
@@ -173,7 +171,6 @@ const meterErrorDataInput = async () => {
                                 startDate: meterErrorElement.minDate,
                                 endDate: meterErrorElement.maxDate,
                                 intervalBlockPayloadId: intervalBlockPayloadId
-
                             }
 
                             let todayReading = meterReading.filter(e => e.date === meterErrorElement.maxDate)
@@ -190,7 +187,7 @@ const meterErrorDataInput = async () => {
                                 if (intervalBlockToday.length > 0) {
                                     let data = await db.MeterReading.bulkCreate(intervalBlockToday);
                                     await db.MeterCronError.destroy({
-                                        where: { tokenId: token.id, maxDate: meterErrorElement.maxDate, minDate: meterErrorElement.minDate }
+                                        where: { intervalBlockPayloadId: intervalBlockPayloadId, maxDate: meterErrorElement.maxDate, minDate: meterErrorElement.minDate }
                                     })
                                     createLogItem(true, 'intervalBlockToday', "intervalBlockToday Added", JSON.stringify(data))
                                 }
