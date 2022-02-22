@@ -19,7 +19,9 @@ const meterReadingHourly = () => {
         let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
             readingEndDate = moment().format('YYYY-MM-DD'),
             d = new Date(),
-            year = moment().year()
+            year = moment().year(),
+            lastYear = moment().subtract(1, "years").format('YYYY')
+        let yearArray = [lastYear, year]
 
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
@@ -76,7 +78,7 @@ const meterReadingHourly = () => {
                             }
                         }
                     } else {
-                        let weeksDates = weekDatesArrayTillToday(d, year),
+                        let weeksDates = weekDatesArrayTillToday(d, yearArray),
                             MeterReadingTillDate = []
 
                         for (let i = 0; i < weeksDates.length; i++) {
@@ -130,7 +132,7 @@ const meterReadingHourly = () => {
 
 const meterHourlyErrorDataInput = async () => {
 
-    cron.schedule('*/2 * * * *', async () => {
+    cron.schedule('45 23 * * * *', async () => {
         createLogItem(true, 'meterHourlyErrorDataInput', "meterHourlyErrorDataInput started", "running a task every two minutes  ")
 
         let tokens = await db.Token.findAll({

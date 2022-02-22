@@ -17,7 +17,9 @@ const meterReading = () => {
         let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
             readingEndDate = moment().format('YYYY-MM-DD'),
             d = new Date(),
-            year = moment().year()
+            year = moment().year(),
+            lastYear = moment().subtract(1, "years").format('YYYY')
+        let yearArray = [lastYear, year]
         for (let i = 0; i < Token.length; i++) {
             let tokenElement = Token[i];
             for (let index = 0; index < tokenElement.GCEP_IntervalBlockPayloads.length; index++) {
@@ -74,7 +76,7 @@ const meterReading = () => {
                             }
                         }
                     } else {
-                        let weeksDates = weekDatesArrayTillToday(d, year),
+                        let weeksDates = weekDatesArrayTillToday(d, yearArray),
                             MeterReadingTillDate = []
 
                         for (let i = 0; i < weeksDates.length; i++) {
