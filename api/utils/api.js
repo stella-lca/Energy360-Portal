@@ -525,7 +525,7 @@ const intervalBlockTest = async (refreshToken, subscriptionId, GCEP_IntervalBloc
         }
       })
 
-      if (meterReading.length < 0) {
+      if (meterReading.length > 0) {
 
         let readingStartDate = subtractDay(readingEndDate)
 
