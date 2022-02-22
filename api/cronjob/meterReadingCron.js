@@ -12,7 +12,7 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const meterReading = () => {
 
-    cron.schedule('*/2 * * * *', async () => {
+    cron.schedule('45 23 * * *', async () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
             readingEndDate = moment().format('YYYY-MM-DD'),
@@ -122,7 +122,7 @@ const meterReading = () => {
 
 const meterErrorDataInput = async () => {
 
-    cron.schedule('*/2 * * * *', async () => {
+    cron.schedule('45 23 * * *', async () => {
         let tokens = await db.Token.findAll({
             include: {
                 model: db.IntervalBlockPayload,
