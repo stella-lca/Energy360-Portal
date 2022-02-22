@@ -167,7 +167,7 @@ const meterHourlyErrorDataInput = async () => {
 
                         let meterReading = await db.MeterReadingHourly.findAll({
                             where: {
-                                tokenId: token.id,
+                                intervalBlockPayloadId: intervalBlockPayloadId,
                                 date: { [Op.gt]: firstDayOfYear }
                             }
                         })
