@@ -12,7 +12,7 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const meterReading = () => {
 
-    cron.schedule('45 23 * * *', async () => {
+    cron.schedule('*/30 * * * *', async () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
             readingEndDate = moment().format('YYYY-MM-DD'),
@@ -80,39 +80,53 @@ const meterReading = () => {
                             MeterReadingTillDate = []
 
                         for (let i = 0; i < weeksDates.length; i++) {
-                            let weeksDatesElement = weeksDates[i];
+                            try {
+                                let weeksDatesElement = weeksDates[i];
 
-                            let obj = {
-                                subscriptionId: tokenElement.subscriptionId,
-                                usagePointId: usagePointId,
-                                meterReadingId: meterReadingId,
-                                startDate: weeksDatesElement.startDate,
-                                endDate: weeksDatesElement.endDate,
-                                intervalBlockPayloadId: intervalBlockPayloadId
+                                let obj = {
+                                    subscriptionId: tokenElement.subscriptionId,
+                                    usagePointId: usagePointId,
+                                    meterReadingId: meterReadingId,
+                                    startDate: weeksDatesElement.startDate,
+                                    endDate: weeksDatesElement.endDate,
+                                    intervalBlockPayloadId: intervalBlockPayloadId
 
+                                }
+
+                                let array = await intervalBlock(headers, obj)
+                                if (array.error) {
+                                    if (array.error.payload) {
+                                        let payload = {
+                                            errorMessage: array.error?.error?.message, intervalBlockPayloadId: array.error.payload.intervalBlockPayloadId, minDate: array.error.payload.startDate, maxDate: array.error.payload.endDate
+                                        }
+                                        await db.MeterCronError.create(payload)
+                                    }
+                                }
+                                array = comparerArray(MeterReadingTillDate, array)     // compare and return unique object from second array 
+                                await db.MeterReading.bulkCreate(array);
+
+                                MeterReadingTillDate = MeterReadingTillDate.concat(array)
+                            } catch (error) {
+                                createLogItem(true, `CRON ERROR payloadId ${intervalBlockPayloadId} startDate ${weeksDatesElement.startDate} <-> endDate${weeksDatesElement.endDate}`, "error in cron", error)
+                                console.log('Cron Error ', error)
+                                if (error.payload) {
+                                    let payload = {
+                                        errorMessage: error?.error?.message, intervalBlockPayloadId: error.payload.intervalBlockPayloadId, minDate: error.payload.startDate, maxDate: error.payload.endDate
+                                    }
+                                    await db.MeterCronError.create(payload)
+                                }
                             }
 
-                            let array = await intervalBlock(headers, obj)
-                            array = comparerArray(MeterReadingTillDate, array)     // compare and return unique object from second array 
 
-                            MeterReadingTillDate = MeterReadingTillDate.concat(array)
                         }
                         console.log(MeterReadingTillDate)
                         createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
-
-                        let data = await db.MeterReading.bulkCreate(MeterReadingTillDate);
-                        console.log("MeterReading BulkCreate >>> ", data)
+                        console.log("MeterReading BulkCreate >>> ", MeterReadingTillDate)
                     }
 
                 } catch (error) {
                     createLogItem(true, 'CRON ERROR', "error in cron", error)
                     console.log('Cron Error ', error)
-                    if (error.payload) {
-                        let payload = {
-                            errorMessage: error?.error?.message, intervalBlockPayloadId: error.payload.intervalBlockPayloadId, minDate: error.payload.startDate, maxDate: error.payload.endDate
-                        }
-                        await db.MeterCronError.create(payload)
-                    }
                 }
             }
         }
