@@ -80,7 +80,7 @@ const meterReading = () => {
                             MeterReadingTillDate = []
 
                         for (let i = 0; i < weeksDates.length; i++) {
-                            let weeksDatesElement = weeksDates[i]; F
+                            let weeksDatesElement = weeksDates[i];
                             try {
 
                                 let obj = {
