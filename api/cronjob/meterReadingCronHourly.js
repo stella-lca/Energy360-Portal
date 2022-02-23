@@ -83,8 +83,8 @@ const meterReadingHourly = () => {
 
                         for (let i = 0; i < weeksDates.length; i++) {
 
+                            let weeksDatesElement = weeksDates[i];
                             try {
-                                let weeksDatesElement = weeksDates[i];
                                 let obj = {
                                     subscriptionId: tokenElement.subscriptionId,
                                     usagePointId: usagePointId,
