@@ -89,12 +89,21 @@ const apiClient = async () => {
 const generateThirdPartyToken = async function (refreshToken, subscriptionId) {
   try {
 
-    var oldTpDate = parseInt(localStorage.getItem('TPDate') || 0)
-    var oldTpToken = localStorage.getItem('TPToken')
+    // var oldTpDate = parseInt(localStorage.getItem('TPDate') || 0)
+    // var oldTpToken = localStorage.getItem('TPToken')
 
-    if ((Date.now() - oldTpDate) / 1000 < 3600 && oldTpToken) {
-      return oldTpToken
-    }
+    // if ((Date.now() - oldTpDate) / 1000 < 3600 && oldTpToken) {
+    //   return oldTpToken
+    // }
+
+    console.log(`
+    APPSETTING_CLIENT_ID >> = ${APPSETTING_CLIENT_ID},
+    APPSETTING_CLIENT_SECRET >> = ${APPSETTING_CLIENT_SECRET},
+    refreshToken >> = ${refreshToken},
+    subscriptionId >> = ${subscriptionId}
+
+
+    `);
 
     const data = {
       grantType: "refresh_token",
