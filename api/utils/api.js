@@ -89,12 +89,11 @@ const apiClient = async () => {
 const generateThirdPartyToken = async function (refreshToken, subscriptionId) {
   try {
 
-    // var oldTpDate = parseInt(localStorage.getItem('TPDate') || 0)
-    // var oldTpToken = localStorage.getItem('TPToken')
+    var oldTpData = parseInt(localStorage.getItem(`${subscriptionId}`))
 
-    // if ((Date.now() - oldTpDate) / 1000 < 3600 && oldTpToken) {
-    //   return oldTpToken
-    // }
+    if ((Date.now() - oldTpData.TPDate) / 1000 < 3600 && oldTpData.TPToken) {
+      return oldTpData.TPToken
+    }
 
     console.log(`
     APPSETTING_CLIENT_ID >> = ${APPSETTING_CLIENT_ID},
@@ -127,8 +126,11 @@ const generateThirdPartyToken = async function (refreshToken, subscriptionId) {
 
         if (access_token) {
           console.log('Created new Third Party token successfully')
-          localStorage.setItem('TPDate', Date.now())
-          localStorage.setItem('TPToken', access_token)
+          let tokenObj = {
+            'TPDate': Date.now(),
+            'TPToken': access_token
+          }
+          localStorage.setItem(`${subscriptionId}`, JSON.stringify(tokenObj))
           return access_token
         }
         return null
