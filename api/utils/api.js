@@ -144,8 +144,14 @@ const ThirdPartyApiClient = async (refreshToken, subscriptionId) => {
 }
 
 const retailCustomerDetails = async (refreshToken, subscriptionId, userId, conedSub) => {
+  console.log(`refreshToken >> = ${refreshToken}, 
+               subscriptionId >>= ${subscriptionId},
+               userId >>= ${userId},
+               conedSub >>= ${conedSub}`);
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
+
+    console.log(`AUTH_TOKEN >> = ${AUTH_TOKEN}`);
 
     let headers = {
       'content-type': 'application/json',
