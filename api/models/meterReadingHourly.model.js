@@ -2,7 +2,7 @@
 
 module.exports = (sequelize, DataTypes) => {
 
-    let MeterReadingHourly = sequelize.define("GCEP_MeterReadingHourly", {
+    let MeterReadingHourly = sequelize.define("GCEP_HourlyMeterReading", {
         date: {
             type: DataTypes.STRING,
             field: "date"
