@@ -6,7 +6,7 @@ import queryString from 'query-string'
 const Callback = props => {
   useEffect(() => { }, []);
   const values = queryString.parse(props.location.search)
-  console.log(values.success)
+  // console.log(values.success)
   return (
     <div className="callback-container">
       <div className="parent" >
