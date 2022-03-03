@@ -384,9 +384,9 @@ const intervalBlock = async (headers, data) => {
           let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
 
           let intervalReading = intervalBlockElement['espi:intervalReading']
-          console.log("<< intervalReading >>", JSON.stringify(intervalReading, 2, null));
+          // console.log("<< intervalReading >>", JSON.stringify(intervalReading, 2, null));
           intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
-          console.log(">> intervalReading <<", intervalReading);
+          // console.log(">> intervalReading <<", intervalReading);
 
 
           let intervalReadingTotal = _.sum(intervalReading);

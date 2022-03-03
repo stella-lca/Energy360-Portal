@@ -108,11 +108,12 @@ const meterReading = () => {
                                 MeterReadingTillDate = MeterReadingTillDate.concat(array)
                             } catch (error) {
                                 createLogItem(true, `CRON ERROR payloadId ${intervalBlockPayloadId} startDate ${weeksDatesElement.startDate} <-> endDate${weeksDatesElement.endDate}`, "error in cron", error)
-                                // console.log('Cron Error ', error)
+                                console.log('Cron Error ', error)
                                 if (error.payload) {
                                     let payload = {
                                         errorMessage: error?.error?.message, intervalBlockPayloadId: error.payload.intervalBlockPayloadId, minDate: error.payload.startDate, maxDate: error.payload.endDate
                                     }
+                                    console.log('Cron payload ', payload)
                                     await db.MeterCronError.create(payload)
                                 }
                             }
