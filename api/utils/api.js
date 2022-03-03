@@ -43,7 +43,7 @@ const generateClientToken = async function () {
       return oldToken
     }
 
-    console.log('Creating new client token...')
+    // console.log('Creating new client token...')
 
     const data = {
       grantType: 'client_credentials',
@@ -58,7 +58,7 @@ const generateClientToken = async function () {
         const { access_token } = data || {}
 
         if (access_token) {
-          console.log('Created new client token successfully')
+          // console.log('Created new client token successfully')
           localStorage.setItem('date', Date.now())
           localStorage.setItem('token', access_token)
           return access_token
@@ -66,11 +66,11 @@ const generateClientToken = async function () {
         return null
       })
       .catch(error => {
-        console.log('Token creating error =', error)
+        // console.log('Token creating error =', error)
         return null
       })
   } catch (error) {
-    console.log('Token Creating Error ', error)
+    // console.log('Token Creating Error ', error)
     return null
   }
 }
@@ -95,14 +95,14 @@ const generateThirdPartyToken = async function (refreshToken, subscriptionId) {
       return oldTpData.TPToken
     }
 
-    console.log(`
-    APPSETTING_CLIENT_ID >> = ${APPSETTING_CLIENT_ID},
-    APPSETTING_CLIENT_SECRET >> = ${APPSETTING_CLIENT_SECRET},
-    refreshToken >> = ${refreshToken},
-    subscriptionId >> = ${subscriptionId}
-
-
-    `);
+    /*  console.log(`
+     APPSETTING_CLIENT_ID >> = ${APPSETTING_CLIENT_ID},
+     APPSETTING_CLIENT_SECRET >> = ${APPSETTING_CLIENT_SECRET},
+     refreshToken >> = ${refreshToken},
+     subscriptionId >> = ${subscriptionId}
+ 
+ 
+     `); */
 
     const data = {
       grantType: "refresh_token",
@@ -125,7 +125,7 @@ const generateThirdPartyToken = async function (refreshToken, subscriptionId) {
         const { access_token } = data || {}
 
         if (access_token) {
-          console.log('Created new Third Party token successfully')
+          // console.log('Created new Third Party token successfully')
           let tokenObj = {
             'TPDate': Date.now(),
             'TPToken': access_token
@@ -155,14 +155,14 @@ const ThirdPartyApiClient = async (refreshToken, subscriptionId) => {
 }
 
 const retailCustomerDetails = async (refreshToken, subscriptionId, userId, conedSub) => {
-  console.log(`refreshToken >> = ${refreshToken}, 
-               subscriptionId >>= ${subscriptionId},
-               userId >>= ${userId},
-               conedSub >>= ${conedSub}`);
+  /*  console.log(`refreshToken >> = ${refreshToken}, 
+                subscriptionId >>= ${subscriptionId},
+                userId >>= ${userId},
+                conedSub >>= ${conedSub}`); */
   try {
     let AUTH_TOKEN = await generateThirdPartyToken(refreshToken, subscriptionId)
 
-    console.log(`AUTH_TOKEN >> = ${AUTH_TOKEN}`);
+    // console.log(`AUTH_TOKEN >> = ${AUTH_TOKEN}`);
 
     let headers = {
       'content-type': 'application/json',
@@ -197,9 +197,9 @@ const retailCustomerDetails = async (refreshToken, subscriptionId, userId, coned
           let mainAddress = retailCustomer['cust:mainAddress']
           let address = mainAddress['cust:streetDetail']._text + ' ' + mainAddress['cust:cityDetail']._text + ', ' + mainAddress['cust:stateDetail']._text + ' ' + mainAddress['cust:postalCode']._text
 
-          console.log("meterAccountNumber >> ", meterAccountNumber, "Address >> ", address);
+          // console.log("meterAccountNumber >> ", meterAccountNumber, "Address >> ", address);
           let obj = { userId, meterAccountId: meterAccountNumber, conedAddress: address, conedSub: conedSub }
-          console.log("Customer Details DATA >> ", result)
+          // console.log("Customer Details DATA >> ", result)
           addressArray.push(obj);
         }
       }
@@ -211,19 +211,19 @@ const retailCustomerDetails = async (refreshToken, subscriptionId, userId, coned
       )
 
       if (addressArray.length > 0) {
-        console.log("Customer Details DATA >> ", addressArray)
+        // console.log("Customer Details DATA >> ", addressArray)
         return addressArray;
       } else {
-        console.log('Retail Customer Data =', addressArray)
+        // console.log('Retail Customer Data =', addressArray)
         return null
       }
     })
       .catch(error => {
-        console.log('Retail Customer Data error =', error)
+        // console.log('Retail Customer Data error =', error)
         return null
       })
   } catch (error) {
-    console.log('Retail Customer Data error ', error)
+    // console.log('Retail Customer Data error ', error)
     return null
   }
 }
@@ -269,7 +269,7 @@ const usagePointDetails = async (refreshToken, subscriptionId) => {
             }
           }
 
-          console.log("usagePointDetails >> ", usagePointId)
+          // console.log("usagePointDetails >> ", usagePointId)
           usagePoints.push(usagePointId);
         }
       }
@@ -277,11 +277,11 @@ const usagePointDetails = async (refreshToken, subscriptionId) => {
       return usagePoints
     })
       .catch(error => {
-        console.log('usagePointDetails error =', error)
+        // console.log('usagePointDetails error =', error)
         return null
       })
   } catch (error) {
-    console.log('usagePointDetails Error ', error)
+    // console.log('usagePointDetails Error ', error)
     return null
   }
 }
@@ -316,19 +316,19 @@ const meterReading = async (refreshToken, subscriptionId, usagePointId) => {
             break
           }
         }
-        console.log("MeterReading >> ", meterReadingId)
+        // console.log("MeterReading >> ", meterReadingId)
         return { meterReadingId, usagePointId };
       } else {
-        console.log("MeterReading null >> ", links)
+        // console.log("MeterReading null >> ", links)
         return null
       }
     })
       .catch(error => {
-        console.log('MeterReading error =', error)
+        // console.log('MeterReading error =', error)
         return null
       })
   } catch (error) {
-    console.log('MeterReading Error ', error)
+    // console.log('MeterReading Error ', error)
     return null
   }
 }
@@ -350,7 +350,7 @@ const intervalBlock = async (headers, data) => {
     let KVARH = false
     let dateViseIntervalBlock = {}
     let resultArray = []
-    console.log('result.feed.entry >> ', result.feed.entry);
+    // console.log('result.feed.entry >> ', result.feed.entry);
     if (!result.feed.entry.length) {
       resultArray.push(result.feed.entry);
     } else {
@@ -386,9 +386,11 @@ const intervalBlock = async (headers, data) => {
           let intervalReading = intervalBlockElement['espi:intervalReading']
           console.log("<< intervalReading >>", intervalReading);
           intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
+          console.log(">> intervalReading <<", intervalReading);
+
 
           let intervalReadingTotal = _.sum(intervalReading);
-          console.log(intervalReadingTotal);
+          // console.log(intervalReadingTotal);
           let date = moment.unix(timestamp).format('YYYY-MM-DD');
           if (KVARH) {
             dateViseIntervalBlock[date] = {
@@ -403,18 +405,18 @@ const intervalBlock = async (headers, data) => {
         }
       }
     }
-    console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
+    // console.log("dateViseIntervalBlock >> ", dateViseIntervalBlock)
 
     let array = []
     for (const property in dateViseIntervalBlock) {
       array.push(dateViseIntervalBlock[property]);
     }
-    console.log("array >>", array);
+    // console.log("array >>", array);
 
     return array
   }
   catch (error) {
-    console.log('intervalBlock error =', error)
+    // console.log('intervalBlock error =', error)
     throw { error, payload: data }
   }
 }
@@ -472,7 +474,7 @@ const intervalBlockHourly = async (headers, data) => {
           let intervalReading = intervalBlockElement['espi:intervalReading']
 
           let arrayData = splitArrayIntoChunksOfLen(intervalReading, 12)
-          console.log(Object.keys(arrayData).length);
+          // console.log(Object.keys(arrayData).length);
           for (let a = 0; a < arrayData.length; a++) {
             let element = arrayData[a];
 
@@ -481,7 +483,7 @@ const intervalBlockHourly = async (headers, data) => {
             element = element.map(e => Number(e['espi:value']._text));
 
             let intervalReadingTotal = _.sum(element);
-            console.log("date ", date, "HH :- ", time, " ", intervalReadingTotal);
+            // console.log("date ", date, "HH :- ", time, " ", intervalReadingTotal);
             if (KVARH) {
               let key = date + ":" + time
               dateViseIntervalBlock[key] = {
@@ -507,7 +509,7 @@ const intervalBlockHourly = async (headers, data) => {
     return array
   }
   catch (error) {
-    console.log('intervalBlock error =', error)
+    // console.log('intervalBlock error =', error)
     throw { error, payload: data }
   }
 }
@@ -594,14 +596,14 @@ const intervalBlockTest = async (refreshToken, subscriptionId, GCEP_IntervalBloc
 
           MeterReadingTillDate = MeterReadingTillDate.concat(array)
         }
-        console.log(MeterReadingTillDate)
+        // console.log(MeterReadingTillDate)
         createLogItem(true, 'intervalBlockTest MeterReadingTillDate', "intervalBlockTest MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
         responseArray = responseArray.concat(MeterReadingTillDate)
       }
     }
     return responseArray
   } catch (error) {
-    console.log('intervalBlock Error ', error)
+    // console.log('intervalBlock Error ', error)
     return new Error(error)
   }
 }
@@ -679,7 +681,7 @@ const intervalBlockHourlyTest = async (refreshToken, subscriptionId, usagePointI
 
         MeterReadingTillDate = MeterReadingTillDate.concat(array)
       }
-      console.log(MeterReadingTillDate)
+      // console.log(MeterReadingTillDate)
       let MeterReadingTillDateChunks = splitArrayIntoChunksOfLen(MeterReadingTillDate, 1000)
       createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
       let data = []
@@ -689,13 +691,13 @@ const intervalBlockHourlyTest = async (refreshToken, subscriptionId, usagePointI
         data.push(d)
       }
 
-      console.log("MeterReadingHourly BulkCreate >>> ", data)
+      // console.log("MeterReadingHourly BulkCreate >>> ", data)
       return data
     }
 
   } catch (error) {
     createLogItem(true, 'meterReadingHourly CRON ERROR', "error in meterReadingHourly cron", JSON.stringify(error))
-    console.log('meterReadingHourly Cron Error ', error)
+    // console.log('meterReadingHourly Cron Error ', error)
     if (error.payload) {
       let payload = {
         errorMessage: error?.error?.message, tokenId: error.payload.tokenId, minDate: error.payload.startDate, maxDate: error.payload.endDate

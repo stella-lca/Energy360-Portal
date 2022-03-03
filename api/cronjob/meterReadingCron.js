@@ -13,7 +13,7 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 const meterReading = () => {
 
     cron.schedule('*/30 * * * *', async () => {
-        console.log('running a task every two minutes  ');
+        // console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
             readingEndDate = moment().format('YYYY-MM-DD'),
             d = new Date(),
@@ -108,7 +108,7 @@ const meterReading = () => {
                                 MeterReadingTillDate = MeterReadingTillDate.concat(array)
                             } catch (error) {
                                 createLogItem(true, `CRON ERROR payloadId ${intervalBlockPayloadId} startDate ${weeksDatesElement.startDate} <-> endDate${weeksDatesElement.endDate}`, "error in cron", error)
-                                console.log('Cron Error ', error)
+                                // console.log('Cron Error ', error)
                                 if (error.payload) {
                                     let payload = {
                                         errorMessage: error?.error?.message, intervalBlockPayloadId: error.payload.intervalBlockPayloadId, minDate: error.payload.startDate, maxDate: error.payload.endDate
@@ -119,14 +119,14 @@ const meterReading = () => {
 
 
                         }
-                        console.log(MeterReadingTillDate)
+                        // console.log(MeterReadingTillDate)
                         createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
-                        console.log("MeterReading BulkCreate >>> ", MeterReadingTillDate)
+                        // console.log("MeterReading BulkCreate >>> ", MeterReadingTillDate)
                     }
 
                 } catch (error) {
                     createLogItem(true, 'CRON ERROR', "error in cron", error)
-                    console.log('Cron Error ', error)
+                    // console.log('Cron Error ', error)
                 }
             }
         }
@@ -211,7 +211,7 @@ const meterErrorDataInput = async () => {
                         }
                     } catch (error) {
                         createLogItem(true, 'Error in error data input', "Error in error data input cron", JSON.stringify(error))
-                        console.log('Cron Error ', error)
+                        // console.log('Cron Error ', error)
                     }
                 }
             }

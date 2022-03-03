@@ -23,7 +23,7 @@ const getWeeksStartAndEndInMonth = (month, year, _start) => {
 	month = month - 1
 	let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
 		d = new Date();
-	console.log("The current month is " + monthNames[d.getMonth()]);
+	// console.log("The current month is " + monthNames[d.getMonth()]);
 	let weeks = [],
 		firstDate = new Date(year, month, 1),
 		lastDate = new Date(year, month + 1, 0),
@@ -88,7 +88,7 @@ const getMonthsBeforeGivenDate = (date) => {
 		timeValues.push(dateStart.format('M'));
 		dateStart.add(1, 'month');
 	}
-	console.log(timeValues)
+	// console.log(timeValues)
 	return timeValues
 }
 

@@ -22,7 +22,7 @@ const { APPSETTING_HOST, APPSETTING_CLIENT_ID, APPSETTING_CLIENT_SECRET, APPSETT
 
 const handleToken = async function (authCode, tokenData) {
   try {
-    console.log("handleToken Call", authCode)
+    // console.log("handleToken Call", authCode)
     let token = await findByToken(authCode)
 
     const expiryDate = moment().add(1, 'hours').format()
@@ -42,12 +42,12 @@ const handleToken = async function (authCode, tokenData) {
     let conedToken = jwt.decode(access_token, { json: true });
     let conedSub = conedToken['sub']
 
-    console.log("email ====> ", email);
+    // console.log("email ====> ", email);
     let subscriptionId = resourceURI.split("/").pop();
     let authorizationId = authorizationURI.split("/").pop();
     // Customer Details
     let customerDetails = await retailCustomerDetails(refresh_token, subscriptionId, userId, conedSub);
-    console.log("Customer Details DATA >> ", customerDetails)
+    // console.log("Customer Details DATA >> ", customerDetails)
 
     // UsagePoint ID
     let meterReadingIdArray = []
@@ -67,7 +67,7 @@ const handleToken = async function (authCode, tokenData) {
         expires_in,
         expiry_date
       })
-      console.log("token updateToken >>", status);
+      // console.log("token updateToken >>", status);
       msg = status ? 'Token updated successfully' : 'Token updating error'
       // createLogItem(true, 'Token Management', msg, JSON.stringify(token))
 
@@ -94,10 +94,10 @@ const handleToken = async function (authCode, tokenData) {
       })
 
       await db.Meter.bulkCreate(customerDetails)
-      console.log("token createToken >>", status);
+      // console.log("token createToken >>", status);
       msg = status ? 'Token created successfully' : 'Token creating - Query Error'
 
-      console.log('handleToken-token_create ===>', msg)
+      // console.log('handleToken-token_create ===>', msg)
       // createLogItem(true, 'Token Management', msg, JSON.stringify(token))
       meterReadingIdArray = meterReadingIdArray.map((e) => {
         let obj = { ...e, tokenId: status.id }
@@ -109,8 +109,8 @@ const handleToken = async function (authCode, tokenData) {
       return tokenData
     }
   } catch (error) {
-    console.log('handleToken-error ===>', error)
-    console.log('handleToken-error.response ===>', error.response)
+    // console.log('handleToken-error ===>', error)
+    // console.log('handleToken-error.response ===>', error.response)
     const errorJson = error && error.response ? error.response.data : error
     // createLogItem(false, 'Token Management', 'Token handling issue', JSON.stringify(errorJson))
 
@@ -123,14 +123,14 @@ exports.authenticateToken = async function (req, res) {
     //authorization code generated & sent by Utility
     const { code } = req.query
 
-    console.log("code ===> ", code);
-    console.log('session token ===> ', req.session)
+    // console.log("code ===> ", code);
+    // console.log('session token ===> ', req.session)
 
     let email = ''
     let userId = ''
     if (req.session.token) {
       let tokenData = jwt.verify(req.session.token, APPSETTING_JWT_SECRET);
-      console.log("tokenData ===> ", tokenData)
+      // console.log("tokenData ===> ", tokenData)
       email = tokenData.email
       userId = tokenData.userId
     }
@@ -173,18 +173,18 @@ exports.authenticateToken = async function (req, res) {
         httpsAgent: agent
       })
       .then(async response => {
-        console.log('Token API Response', response.data || {})
+        // console.log('Token API Response', response.data || {})
 
         // createLogItem(true, 'Token api working correctly', 'TOKEN CREATE API', JSON.stringify(response.data))
 
         const { data: tokenData } = response
-        console.log("tokenData >>", tokenData);
+        // console.log("tokenData >>", tokenData);
 
         tokenData.email = email
         tokenData.userId = userId
 
         const resultData = await handleToken(code, tokenData)
-        console.log("resultData >>", resultData);
+        // console.log("resultData >>", resultData);
 
         // createLogItem(true, 'Token api working correctly', 'TOKEN DB MANAGEMENT', JSON.stringify(resultData))
 
@@ -195,13 +195,13 @@ exports.authenticateToken = async function (req, res) {
         }
       })
       .catch(error => {
-        console.log('Token api processing error', error)
+        // console.log('Token api processing error', error)
         const errorJson = error && error.response ? error.response.data : error
         // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
         res.redirect('/callback?success=false')
       })
   } catch (error) {
-    console.log('Catch Error', error)
+    // console.log('Catch Error', error)
     const errorJson = error && error.response ? error.response.data : error
     // createLogItem(false, 'Token api processing error', 'TOKEN CREATE API', JSON.stringify(errorJson))
     res.redirect('/callback?success=false')
@@ -213,7 +213,7 @@ exports.intervalBlockApi = async function (req, res) {
     //authorization code generated & sent by Utility
     const { resourceURI } = req.query
 
-    console.log('resource URI ===> ', resourceURI);
+    // console.log('resource URI ===> ', resourceURI);
 
     let token = await db.Token.findOne({
       where: {
@@ -223,12 +223,12 @@ exports.intervalBlockApi = async function (req, res) {
     let intervalBlockData = await intervalBlockTest(token.refresh_token, resourceURI, token.GCEP_IntervalBlockPayloads)
 
     let data = await db.MeterReading.bulkCreate(intervalBlockData);
-    console.log(data)
+    // console.log(data)
 
-    console.log("Customer intervalBlockUrl >> ", intervalBlockData)
+    // console.log("Customer intervalBlockUrl >> ", intervalBlockData)
     res.status(200).json({ data: intervalBlockData })
   } catch (error) {
-    console.log('meterReadingAPI Error', error)
+    // console.log('meterReadingAPI Error', error)
     return res.status(500).send({ err: error, message: "error" })
     // res.redirect('/callback?success=false')
   }
@@ -239,7 +239,7 @@ exports.intervalBlockHourlyApi = async function (req, res) {
     //authorization code generated & sent by Utility
     const { resourceURI } = req.query
 
-    console.log('resource URI ===> ', resourceURI);
+    // console.log('resource URI ===> ', resourceURI);
 
     let token = await db.Token.findOne({
       where: {
@@ -248,10 +248,10 @@ exports.intervalBlockHourlyApi = async function (req, res) {
     })
     let intervalBlockData = await intervalBlockHourlyTest(token.refresh_token, resourceURI, token.usagePointId, token.meterReadingId, token.id)
 
-    console.log("Customer intervalBlockUrl >> ", intervalBlockData)
+    // console.log("Customer intervalBlockUrl >> ", intervalBlockData)
     return res.status(200).json({ data: intervalBlockData })
   } catch (error) {
-    console.log('meterReadingAPI Error', error)
+    // console.log('meterReadingAPI Error', error)
     return res.status(500).send({ err: error, message: "error" })
     // res.redirect('/callback?success=false')
   }
@@ -275,7 +275,7 @@ exports.notifyCallback = async function (req, res) {
     var xmlDoc = convert.xml2js(validXMLText, options)
 
     // const list = await findAllLog();
-    // console.log("Utilify API REQUEST ===>", req.body);
+    console.log("Utilify API REQUEST ===>", req.body);
     createLogItem(true, 'N-2 ---> Parsed Notofiy Response', ``)
 
     let fileUrlList = await findNestedObj(xmlDoc, 'espi:resources')
