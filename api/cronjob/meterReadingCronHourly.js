@@ -13,7 +13,7 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 const meterReadingHourly = () => {
 
     cron.schedule('45 23 * * *', async () => {
-        // console.log('running a task every two minutes  ');
+        console.log('running a task every two minutes  ');
         createLogItem(true, 'meterReadingHourly', "meterReadingHourly started", "running a task every two minutes  ")
 
         let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
@@ -110,7 +110,7 @@ const meterReadingHourly = () => {
                                 MeterReadingTillDate = MeterReadingTillDate.concat(array)
                             } catch (error) {
                                 createLogItem(true, `CRON Hourly ERROR payloadId ${intervalBlockPayloadId} startDate ${weeksDatesElement.startDate} <-> endDate${weeksDatesElement.endDate}`, "error in cron", error)
-                                // console.log('Cron Error ', error)
+                                console.log('Cron Error ', error)
                                 if (error.payload) {
                                     let payload = {
                                         errorMessage: error?.error?.message, intervalBlockPayloadId: error.payload.intervalBlockPayloadId, minDate: error.payload.startDate, maxDate: error.payload.endDate
@@ -120,12 +120,12 @@ const meterReadingHourly = () => {
                             }
                         }
                         createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
-                        // console.log("MeterReadingHourly >>> ", MeterReadingTillDate)
+                        console.log("MeterReadingHourly >>> ", MeterReadingTillDate)
                     }
 
                 } catch (error) {
                     createLogItem(true, 'meterReadingHourly CRON ERROR', "error in meterReadingHourly cron", JSON.stringify(error))
-                    // console.log('meterReadingHourly Cron Error ', error)
+                    console.log('meterReadingHourly Cron Error ', error)
 
                 }
             }
@@ -214,7 +214,7 @@ const meterHourlyErrorDataInput = async () => {
                         }
                     } catch (error) {
                         createLogItem(true, 'Error in meterHourlyErrorData data input', "Error in error meterHourlyError input cron", JSON.stringify(error))
-                        // console.log('meterHourlyErrorDataInput Cron Error ', error)
+                        console.log('meterHourlyErrorDataInput Cron Error ', error)
                     }
                 }
             }

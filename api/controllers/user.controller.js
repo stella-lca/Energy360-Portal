@@ -59,7 +59,7 @@ exports.signup = async (req, res) => {
       ...params,
       password: bcrypt.hashSync(password, 8)
     });
-    // console.log(user);
+    console.log(user);
     if (user !== undefined) {
       const token = await createJwtToken(user);
       req.session.token = token
