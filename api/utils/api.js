@@ -95,7 +95,7 @@ const generateThirdPartyToken = async function (refreshToken, subscriptionId) {
       return oldTpData.TPToken
     }
 
-     console.log(`
+    console.log(`
      APPSETTING_CLIENT_ID >> = ${APPSETTING_CLIENT_ID},
      APPSETTING_CLIENT_SECRET >> = ${APPSETTING_CLIENT_SECRET},
      refreshToken >> = ${refreshToken},
@@ -155,7 +155,7 @@ const ThirdPartyApiClient = async (refreshToken, subscriptionId) => {
 }
 
 const retailCustomerDetails = async (refreshToken, subscriptionId, userId, conedSub) => {
-   console.log(`refreshToken >> = ${refreshToken}, 
+  console.log(`refreshToken >> = ${refreshToken}, 
                 subscriptionId >>= ${subscriptionId},
                 userId >>= ${userId},
                 conedSub >>= ${conedSub}`);
@@ -358,6 +358,7 @@ const intervalBlock = async (headers, data) => {
     }
     for (let j = 0; j < resultArray.length; j++) {
       const resultArrayElement = resultArray[j];
+      console.log("Result Array Element=", resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']);
       let links = resultArrayElement.link
       for (let a = 0; a < links.length; a++) {
         const linkElement = links[a];
