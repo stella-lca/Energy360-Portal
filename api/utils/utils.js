@@ -30,12 +30,12 @@ const getWeeksStartAndEndInMonth = (month, year, _start) => {
 		numDays = lastDate.getDate();
 	var c = Date()
 	let start = 1;
-	let end = 4 - firstDate.getDay();
+	let end = 3 - firstDate.getDay();
 	if (_start == 'monday') {
 		if (firstDate.getDay() === 0) {
 			end = 1;
 		} else {
-			end = 4 - firstDate.getDay() + 1;
+			end = 3 - firstDate.getDay() + 1;
 		}
 	}
 	while (start <= numDays) {
@@ -51,7 +51,7 @@ const getWeeksStartAndEndInMonth = (month, year, _start) => {
 			}
 		}
 		start = end + 1;
-		end = end + 4;
+		end = end + 3;
 		end = start === 1 && end === 8 ? 1 : end;
 		if (end > numDays) {
 			end = numDays;
