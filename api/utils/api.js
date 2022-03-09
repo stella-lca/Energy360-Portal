@@ -358,7 +358,8 @@ const intervalBlock = async (headers, data) => {
     }
     for (let j = 0; j < resultArray.length; j++) {
       const resultArrayElement = resultArray[j];
-      console.log("Result Array Element=", resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']);
+      console.log("Result Array Element timePeriod=", JSON.stringify(resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']['espi:timePeriod'], 2, null));
+      console.log("Result Array Element value=", JSON.stringify(resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']['espi:value'], 2, null));
       let links = resultArrayElement.link
       for (let a = 0; a < links.length; a++) {
         const linkElement = links[a];
