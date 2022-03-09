@@ -345,7 +345,7 @@ const intervalBlock = async (headers, data) => {
     }
     let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`, options)
     let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
-
+    console.log("RESULT ==>", result);
 
     let KVARH = false
     let dateViseIntervalBlock = {}
