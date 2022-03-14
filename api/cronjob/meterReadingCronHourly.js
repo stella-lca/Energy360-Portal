@@ -137,8 +137,9 @@ const meterReadingHourly = () => {
 }
 
 const meterHourlyErrorDataInput = async () => {
-    //45 23 * * *
-    cron.schedule('45 23 * * *', async () => {
+    // 45 23 * * *
+    // */30 * * * *
+    cron.schedule('*/30 * * * *', async () => {
         createLogItem(true, 'meterHourlyErrorDataInput', "meterHourlyErrorDataInput started", "running a task every two minutes  ")
 
         let tokens = await db.Token.findAll({
