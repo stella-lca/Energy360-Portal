@@ -73,8 +73,8 @@ const handleToken = async function (authCode, tokenData) {
 
       return token
     } else {
-      await db.Token.destroy({ where: { userId } })
-      await db.Meter.destroy({ where: { userId } })
+      // await db.Token.destroy({ where: { userId } })
+      // await db.Meter.destroy({ where: { userId } })
       //save new token.
       status = await createToken({
         authCode,
