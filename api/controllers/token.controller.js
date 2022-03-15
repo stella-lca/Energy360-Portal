@@ -80,13 +80,24 @@ const handleToken = async function (authCode, tokenData) {
         await db.Token.destroy({ where: { accountNumber } })
       }
 
+      for (let k = 0; k < customerDetails.length; k++) {
+        const element = customerDetails[k].meterAccountId;
+        console.log("customerDetails.meterAccountId >>", element);
+        let meterData = await db.Meter.findOne({ meterAccountId: element })
+        console.log("meterData >>", meterData);
+        if (meterData) {
+          await db.Meter.destroy({ where: { meterAccountId: element } })
+        }
 
-      console.log("customerDetails.meterAccountId >>", customerDetails[0].meterAccountId);
+      }
+
+      /* console.log("customerDetails.meterAccountId >>", customerDetails[0].meterAccountId);
       let meterData = await db.Meter.findOne({ meterAccountId: customerDetails[0].meterAccountId })
       console.log("meterData >>", meterData);
       if (meterData) {
         await db.Meter.destroy({ where: { meterAccountId: customerDetails[0].meterAccountId } })
-      }
+      } */
+
       //save new token.
       status = await createToken({
         authCode,
