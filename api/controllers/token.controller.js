@@ -31,7 +31,7 @@ const handleToken = async function (authCode, tokenData) {
     // createLogItem(true, 'Token Management', msg)
 
     tokenData.expiry_date = expiryDate
-    const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email, userId, /* meterAccountId */ } = tokenData
+    const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email, userId } = tokenData
 
     if (!access_token) {
       // createLogItem(true, 'Token Management', "Token API Don't have valid contents")
@@ -113,8 +113,7 @@ const handleToken = async function (authCode, tokenData) {
         resourceURI,
         authorizationURI,
         accountNumber,
-        expiry_date,
-        // meterAccountId: customerDetails.meterAccountId
+        expiry_date
       })
 
       await db.Meter.bulkCreate(customerDetails)
