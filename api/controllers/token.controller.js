@@ -31,7 +31,7 @@ const handleToken = async function (authCode, tokenData) {
     // createLogItem(true, 'Token Management', msg)
 
     tokenData.expiry_date = expiryDate
-    const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email, userId, meterAccountId } = tokenData
+    const { access_token, refresh_token, expires_in, expiry_date, scope, resourceURI, authorizationURI, accountNumber, email, userId, /* meterAccountId */ } = tokenData
 
     if (!access_token) {
       // createLogItem(true, 'Token Management', "Token API Don't have valid contents")
@@ -73,7 +73,8 @@ const handleToken = async function (authCode, tokenData) {
 
       return token
     } else {
-      await db.Token.destroy({ where: { meterAccountId } })
+      console.log("customerDetails.meterAccountId >>", customerDetails.meterAccountId);
+      await db.Token.destroy({ where: { userId } })
       await db.Meter.destroy({ where: { meterAccountId: customerDetails.meterAccountId } })
       //save new token.
       status = await createToken({
@@ -91,7 +92,7 @@ const handleToken = async function (authCode, tokenData) {
         authorizationURI,
         accountNumber,
         expiry_date,
-        meterAccountId: customerDetails.meterAccountId
+        // meterAccountId: customerDetails.meterAccountId
       })
 
       await db.Meter.bulkCreate(customerDetails)
