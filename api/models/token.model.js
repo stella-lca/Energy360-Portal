@@ -67,6 +67,11 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			field: "authorizationId"
 		}
+		,
+		meterAccountId: {
+			type: DataTypes.STRING,
+			field: "meterAccountId"
+		}
 	},
 		{
 			timestamps: true,
