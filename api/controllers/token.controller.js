@@ -74,7 +74,7 @@ const handleToken = async function (authCode, tokenData) {
       return token
     } else {
       console.log("customerDetails.meterAccountId >>", customerDetails[0].meterAccountId);
-      await db.Token.destroy({ where: { userId } })
+      // await db.Token.destroy({ where: { userId } })
 
       let meterData = await db.Meter.findOne({ meterAccountId: customerDetails[0].meterAccountId })
       console.log("meterData >>", meterData);
