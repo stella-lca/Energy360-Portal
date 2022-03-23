@@ -392,13 +392,13 @@ const intervalBlock = async (headers, data) => {
           console.log(">> intervalReading <<", intervalReading);
 
 
-          // let intervalReadingTotal = _.sum(intervalReading);
+          let intervalReadingTotal = _.sum(intervalReading);
 
-          let intervalReadingTotal = 0;
+          // let intervalReadingTotal = 0;
+          // for (let i = 0; i < intervalReading.length; i++) {
+          //   intervalReadingTotal += intervalReading[i];
+          // }
 
-          for (let i = 0; i < intervalReading.length; i++) {
-            intervalReadingTotal += intervalReading[i];
-          }
           console.log("<< sum >>", intervalReadingTotal);
 
           // console.log(intervalReadingTotal);
