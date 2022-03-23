@@ -392,8 +392,16 @@ const intervalBlock = async (headers, data) => {
           console.log(">> intervalReading <<", intervalReading);
 
 
-          let intervalReadingTotal = _.sum(intervalReading);
-          console.log(intervalReadingTotal);
+          // let intervalReadingTotal = _.sum(intervalReading);
+
+          let intervalReadingTotal = 0;
+
+          for (let i = 0; i < intervalReading.length; i++) {
+            intervalReadingTotal += intervalReading[i];
+          }
+          console.log("<< sum >>", intervalReadingTotal);
+
+          // console.log(intervalReadingTotal);
           let date = moment.unix(timestamp).format('YYYY-MM-DD');
           if (KVARH) {
             dateViseIntervalBlock[date] = {
