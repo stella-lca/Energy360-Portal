@@ -52,7 +52,7 @@ const getWeeksStartAndEndInMonth = (month, year, _start) => {
 		}
 		start = end + 1;
 		end = end + 2;
-		end = start === 1 && end === 8 ? 1 : end;
+		end = start === 1 && end === 3 ? 1 : end;
 		if (end > numDays) {
 			end = numDays;
 		}
