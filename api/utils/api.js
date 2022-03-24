@@ -492,8 +492,11 @@ const intervalBlockHourly = async (headers, data) => {
             let time = element[0]['espi:timePeriod']['espi:start']._text
             time = moment.unix(time).tz("America/New_York").format("HH");
             element = element.map(e => Number(e['espi:value']._text));
-
+            let a = []
             let intervalReadingTotal = _.sum(element);
+            a.push(element)
+            console.log("<< element >>", element);
+            console.log("<< a >>", a);
             console.log("date ", date, "HH :- ", time, " ", intervalReadingTotal);
             if (KVARH) {
               let key = date + ":" + time
