@@ -51,7 +51,7 @@
 		"jsonwebtoken": "^8.5.1",
 		"light-toast": "^0.2.3",
 		"lodash": "^4.17.21",
-		"moment": "^2.29.1",
+		"moment": "^2.29.2",
 		"moment-timezone": "^0.5.34",
 		"mysql2": "^2.1.0",
 		"node-cron": "^3.0.0",
