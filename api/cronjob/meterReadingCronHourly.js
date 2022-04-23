@@ -11,7 +11,8 @@ require('dotenv').config()
 const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 
 const meterReadingHourly = () => {
-
+    // 45 23 * * *
+    // */30 * * * *
     cron.schedule('*/30 * * * *', async () => {
         console.log('running a task every two minutes  ');
         createLogItem(true, 'meterReadingHourly', "meterReadingHourly started", "running a task every two minutes  ")
@@ -139,7 +140,7 @@ const meterReadingHourly = () => {
 const meterHourlyErrorDataInput = async () => {
     // 45 23 * * *
     // */30 * * * *
-    cron.schedule('*/30 * * * *', async () => {
+    cron.schedule('45 23 * * *', async () => {
         createLogItem(true, 'meterHourlyErrorDataInput', "meterHourlyErrorDataInput started", "running a task every two minutes  ")
 
         let tokens = await db.Token.findAll({
