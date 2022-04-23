@@ -72,8 +72,10 @@ app.use((req, res, next) => {
 	// next();
 
 	if (dbState && dbState.status) {
+		console.log("DB state Inside IF", dbState);
 		next();
 	} else {
+		console.log("DB state Inside ELSE", dbState);
 		db_sync();
 		res.status(500).send(dbState);
 	}
