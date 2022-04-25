@@ -46,7 +46,7 @@ const meterReading = () => {
                             date: { [Op.gt]: firstDayOfYear }
                         }
                     })
-
+ 
                     if (meterReading.length > 0) {
 
                         let readingStartDate = subtractDay(readingEndDate)
