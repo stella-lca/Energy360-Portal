@@ -386,7 +386,8 @@ const intervalBlock = async (headers, data) => {
           let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
 
           let intervalReading = intervalBlockElement['espi:intervalReading']
-          // console.log("<< intervalReading >>", JSON.stringify(intervalReading, 2, null));
+          console.log("<< intervalReading Json>>", JSON.stringify(intervalReading, 2, null));
+          console.log("<< intervalReading >>", intervalReading);
           intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
 
           console.log(">> intervalReading <<", intervalReading);
@@ -404,6 +405,9 @@ const intervalBlock = async (headers, data) => {
           // console.log(intervalReadingTotal);
           let date = moment.unix(timestamp).format('YYYY-MM-DD');
           if (KVARH) {
+            console.log("<< dateViseIntervalBlock[date] KVARH>>", dateViseIntervalBlock[date]);
+            console.log("<< dateViseIntervalBlock[date].KWHReading KVARH>>", dateViseIntervalBlock[date].KWHReading);
+
             dateViseIntervalBlock[date] = {
               date: date,
               KVARHReading: intervalReadingTotal,
