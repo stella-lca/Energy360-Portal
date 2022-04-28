@@ -402,9 +402,9 @@ const intervalBlock = async (headers, data) => {
 
           console.log("<< sum >>", intervalReadingTotal);
 
-          // console.log(intervalReadingTotal);
           let date = moment.unix(timestamp).format('YYYY-MM-DD');
           if (KVARH) {
+            console.log("<< dateViseIntervalBlock KVARH>>", dateViseIntervalBlock);
             console.log("<< dateViseIntervalBlock[date] KVARH>>", dateViseIntervalBlock[date]);
             console.log("<< dateViseIntervalBlock[date].KWHReading KVARH>>", dateViseIntervalBlock[date].KWHReading);
 
