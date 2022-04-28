@@ -386,7 +386,8 @@ const intervalBlock = async (headers, data) => {
           let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
 
           let intervalReading = intervalBlockElement['espi:intervalReading']
-          // console.log("<< intervalReading >>", JSON.stringify(intervalReading, 2, null));
+          console.log("<< intervalReading Json>>", JSON.stringify(intervalReading, 2, null));
+          console.log("<< intervalReading >>", intervalReading);
           intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
 
           console.log(">> intervalReading <<", intervalReading);
