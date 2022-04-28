@@ -411,6 +411,9 @@ const intervalBlock = async (headers, data) => {
               KWHReading: null
             }
           } else {
+            console.log("<< dateViseIntervalBlock[date] >>", dateViseIntervalBlock[date]);
+            console.log("<< dateViseIntervalBlock[date].KWHReading >>", dateViseIntervalBlock[date].KWHReading);
+
             dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
           }
         }
