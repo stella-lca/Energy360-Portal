@@ -13,7 +13,7 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 const meterReading = () => {
     // 45 23 * * *
     // */30 * * * *
-    cron.schedule('*/30 * * * *', async () => {
+    cron.schedule('45 23 * * *', async () => {
         console.log('running a task every two minutes  ');
         let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
             readingEndDate = moment().format('YYYY-MM-DD'),
@@ -93,7 +93,8 @@ const meterReading = () => {
                                     intervalBlockPayloadId: intervalBlockPayloadId
 
                                 }
-
+                                console.log("<< headers >>", headers);
+                                console.log("<< obj >>", obj);
                                 let array = await intervalBlock(headers, obj)
                                 if (array.error) {
                                     if (array.error.payload) {
@@ -108,13 +109,13 @@ const meterReading = () => {
 
                                 MeterReadingTillDate = MeterReadingTillDate.concat(array)
                             } catch (error) {
-                                createLogItem(true, `CRON ERROR payloadId ${intervalBlockPayloadId} startDate ${weeksDatesElement.startDate} <-> endDate${weeksDatesElement.endDate}`, "error in cron", error)
-                                console.log('Cron Error ', error)
+                                createLogItem(true, `CRON ERROR payloadId ELSE ${intervalBlockPayloadId} startDate ${weeksDatesElement.startDate} <-> endDate${weeksDatesElement.endDate}`, "error in cron", error)
+                                console.log('Cron Error ELSE', error)
                                 if (error.payload) {
                                     let payload = {
                                         errorMessage: error?.error?.message, intervalBlockPayloadId: error.payload.intervalBlockPayloadId, minDate: error.payload.startDate, maxDate: error.payload.endDate
                                     }
-                                    console.log('Cron payload ', payload)
+                                    console.log('Cron payload ELSE ', payload)
                                     await db.MeterCronError.create(payload)
                                 }
                             }
@@ -127,8 +128,8 @@ const meterReading = () => {
                     }
 
                 } catch (error) {
-                    createLogItem(true, 'CRON ERROR', "error in cron", error)
-                    console.log('Cron Error ', error)
+                    createLogItem(true, 'CRON ERROR IF', "error in cron IF", error)
+                    console.log('Cron Error IF', error)
                 }
             }
         }
