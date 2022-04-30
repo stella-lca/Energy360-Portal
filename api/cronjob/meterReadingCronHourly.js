@@ -66,6 +66,7 @@ const meterReadingHourly = () => {
                         let yesterdayReading = meterReading.filter(e => e.date === readingStartDate)
 
                         let intervalBlockData = await intervalBlockHourly(headers, obj)
+                        console.log("<< intervalBlockData TEST >>", intervalBlockData);
                         if (todayReading && todayReading.length === 0 || yesterdayReading && yesterdayReading.length === 0) {
                             let intervalBlockToday
                             if (yesterdayReading.length > 0) {
