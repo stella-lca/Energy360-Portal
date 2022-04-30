@@ -98,6 +98,7 @@ const meterReadingHourly = () => {
                                 }
 
                                 let array = await intervalBlockHourly(headers, obj)
+                                console.log("<< array TEST >>", array);
                                 if (array.error) {
                                     if (array.error.payload) {
                                         let payload = {
