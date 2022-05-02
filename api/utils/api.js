@@ -451,8 +451,8 @@ const intervalBlockHourly = async (headers, data) => {
       maxBodyLength: 100000000
     }
     let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`, options)
-    console.log("<< data Hourly>>", data);
     let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
+    console.log("<< result Hourly>>", result);
 
     let KVARH = false
     let dateViseIntervalBlock = {}
@@ -460,6 +460,7 @@ const intervalBlockHourly = async (headers, data) => {
     if (!result.feed.entry.length) {
       resultArray.push(result.feed.entry);
     } else {
+      console.log("<< result.feed.entry >>", result.feed.entry);
       resultArray = result.feed.entry
     }
     for (let j = 0; j < resultArray.length; j++) {
