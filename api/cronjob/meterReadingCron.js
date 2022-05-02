@@ -14,7 +14,7 @@ const
     meterReading = () => {
         // 45 23 * * *
         // */30 * * * *
-        cron.schedule('*/30 * * * *', async () => {
+        cron.schedule('*/180 * * * *', async () => {
             console.log('running a task every two minutes  ');
             let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
                 readingEndDate = moment().format('YYYY-MM-DD'),
@@ -65,7 +65,7 @@ const
                             let todayReading = meterReading.filter(e => e.date === readingEndDate)
                             let yesterdayReading = meterReading.filter(e => e.date === readingStartDate)
 
-                            console.log("<< meterReading headers IF>>", headers);
+                            // console.log("<< meterReading headers IF>>", headers);
                             console.log("<< meterReading obj IF>>", obj);
 
                             let intervalBlockData = await intervalBlock(headers, obj)
@@ -102,7 +102,7 @@ const
                                         intervalBlockPayloadId: intervalBlockPayloadId
 
                                     }
-                                    console.log("<< meterReading headers ELSE>>", headers);
+                                    // console.log("<< meterReading headers ELSE>>", headers);
                                     console.log("<< meterReading obj ELSE>>", obj);
                                     let array = await intervalBlock(headers, obj)
 
@@ -134,7 +134,7 @@ const
 
 
                             }
-                            console.log(MeterReadingTillDate)
+                            // console.log(MeterReadingTillDate)
                             createLogItem(true, 'MeterReadingTillDate', "MeterReadingTillDate", JSON.stringify(MeterReadingTillDate))
                             console.log("MeterReading BulkCreate >>> ", MeterReadingTillDate)
                         }
@@ -154,7 +154,7 @@ const
 const meterErrorDataInput = async () => {
     // 45 23 * * *
     // */30 * * * *
-    cron.schedule('45 23 * * *', async () => {
+    cron.schedule('*/180 * * * *', async () => {
         let tokens = await db.Token.findAll({
             include: {
                 model: db.IntervalBlockPayload,
