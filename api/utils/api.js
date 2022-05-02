@@ -512,7 +512,7 @@ const intervalBlockHourly = async (headers, data) => {
                 time: time,
                 intervalBlockPayloadId,
                 KVARHReading: intervalReadingTotal,
-                KWHReading: null
+                KWHReading: 1111111111
               }
             } else {
               let key = date + ":" + time
