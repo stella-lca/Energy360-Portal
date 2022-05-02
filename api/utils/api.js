@@ -404,9 +404,6 @@ const intervalBlock = async (headers, data) => {
 
           let date = moment.unix(timestamp).format('YYYY-MM-DD');
           if (KVARH) {
-            console.log("<< dateViseIntervalBlock KVARH>>", dateViseIntervalBlock);
-            console.log("<< dateViseIntervalBlock[date] KVARH>>", dateViseIntervalBlock[date]);
-            console.log("<< dateViseIntervalBlock[date].KWHReading KVARH>>", dateViseIntervalBlock[date].KWHReading);
 
             dateViseIntervalBlock[date] = {
               date: date,
@@ -414,11 +411,15 @@ const intervalBlock = async (headers, data) => {
               intervalBlockPayloadId: intervalBlockPayloadId,
               KWHReading: null
             }
+            console.log("<< dateViseIntervalBlock KVARH>>", dateViseIntervalBlock);
+            console.log("<< dateViseIntervalBlock[date] KVARH>>", dateViseIntervalBlock[date]);
+
           } else {
+            dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
+
             console.log("<< dateViseIntervalBlock[date] >>", dateViseIntervalBlock[date]);
             console.log("<< dateViseIntervalBlock[date].KWHReading >>", dateViseIntervalBlock[date].KWHReading);
 
-            dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
           }
         }
       }
