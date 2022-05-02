@@ -358,8 +358,6 @@ const intervalBlock = async (headers, data) => {
     }
     for (let j = 0; j < resultArray.length; j++) {
       const resultArrayElement = resultArray[j];
-      // console.log("Result Array Element timePeriod=", JSON.stringify(resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']['espi:timePeriod'], 2, null));
-      // console.log("Result Array Element value=", JSON.stringify(resultArrayElement.content['espi:intervalBlocks']['espi:intervalBlock']['espi:value'], 2, null));
       let links = resultArrayElement.link
       for (let a = 0; a < links.length; a++) {
         const linkElement = links[a];
@@ -386,18 +384,11 @@ const intervalBlock = async (headers, data) => {
           let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
 
           let intervalReading = intervalBlockElement['espi:intervalReading']
-          // console.log("<< intervalReading Json>>", JSON.stringify(intervalReading, 2, null));
-          // console.log("<< intervalReading >>", intervalReading);
           intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
 
           console.log(">> intervalReading <<", intervalReading);
 
           let intervalReadingTotal = _.sum(intervalReading);
-
-          // let intervalReadingTotal = 0;
-          // for (let i = 0; i < intervalReading.length; i++) {
-          //   intervalReadingTotal += intervalReading[i];
-          // }
 
           console.log("<< sum >>", intervalReadingTotal);
 
@@ -410,7 +401,6 @@ const intervalBlock = async (headers, data) => {
               intervalBlockPayloadId: intervalBlockPayloadId,
               KWHReading: null
             }
-            // console.log("<< dateViseIntervalBlock KVARH>>", dateViseIntervalBlock);
             console.log("<< dateViseIntervalBlock[date] KVARH>>", dateViseIntervalBlock[date]);
 
           } else {
@@ -460,8 +450,8 @@ const intervalBlockHourly = async (headers, data) => {
     if (!result.feed.entry.length) {
       resultArray.push(result.feed.entry);
     } else {
-      console.log("<< result.feed.entry >>", result.feed.entry);
       resultArray = result.feed.entry
+      console.log("<< resultArray >>", resultArray);
     }
     for (let j = 0; j < resultArray.length; j++) {
       const element = resultArray[j];
@@ -502,8 +492,6 @@ const intervalBlockHourly = async (headers, data) => {
             time = moment.unix(time).tz("America/New_York").format("HH");
             element = element.map(e => Number(e['espi:value']._text));
             let intervalReadingTotal = _.sum(element);
-            // datas.push(element)
-            // console.log("<< element >>", element);
             console.log("date ", date, "HH :- ", time, " ", intervalReadingTotal);
             if (KVARH) {
               let key = date + ":" + time
@@ -512,7 +500,7 @@ const intervalBlockHourly = async (headers, data) => {
                 time: time,
                 intervalBlockPayloadId,
                 KVARHReading: intervalReadingTotal,
-                KWHReading: 1111111111
+                KWHReading: 7777777
               }
             } else {
               let key = date + ":" + time

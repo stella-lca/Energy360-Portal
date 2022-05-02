@@ -13,7 +13,7 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 const meterReadingHourly = () => {
     // 45 23 * * *
     // */30 * * * *
-    cron.schedule('*/180 * * * *', async () => {
+    cron.schedule('*/300 * * * *', async () => {
         console.log('running a task every two minutes  ');
         createLogItem(true, 'meterReadingHourly', "meterReadingHourly started", "running a task every two minutes  ")
 
@@ -142,7 +142,7 @@ const meterReadingHourly = () => {
 const meterHourlyErrorDataInput = async () => {
     // 45 23 * * *
     // */30 * * * *
-    cron.schedule('*/180 * * * *', async () => {
+    cron.schedule('*/300 * * * *', async () => {
         createLogItem(true, 'meterHourlyErrorDataInput', "meterHourlyErrorDataInput started", "running a task every two minutes  ")
 
         let tokens = await db.Token.findAll({
