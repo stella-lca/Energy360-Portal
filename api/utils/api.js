@@ -386,12 +386,11 @@ const intervalBlock = async (headers, data) => {
           let timestamp = intervalBlockElement['espi:interval']['espi:start']._text
 
           let intervalReading = intervalBlockElement['espi:intervalReading']
-          console.log("<< intervalReading Json>>", JSON.stringify(intervalReading, 2, null));
-          console.log("<< intervalReading >>", intervalReading);
+          // console.log("<< intervalReading Json>>", JSON.stringify(intervalReading, 2, null));
+          // console.log("<< intervalReading >>", intervalReading);
           intervalReading = intervalReading.map(e => Number(e['espi:value']._text));
 
           console.log(">> intervalReading <<", intervalReading);
-
 
           let intervalReadingTotal = _.sum(intervalReading);
 
@@ -411,7 +410,7 @@ const intervalBlock = async (headers, data) => {
               intervalBlockPayloadId: intervalBlockPayloadId,
               KWHReading: null
             }
-            console.log("<< dateViseIntervalBlock KVARH>>", dateViseIntervalBlock);
+            // console.log("<< dateViseIntervalBlock KVARH>>", dateViseIntervalBlock);
             console.log("<< dateViseIntervalBlock[date] KVARH>>", dateViseIntervalBlock[date]);
 
           } else {
@@ -452,6 +451,7 @@ const intervalBlockHourly = async (headers, data) => {
       maxBodyLength: 100000000
     }
     let { data } = await axios.get(`https://api.coned.com/gbc/v1/resource/Subscription/${subscriptionId}/UsagePoint/${usagePointId}/MeterReading/${meterReadingId}/IntervalBlock?publishedMin=${startDate}&publishedMax=${endDate}`, options)
+    console.log("<< data Hourly>>", data);
     let result = xml2jsObj.xml2js(data, { compact: true, spaces: 4 });
 
     let KVARH = false
@@ -525,7 +525,7 @@ const intervalBlockHourly = async (headers, data) => {
     for (const property in dateViseIntervalBlock) {
       array.push(dateViseIntervalBlock[property]);
     }
-
+    console.log("<< array Hourly >>", array);
     return array
   }
   catch (error) {
