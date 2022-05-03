@@ -455,10 +455,13 @@ const intervalBlockHourly = async (headers, data) => {
     }
     for (let j = 0; j < resultArray.length; j++) {
       const element = resultArray[j];
-      console.log("<< element >>", element);
       let links = element.link
+      console.log("<< links >>", links);
       for (let a = 0; a < links.length; a++) {
         const linkElement = links[a];
+        console.log("<< linkElement >>", linkElement);
+        console.log("<< linkElement._attributes >>", linkElement._attributes);
+        console.log("<< linkElement._attributes.href >>", linkElement._attributes.href);
         if (linkElement._attributes.href.includes('KVARH')) {
           KVARH = true
         } else {
