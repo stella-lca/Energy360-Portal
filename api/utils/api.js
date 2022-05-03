@@ -429,7 +429,6 @@ const intervalBlock = async (headers, data) => {
   }
 }
 
-
 const intervalBlockHourly = async (headers, data) => {
   let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, intervalBlockPayloadId } = data
   try {
