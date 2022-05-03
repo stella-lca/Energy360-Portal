@@ -429,6 +429,7 @@ const intervalBlock = async (headers, data) => {
   }
 }
 
+
 const intervalBlockHourly = async (headers, data) => {
   let { subscriptionId, usagePointId, meterReadingId, startDate, endDate, intervalBlockPayloadId } = data
   try {
@@ -499,21 +500,12 @@ const intervalBlockHourly = async (headers, data) => {
             console.log("date ", date, "HH :- ", time, " ", intervalReadingTotal);
             if (KVARH) {
               let key = date + ":" + time
-              if (dateViseIntervalBlock[key].hasOwnProperty("KWHReading")) {
-                dateViseIntervalBlock[key] = {
-                  date: date,
-                  time: time,
-                  intervalBlockPayloadId,
-                  KVARHReading: intervalReadingTotal
-                }
-              } else {
-                dateViseIntervalBlock[key] = {
-                  date: date,
-                  time: time,
-                  intervalBlockPayloadId,
-                  KVARHReading: intervalReadingTotal,
-                  KWHReading: null
-                }
+              dateViseIntervalBlock[key] = {
+                date: date,
+                time: time,
+                intervalBlockPayloadId,
+                KVARHReading: intervalReadingTotal,
+                KWHReading: 7777777
               }
             } else {
               let key = date + ":" + time
