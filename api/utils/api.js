@@ -455,6 +455,7 @@ const intervalBlockHourly = async (headers, data) => {
     }
     for (let j = 0; j < resultArray.length; j++) {
       const element = resultArray[j];
+      console.log("<< element >>", element);
       let links = element.link
       for (let a = 0; a < links.length; a++) {
         const linkElement = links[a];
