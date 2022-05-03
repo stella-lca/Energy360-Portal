@@ -470,6 +470,8 @@ const intervalBlockHourly = async (headers, data) => {
       }
       let intervalBlocksArray = []
       let intervalBlocks = element.content['espi:intervalBlocks']['espi:intervalBlock']
+      console.log("<< intervalBlocksintervalBlocks >>", intervalBlocks);
+      console.log("<< !Array.isArray(intervalBlocks) >>", !Array.isArray(intervalBlocks));
       if (!Array.isArray(intervalBlocks)) {
         intervalBlocksArray.push(intervalBlocks)
       } else {
@@ -486,9 +488,9 @@ const intervalBlockHourly = async (headers, data) => {
           let date = moment.unix(timestamp).format('YYYY-MM-DD');
 
           let intervalReading = intervalBlockElement['espi:intervalReading']
-
+          console.log("< intervalReading >", intervalReading);
           let arrayData = splitArrayIntoChunksOfLen(intervalReading, 12)
-          console.log(Object.keys(arrayData).length);
+          console.log("<< Object.keys(arrayData) >>", Object.keys(arrayData));
           for (let a = 0; a < arrayData.length; a++) {
             let element = arrayData[a];
 
