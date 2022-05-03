@@ -14,7 +14,7 @@ const meterReadingHourly = () => {
     // 45 23 * * *
     // */30 * * * *
     cron.schedule('*/30 * * * *', async () => {
-        console.log('running a task every two minutes  ');
+        console.log('running a task every two minutes');
         createLogItem(true, 'meterReadingHourly', "meterReadingHourly started", "running a task every two minutes  ")
 
         let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
