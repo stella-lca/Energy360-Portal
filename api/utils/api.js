@@ -463,7 +463,7 @@ const intervalBlockHourly = async (headers, data) => {
         console.log("<< linkElement._attributes >>", linkElement._attributes);
         console.log("<< linkElement._attributes.href >>", linkElement._attributes.href);
         if (linkElement._attributes.href.includes('KVARH')) {
-          KVARH = true
+          KVARH = false
         } else {
           KVARH = false
         }
@@ -490,7 +490,6 @@ const intervalBlockHourly = async (headers, data) => {
           let intervalReading = intervalBlockElement['espi:intervalReading']
           console.log("< intervalReading >", intervalReading);
           let arrayData = splitArrayIntoChunksOfLen(intervalReading, 12)
-          console.log("<< Object.keys(arrayData) >>", Object.keys(arrayData));
           for (let a = 0; a < arrayData.length; a++) {
             let element = arrayData[a];
 
