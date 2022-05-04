@@ -14,7 +14,7 @@ const
     meterReading = () => {
         // 45 23 * * *
         // */30 * * * *
-        cron.schedule('*/30 * * * *', async () => {
+        cron.schedule('*/180 * * * *', async () => {
             console.log('running a task every two minutes  ');
             let Token = await db.Token.findAll({ include: { model: db.IntervalBlockPayload } }),
                 readingEndDate = moment().format('YYYY-MM-DD'),
