@@ -37,7 +37,7 @@ const Scope = () => {
   if (!authState && !isloading) return <Redirect to='/' />;
   return (
     <div className='page-content'>
-      <Header title={'Scope Section'} />
+      <Header title={'Scope Selection'} />
       <Container>
         <Row>
           <Col className='mx-auto scrope-select' md='7'>
