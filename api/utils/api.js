@@ -389,8 +389,10 @@ const intervalBlock = async (headers, data) => {
           console.log(">> intervalReading <<", intervalReading);
 
           let intervalReadingTotal = _.sum(intervalReading);
+		      let intervalReadingMax = _.max(intervalReading)
 
           console.log("<< sum >>", intervalReadingTotal);
+		      console.log("<< max >>", intervalReadingMax);
 
           let date = moment.unix(timestamp).format('YYYY-MM-DD');
           if (KVARH) {
@@ -399,15 +401,18 @@ const intervalBlock = async (headers, data) => {
               date: date,
               KVARHReading: intervalReadingTotal,
               intervalBlockPayloadId: intervalBlockPayloadId,
-              KWHReading: null
+              KWHReading: null,
+			        kWReading: null
             }
             console.log("<< dateViseIntervalBlock[date] KVARH>>", dateViseIntervalBlock[date]);
 
           } else {
             dateViseIntervalBlock[date].KWHReading = intervalReadingTotal
+			dateViseIntervalBlock[date].kWReading = intervalReadingMax
 
             console.log("<< dateViseIntervalBlock[date] >>", dateViseIntervalBlock[date]);
             console.log("<< dateViseIntervalBlock[date].KWHReading >>", dateViseIntervalBlock[date].KWHReading);
+			      console.log("<< dateViseIntervalBlock[date].kWReading >>", dateViseIntervalBlock[date].kWReading);
 
           }
         }
@@ -496,7 +501,10 @@ const intervalBlockHourly = async (headers, data) => {
             let time = element[0]['espi:timePeriod']['espi:start']._text
             time = moment.unix(time).tz("America/New_York").format("HH");
             element = element.map(e => Number(e['espi:value']._text));
-            let intervalReadingTotal = _.sum(element);
+            
+			let intervalReadingTotal = _.sum(element);
+			let intervalReadingMax = _.max(element);
+			
             console.log("date ", date, "HH :- ", time, " ", intervalReadingTotal);
             if (KVARH) {
               let key = date + ":" + time
@@ -514,11 +522,13 @@ const intervalBlockHourly = async (headers, data) => {
                   intervalBlockPayloadId,
                   KVARHReading: intervalReadingTotal,
                   KWHReading: null
+				          kWReading: null
                 }
               }
             } else {
               let key = date + ":" + time
               dateViseIntervalBlock[key].KWHReading = intervalReadingTotal
+			        dateViseIntervalBlock[key].kWReading = intervalReadingMax
             }
           }
         }
