@@ -402,7 +402,7 @@ const intervalBlock = async (headers, data) => {
               KVARHReading: intervalReadingTotal,
               intervalBlockPayloadId: intervalBlockPayloadId,
               KWHReading: null,
-			        kWReading: null
+	      kWReading: null
             }
             console.log("<< dateViseIntervalBlock[date] KVARH>>", dateViseIntervalBlock[date]);
 
@@ -521,8 +521,8 @@ const intervalBlockHourly = async (headers, data) => {
                   time: time,
                   intervalBlockPayloadId,
                   KVARHReading: intervalReadingTotal,
-                  KWHReading: null
-				          kWReading: null
+                  KWHReading: null,
+	          kWReading: null
                 }
               }
             } else {
