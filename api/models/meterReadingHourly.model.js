@@ -26,6 +26,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: true,
             field: 'KWHReading'
+        },
+        kWReading: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+            field: 'kWReading'
         }
     },
         {
