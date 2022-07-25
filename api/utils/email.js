@@ -14,7 +14,7 @@ APPSETTING_SENDGRID_API_KEY = "SG.FwBZpGPnQyiz21x_Ng9cRw.r21n780NHs2x-IXpk-r-z0q
 sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
 
 try {
-	const devEmail = "aleksa.pesic351@gmail.com";
+	const devEmail = "stella@cutone.org";
 	APPSETTING_NOREPLY_EMAIL = devEmail;
 
 	if (!APPSETTING_ADMIN_EMAIL) {
