@@ -48,7 +48,7 @@
 		"express-xml-bodyparser": "^0.3.0",
 		"feedparser": "^2.2.10",
 		"fs": "0.0.1-security",
-		"jsonwebtoken": "^8.5.1",
+		"jsonwebtoken": "^9.0.0",
 		"light-toast": "^0.2.3",
 		"lodash": "^4.17.21",
 		"moment": "^2.29.1",
