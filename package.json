@@ -69,7 +69,7 @@
 		"react-router-dom": "^5.1.2",
 		"reactstrap": "^8.4.1",
 		"request": "^2.88.2",
-		"sequelize": "^5.21.4",
+		"sequelize": "^6.29.0",
 		"sessionstorage": "^0.1.0",
 		"tabler-react": "^1.30.1",
 		"tedious": "^8.0.1",
