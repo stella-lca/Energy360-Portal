@@ -1,3 +1,5 @@
+@use "variables";
+
 .footer{
     background-attachment: fixed;
     position: relative;
@@ -48,12 +50,12 @@
     color: #EB5E28;
 }
 .footer{
-    background-color: $white-color;
-    line-height: $line-height;
+    background-color: variables.$white-color;
+    line-height: variables.$line-height;
 
     &.footer-black{
         h4{
-            color: $white-color;
+            color: variables.$white-color;
         }
     }
 
@@ -64,7 +66,7 @@
             list-style: none;
             margin: 0;
             padding: 0;
-            font-weight: $font-weight-bold;
+            font-weight: variables.$font-weight-bold;
 
             > li{
                 display: inline-block;
@@ -75,13 +77,13 @@
             }
 
             a:not(.btn){
-                color: $font-color;
+                color: variables.$font-color;
                 display: block;
-                font-size: $font-size-h6;
+                font-size: variables.$font-size-h6;
                 margin-bottom: 3px;
                 &:hover,
                 &:focus{
-                    color: $default-states-color;
+                    color: variables.$default-states-color;
                 }
             }
 
@@ -113,19 +115,19 @@
         }
     }
     hr{
-        border-color: $medium-gray;
+        border-color: variables.$medium-gray;
         border-width: 1px 0 0;
         margin-top: 5px;
         margin-bottom: 5px;
     }
     .copyright{
-        color: $brown-font-color;
+        color: variables.$brown-font-color;
         font-size: 0.9em;
         ul > li{
             padding-right: 0px;
         }
     }
     .title{
-        color: $default-states-color;
+        color: variables.$default-states-color;
     }
 }

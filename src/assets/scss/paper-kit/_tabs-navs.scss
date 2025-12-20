@@ -1,9 +1,11 @@
+@use "variables";
+
 /*             Navigation menu                */
 
 /*             Navigation Tabs                 */
 .nav-tabs-navigation{
     text-align: center;
-    border-bottom: 1px solid $medium-pale-bg;
+    border-bottom: 1px solid variables.$medium-pale-bg;
     margin-bottom: 30px;
 
     .nav > .nav-item > .nav-link{
@@ -20,24 +22,24 @@
 }
 .nav-tabs {
         border-bottom: 0 none;
-        font-size: $font-size-medium;
-        font-weight: $font-weight-bold;
+        font-size: variables.$font-size-medium;
+        font-weight: variables.$font-weight-bold;
         .nav-item{
             .nav-link{
                 border: 0 none;
-                color: $other-medium-gray;
+                color: variables.$other-medium-gray;
                 background-color: transparent;
             }
             .nav-link:hover{
-                color: $font-color;
+                color: variables.$font-color;
             }
             .nav-link.active{
-                color: $font-color;
+                color: variables.$font-color;
             }
         }
 
         .nav-item{
-            color: $font-color;
+            color: variables.$font-color;
             position: relative;
 
 
@@ -48,7 +50,7 @@
                 border: 0 none;
                 //height: 50px;
                 &:after{
-                    border-bottom: 11px solid $white-color;
+                    border-bottom: 11px solid variables.$white-color;
                     border-left: 11px solid rgba(0, 0, 0, 0);
                     border-right: 11px solid rgba(0, 0, 0, 0);
                     content: "";
@@ -59,7 +61,7 @@
                 }
 
                 &:before{
-                    border-bottom: 11px solid $medium-pale-bg;
+                    border-bottom: 11px solid variables.$medium-pale-bg;
                     border-left: 11px solid rgba(0, 0, 0, 0);
                     border-right: 11px solid rgba(0, 0, 0, 0);
                     content: "";
@@ -85,7 +87,7 @@
                 background-color: #68B3C8;
             }
             :before{
-                border-bottom: 11px solid $medium-pale-bg;
+                border-bottom: 11px solid variables.$medium-pale-bg;
                 border-left: 11px solid rgba(0, 0, 0, 0);
                 border-right: 11px solid rgba(0, 0, 0, 0);
                 content: "";
@@ -95,7 +97,7 @@
                 top: -11px;
             }
             :after{
-                border-bottom: 11px solid $pale-bg;
+                border-bottom: 11px solid variables.$pale-bg;
                 border-left: 11px solid rgba(0, 0, 0, 0);
                 border-right: 11px solid rgba(0, 0, 0, 0);
                 content: "";
@@ -123,10 +125,10 @@
         margin-left: 0;
     }
     .nav-item .nav-link {
-        border: 1px solid $default-color;
+        border: 1px solid variables.$default-color;
         border-radius: 0;
-        color: $default-color;
-        font-weight: $font-weight-bold;
+        color: variables.$default-color;
+        font-weight: variables.$font-weight-bold;
         margin-left: -1px;
         padding: 10px 25px;
 
@@ -134,7 +136,7 @@
     .nav-item.active .nav-link,
     .nav-item.active .nav-link:hover,
     .nav-item.active .nav-link:focus {
-        background-color: $default-color;
+        background-color: variables.$default-color;
         color: #FFFFFF;
     }
     .nav-item:first-child .nav-link{
@@ -145,19 +147,19 @@
         border-radius: 0 30px 30px 0 !important;
     }
     .nav-item .nav-link.active{
-        background-color: $default-color;
-        color: $white-color;
+        background-color: variables.$default-color;
+        color: variables.$white-color;
     }
 
 }
 .nav-pills-primary{
     .nav-item{
         .nav-link{
-            border: 1px solid $primary-color !important;
-            color: $primary-color !important;
+            border: 1px solid variables.$primary-color !important;
+            color: variables.$primary-color !important;
             &.active{
-                border: 1px solid $primary-color !important;
-                color: $white-color !important;
+                border: 1px solid variables.$primary-color !important;
+                color: variables.$white-color !important;
             }
         }
     }
@@ -165,11 +167,11 @@
 .nav-pills-danger{
     .nav-item{
         .nav-link{
-            border: 1px solid $danger-color !important;
-            color: $danger-color !important;
+            border: 1px solid variables.$danger-color !important;
+            color: variables.$danger-color !important;
             &.active{
-                border: 1px solid $danger-color !important;
-                color: $white-color !important;
+                border: 1px solid variables.$danger-color !important;
+                color: variables.$white-color !important;
             }
         }
     }
@@ -177,11 +179,11 @@
 .nav-pills-info{
     .nav-item{
         .nav-link{
-            border: 1px solid $info-color !important;
-            color: $info-color !important;
+            border: 1px solid variables.$info-color !important;
+            color: variables.$info-color !important;
             &.active{
-                border: 1px solid $info-color !important;
-                color: $white-color !important;
+                border: 1px solid variables.$info-color !important;
+                color: variables.$white-color !important;
             }
         }
     }
@@ -189,11 +191,11 @@
 .nav-pills-success{
     .nav-item{
         .nav-link{
-            border: 1px solid $success-color !important;
-            color: $success-color !important;
+            border: 1px solid variables.$success-color !important;
+            color: variables.$success-color !important;
             &.active{
-                border: 1px solid $success-color !important;
-                color: $white-color !important;
+                border: 1px solid variables.$success-color !important;
+                color: variables.$white-color !important;
             }
         }
     }
@@ -201,11 +203,11 @@
 .nav-pills-warning{
     .nav-item{
         .nav-link{
-            border: 1px solid $warning-color !important;
-            color: $warning-color !important;
+            border: 1px solid variables.$warning-color !important;
+            color: variables.$warning-color !important;
             &.active{
-                border: 1px solid $warning-color !important;
-                color: $white-color !important;
+                border: 1px solid variables.$warning-color !important;
+                color: variables.$white-color !important;
             }
         }
     }

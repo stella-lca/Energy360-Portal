@@ -1,3 +1,4 @@
+@use "sass:selector";
 @mixin input-size($padding-vertical, $padding-horizontal, $height){
     padding: $padding-vertical $padding-horizontal;
     height: $height;
@@ -12,7 +13,7 @@
 }
 
 @mixin optional-at-root($sel) {
-@at-root #{if(not &, $sel, selector-append(&, $sel))} {@content;}
+@at-root #{if(not &, $sel, selector.append(&, $sel))} {@content;}
 }
 @mixin placeholder() {
   @include optional-at-root('::-moz-placeholder') {@content;} // Firefox

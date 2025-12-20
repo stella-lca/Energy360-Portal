@@ -1,10 +1,12 @@
+@use "../variables";
+
 @mixin label-style(){
-     padding: $padding-label-vertical $padding-label-horizontal;
-     border: 1px solid $default-color;
-     border-radius: $border-radius-small;
-     color: $default-color;
-     font-weight: $font-weight-semi;
-     font-size: $font-size-small;
+     padding: variables.$padding-label-vertical variables.$padding-label-horizontal;
+     border: 1px solid variables.$default-color;
+     border-radius: variables.$border-radius-small;
+     color: variables.$default-color;
+     font-weight: variables.$font-weight-semi;
+     font-size: variables.$font-size-small;
      text-transform: uppercase;
      display: inline-block;
      vertical-align: middle;
@@ -16,6 +18,6 @@
 }
 @mixin label-color-fill($color){
      border-color: $color;
-     color: $white-color;
+     color: variables.$white-color;
      background-color: $color;
 }

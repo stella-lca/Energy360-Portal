@@ -1,3 +1,5 @@
+@use "variables";
+
 .landing-alert {
 	margin-bottom: 0;
 }
@@ -97,7 +99,7 @@
 	z-index: 1;
 	width: 100%;
 	background: transparent;
-	color: $white-color;
+	color: variables.$white-color;
 }
 .register-footer .fa-heart {
 	color: #eb5e28;
