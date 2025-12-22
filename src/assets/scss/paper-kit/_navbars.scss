@@ -1,3 +1,7 @@
+@use "mixins/navbars";
+@use "mixins/transparency";
+@use "variables";
+
 
 .nav {
   .nav-item{
@@ -8,20 +12,20 @@
   }
 }
 .navbar {
-    border: $none;
-    font-size: $font-size-base;
+    border: variables.$none;
+    font-size: variables.$font-size-base;
     transition: all 0.4s;
     -webkit-transition: all 0.4s;
     padding: 0;
-    background: $white-color;
+    background: variables.$white-color;
     box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15);
 
     .navbar-brand {
-        font-weight: $font-weight-bold;
-        margin: $navbar-margin-brand;
-        padding: $navbar-padding-brand;
-        font-size: $font-size-base;
-        color: $default-color;
+        font-weight: variables.$font-weight-bold;
+        margin: variables.$navbar-margin-brand;
+        padding: variables.$navbar-padding-brand;
+        font-size: variables.$font-size-base;
+        color: variables.$default-color;
         text-transform: uppercase;
     }
     .navbar-toggler:focus {
@@ -34,7 +38,7 @@
     &:not([class*="bg"]) {
       .navbar-toggler {
         .navbar-toggler-bar {
-          background: $default-color !important;
+          background: variables.$default-color !important;
         }
       }
     }
@@ -42,13 +46,13 @@
     .navbar-nav {
         .nav-item .nav-link {
             line-height: 1.6;
-            margin: $navbar-margin-a;
-            padding: $navbar-padding-a;
+            margin: variables.$navbar-margin-a;
+            padding: variables.$navbar-padding-a;
             opacity: .8;
-            font-size: $font-size-small;
+            font-size: variables.$font-size-small;
             text-transform: uppercase;
             font-weight: 600;
-            color: $default-color;
+            color: variables.$default-color;
 
             p {
               margin: 0px 0px;
@@ -60,7 +64,7 @@
             }
          }
         .nav-item .nav-link.btn {
-            margin: $navbar-margin-a-btn;
+            margin: variables.$navbar-margin-a-btn;
             padding: 9px;
 
          }
@@ -70,13 +74,13 @@
             right: 5px;
         }
         .dropdown-menu {
-            border-radius: $border-radius-extreme;
+            border-radius: variables.$border-radius-extreme;
             margin-top: 1px;
         }
         .nav-item {
           .btn {
             i {
-              color: $white-color;
+              color: variables.$white-color;
             }
           }
         }
@@ -123,7 +127,7 @@
     }
     .btn{
        margin: 14px 3px;
-       font-size: $font-size-small;
+       font-size: variables.$font-size-small;
        i{
            font-size: 14px;
            position: relative;
@@ -131,10 +135,10 @@
        }
     }
     .btn-simple{
-        font-size: $font-size-medium;
+        font-size: variables.$font-size-medium;
     }
     .caret{
-       @include center-item();
+       @include navbars.center-item();
     }
     &.navbar-transparent {
       background: transparent !important;
@@ -142,18 +146,18 @@
       box-shadow: none;
 
       .navbar-brand {
-        color: $white-color;
+        color: variables.$white-color;
       }
 
       .navbar-nav {
         .nav-item .nav-link {
-          color: $white-color;
+          color: variables.$white-color;
         }
       }
 
       .navbar-toggler {
         .navbar-toggler-bar {
-          background: $white-color !important;
+          background: variables.$white-color !important;
         }
       }
     }
@@ -187,7 +191,7 @@
     }
     .navbar-toggler {
       .navbar-toggler-bar {
-        background: $white-color !important;
+        background: variables.$white-color !important;
         display: block;
         position: relative;
         width: 24px;
@@ -200,21 +204,21 @@
 
 .navbar-transparent, [class*="bg"]{
     .navbar-brand{
-        color: $white-color;
-        @include opacity(.9);
+        color: variables.$white-color;
+        @include transparency.opacity(.9);
 
         &:focus,
         &:hover{
             background-color: transparent;
-            @include opacity(1);
-            color: $white-color;
+            @include transparency.opacity(1);
+            color: variables.$white-color;
         }
     }
 
     .navbar-nav{
         .nav-item .nav-link:not(.btn){
-            color: $white-color;
-            border-color: $white-color;
+            color: variables.$white-color;
+            border-color: variables.$white-color;
         }
         .active .nav-link
         .active .nav-link:hover,
@@ -222,8 +226,8 @@
         .nav-item .nav-link:hover,
         .nav-item .nav-link:focus{
             background-color: transparent;
-            color: $white-color;
-            @include opacity(1);
+            color: variables.$white-color;
+            @include transparency.opacity(1);
         }
         .nav .nav-item a.btn:hover{
             background-color: transparent;
@@ -232,31 +236,31 @@
         .dropdown .nav-link .caret,
         .dropdown .nav-link:hover .caret,
         .dropdown .nav-link:focus .caret{
-            border-bottom-color: $white-color;
-            border-top-color: $white-color;
+            border-bottom-color: variables.$white-color;
+            border-top-color: variables.$white-color;
         }
 
         .open .nav-link,
         .open .nav-link:hover,
         .open .nav-link:focus {
             background-color: transparent;
-            color: $default-color;
-            @include opacity(1);
+            color: variables.$default-color;
+            @include transparency.opacity(1);
         }
     }
 
     .btn-default.btn-fill{
-        color: $dark-gray;
-        background-color: $white-color;
-        @include opacity(.9);
+        color: variables.$dark-gray;
+        background-color: variables.$white-color;
+        @include transparency.opacity(.9);
     }
     .btn-default.btn-fill:hover,
     .btn-default.btn-fill:focus,
     .btn-default.btn-fill:active,
     .btn-default.btn-fill.active,
     .open .dropdown-toggle.btn-fill.btn-default{
-        border-color: $white-color;
-        @include opacity(1);
+        border-color: variables.$white-color;
+        @include transparency.opacity(1);
     }
 
 }

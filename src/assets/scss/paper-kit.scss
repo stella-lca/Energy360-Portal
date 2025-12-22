@@ -1,5 +1,4 @@
 /*!
-
  =========================================================
  * Paper Kit React - v1.0.0 based on Paper Kit - v2.2.0
  =========================================================
@@ -12,54 +11,52 @@
  =========================================================
 
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*/
 
- */
-
-@import 'paper-kit/variables';
-@import 'paper-kit/mixins';
+@use "paper-kit/variables" as *;
+@use "paper-kit/mixins" as *;
 
 // Plugins CSS
-@import "paper-kit/plugins/plugin-bootstrap-switch";
-@import "paper-kit/plugins/plugin-nouislider";
-@import "paper-kit/plugins/plugin-datepicker";
+@use "paper-kit/plugins/plugin-bootstrap-switch";
+@use "paper-kit/plugins/plugin-nouislider";
+@use "paper-kit/plugins/plugin-datepicker";
 
 // Core CSS
-@import "paper-kit/buttons";
-@import "paper-kit/inputs";
-@import "paper-kit/checkbox-radio";
-@import "paper-kit/progress-bars";
-@import "paper-kit/badges";
-@import "paper-kit/pagination";
-@import "paper-kit/typography";
-@import "paper-kit/misc";
-@import "paper-kit/labels";
+@use "paper-kit/buttons";
+@use "paper-kit/inputs";
+@use "paper-kit/checkbox-radio";
+@use "paper-kit/progress-bars";
+@use "paper-kit/badges";
+@use "paper-kit/pagination";
+@use "paper-kit/typography";
+@use "paper-kit/misc";
+@use "paper-kit/labels";
 
 // components
-@import "paper-kit/nucleo-icons";
-@import "paper-kit/social-buttons";
-@import "paper-kit/tabs-navs";
-@import "paper-kit/navbars";
-@import "paper-kit/dropdown";
-@import "paper-kit/alerts";
-@import "paper-kit/images";
-@import "paper-kit/tooltips-and-popovers";
-@import "paper-kit/modal";
-@import "paper-kit/icons";
-@import "paper-kit/carousel";
-@import "paper-kit/footers";
+@use "paper-kit/nucleo-icons";
+@use "paper-kit/social-buttons";
+@use "paper-kit/tabs-navs";
+@use "paper-kit/navbars";
+@use "paper-kit/dropdown";
+@use "paper-kit/alerts";
+@use "paper-kit/images";
+@use "paper-kit/tooltips-and-popovers";
+@use "paper-kit/modal";
+@use "paper-kit/icons";
+@use "paper-kit/carousel";
+@use "paper-kit/footers";
 
 // Cards
-@import "paper-kit/cards";
-@import "paper-kit/cards/card-plain";
-@import "paper-kit/cards/card-register";
-@import "paper-kit/cards/card-profile";
+@use "paper-kit/cards";
+@use "paper-kit/cards/card-plain";
+@use "paper-kit/cards/card-register";
+@use "paper-kit/cards/card-profile";
 
 // example pages and sections
-@import "paper-kit/examples";
-@import "paper-kit/sections";
+@use "paper-kit/examples";
+@use "paper-kit/sections";
 
-
-@import "paper-kit/responsive";
+@use "paper-kit/responsive";
 
 // React Differences
-@import "react/react-differences.scss";
+@use "react/react-differences";

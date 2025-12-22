@@ -136,7 +136,7 @@ const ResetPassword = props => {
 										</FormText>
 									</Form.Group>
 									<FormGroup className="button-group">
-										<Button block className="btn-round" color="danger">
+										<Button type="submit" block className="btn-round" color="danger">
 											Reset Password
 										</Button>
 									</FormGroup>

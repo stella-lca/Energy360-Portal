@@ -1,3 +1,5 @@
+@use "../variables";
+
 .card-plain {
   background-color: transparent;
   box-shadow: none;
@@ -9,6 +11,6 @@
   }
 
   img {
-      border-radius: $border-radius-extreme;
+      border-radius: variables.$border-radius-extreme;
   }
 }

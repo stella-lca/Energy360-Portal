@@ -12,6 +12,21 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			field: "authCode"
 		},
+		email: {
+			type: DataTypes.TEXT,
+			field: "email",
+		},
+		userId: {
+			type: DataTypes.INTEGER(),
+			references: {
+				model: 'GCEP_Users',
+				key: 'id'
+			}
+		},
+		conedSub: {
+			type: DataTypes.TEXT,
+			allowNull: true,
+		},
 		access_token: {
 			type: DataTypes.TEXT,
 			field: "access_token",
@@ -43,38 +58,51 @@ module.exports = (sequelize, DataTypes) => {
 		accountNumber: {
 			type: DataTypes.STRING,
 			field: "accountNumber"
+		},
+		subscriptionId: {
+			type: DataTypes.STRING,
+			field: "subscriptionId"
+		},
+		authorizationId: {
+			type: DataTypes.STRING,
+			field: "authorizationId"
 		}
+		,
+		// meterAccountId: {
+		// 	type: DataTypes.STRING,
+		// 	field: "meterAccountId"
+		// }
 	},
-	{
-		timestamps: true,
-		createdAt: "createdDate",
-		updatedAt: "modifiedDate"
-	});
+		{
+			timestamps: true,
+			createdAt: "createdDate",
+			updatedAt: "modifiedDate"
+		});
 
 	Token.findByToken = async code => {
 		return await Token.findOne({
-				where: {
-					authCode: code
-				}
-			})
+			where: {
+				authCode: code
+			}
+		})
 			.then(token => token || undefined)
-			.catch(err => err);
+			.catch(err => false);
 	};
 
 	Token.createToken = async tokenData => {
 		return await Token.create(tokenData)
 			.then(token => token)
-			.catch(err => err);
+			.catch(err => false);
 	};
 
 	Token.updateToken = async (authCode, tokenData) => {
 		return await Token.update(tokenData, {
-				where: {
-					authCode: authCode
-				}
-			})
+			where: {
+				authCode: authCode
+			}
+		})
 			.then(token => token || undefined)
-			.catch(err => err);
+			.catch(err => false);
 	};
 
 	return Token;

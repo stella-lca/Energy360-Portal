@@ -1,3 +1,5 @@
+@use "variables";
+
 /*           Labels & Progress-bar              */
 .label{
     padding: 0.2em 0.6em;
@@ -11,20 +13,20 @@
     line-height: 17px;
 }
 .label-primary{
-    background-color: $primary-color;
+    background-color: variables.$primary-color;
 }
 .label-info{
-    background-color: $info-color;
+    background-color: variables.$info-color;
 }
 .label-success{
-    background-color: $success-color;
+    background-color: variables.$success-color;
 }
 .label-warning{
-    background-color: $warning-color;
+    background-color: variables.$warning-color;
 }
 .label-danger{
-    background-color: $danger-color;
+    background-color: variables.$danger-color;
 }
 .label-default{
-    background-color: $default-color;
+    background-color: variables.$default-color;
 }

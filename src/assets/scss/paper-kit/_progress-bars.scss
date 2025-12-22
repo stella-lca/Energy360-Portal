@@ -1,6 +1,8 @@
+@use "variables";
+
 .progress {
-    background-color: $medium-gray;
-    border-radius: $border-radius-small;
+    background-color: variables.$medium-gray;
+    border-radius: variables.$border-radius-small;
     box-shadow: none;
     height: 8px;
 }
@@ -8,20 +10,20 @@
     height: 4px;
 }
 .progress-bar{
-    background-color: $primary-color;
+    background-color: variables.$primary-color;
 }
 .progress-bar-primary{
-    background-color: $primary-color;
+    background-color: variables.$primary-color;
 }
 .progress-bar-info{
-    background-color: $info-color;
+    background-color: variables.$info-color;
 }
 .progress-bar-success{
-    background-color: $success-color;
+    background-color: variables.$success-color;
 }
 .progress-bar-warning{
-    background-color: $warning-color;
+    background-color: variables.$warning-color;
 }
 .progress-bar-danger{
-    background-color: $danger-color;
+    background-color: variables.$danger-color;
 }

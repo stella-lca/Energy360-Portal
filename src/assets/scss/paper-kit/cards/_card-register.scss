@@ -1,3 +1,5 @@
+@use "../variables";
+
 .card-register {
   background-color: #FF8F5E;
   border-radius: 8px;
@@ -22,6 +24,6 @@
   }
 
   .input-group-text {
-    border: 1px solid $white-color;
+    border: 1px solid variables.$white-color;
   }
 }

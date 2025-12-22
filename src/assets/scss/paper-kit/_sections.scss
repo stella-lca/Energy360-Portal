@@ -1,3 +1,5 @@
+@use "variables";
+
 .section{
     padding: 70px 0;
     position: relative;
@@ -10,23 +12,23 @@
     background-color: #EEEEEE;
 }
 .section-nude{
-    background-color: $bg-nude;
+    background-color: variables.$bg-nude;
 }
 .section-gold{
     background-color: #caac90;
-    color: $white-color;
+    color: variables.$white-color;
 }
 .section-brown{
     background-color: #A59E94;
-    color: $white-color;
+    color: variables.$white-color;
 }
 .section-light-blue{
-    background-color: $primary-color;
-    color: $white-color;
+    background-color: variables.$primary-color;
+    color: variables.$white-color;
 }
 .section-dark-blue{
     background-color: #506367;
-    color: $white-color;
+    color: variables.$white-color;
 }
 .section-dark{
     background-color: #0b1011;
@@ -39,13 +41,13 @@
     .title,
     .info-title,
     .card-plain .card-title{
-        color: $white-color !important;
+        color: variables.$white-color !important;
     }
     .category,
     .description,
     .card-plain .card-description,
     .card-plain .card-category{
-        color: rgba($white-color, .7);
+        color: rgba(variables.$white-color, .7);
     }
     hr{
         border-color: rgba(255, 255, 255, 0.19);
@@ -55,7 +57,7 @@
 .carousel-caption{
     .title,
     .info-title{
-        color: $white-color;
+        color: variables.$white-color;
     }
 }
 [class*="features-"],

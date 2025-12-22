@@ -1,25 +1,29 @@
+@use "mixins/navbars";
+@use "mixins/vendor-prefixes";
+@use "variables";
+
 /*     General overwrite     */
 body{
-    color: $font-color;
-    font-size: $font-size-base;
-    font-weight: $font-weight-light;
+    color: variables.$font-color;
+    font-size: variables.$font-size-base;
+    font-weight: variables.$font-weight-light;
     font-family: 'Montserrat', "Helvetica", Arial, sans-serif;
 }
 a{
-  color: $info-color;
+  color: variables.$info-color;
 
   &:hover, &:focus{
-     color: $info-states-color;
+     color: variables.$info-states-color;
      text-decoration: none;
   }
 
   // @include transition($fast-transition-time, linear);
 }
 hr{
-    border-color: $medium-pale-bg;
+    border-color: variables.$medium-pale-bg;
 }
 .icon{
-    fill: $font-color;
+    fill: variables.$font-color;
 }
 .fa-base{
     font-size: 1.25em !important;
@@ -48,7 +52,7 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 .carousel-control.right,
 .carousel-control.left
 {
-    @include transition($general-transition-time, linear);
+    @include vendor-prefixes.transition(variables.$general-transition-time, linear);
 }
 .tagsinput .tag,
 .tagsinput-remove-link,
@@ -57,13 +61,13 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 [data-toggle="collapse"] i,
 .animation-transition-fast,
 .dropdown-menu .dropdown-item{
-    @include transition($fast-transition-time, linear);
+    @include vendor-prefixes.transition(variables.$fast-transition-time, linear);
 }
 
 .btn-morphing .fa,
 .btn-morphing .circle,
 .gsdk-collapse{
-    @include transition($slow-transition-time, linear);
+    @include vendor-prefixes.transition(variables.$slow-transition-time, linear);
 }
 
 .fa{
@@ -80,42 +84,42 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 
 /*       CT colors          */
 .ct-blue{
-    color: $primary-color;
+    color: variables.$primary-color;
 }
 .ct-azure{
-    color: $info-color;
+    color: variables.$info-color;
 }
 .ct-green{
-    color: $success-color;
+    color: variables.$success-color;
 }
 .ct-orange{
-    color: $warning-color;
+    color: variables.$warning-color;
 }
 .ct-red{
-    color: $danger-color;
+    color: variables.$danger-color;
 }
 
 //stefan changes
 
 .pagination .page-item .page-link .fa{
     width: auto;
-    font-weight: $font-weight-bold;
+    font-weight: variables.$font-weight-bold;
 }
 
 .bg-primary{
-    @include navbar-color($bg-primary !important);
+    @include navbars.navbar-color(variables.$bg-primary !important);
 }
 .bg-info{
-    @include navbar-color($bg-info !important);
+    @include navbars.navbar-color(variables.$bg-info !important);
 }
 .bg-success{
-    @include navbar-color($bg-success !important);
+    @include navbars.navbar-color(variables.$bg-success !important);
 }
 .bg-warning{
-    @include navbar-color($bg-warning !important);
+    @include navbars.navbar-color(variables.$bg-warning !important);
 }
 .bg-danger{
-    @include navbar-color($bg-danger !important);
+    @include navbars.navbar-color(variables.$bg-danger !important);
 }
 
 
@@ -123,7 +127,7 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
   -webkit-transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
   transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
   left: 0;
-  background-color: $white-color;
+  background-color: variables.$white-color;
   position: relative;
   z-index: 1;
 }
@@ -160,7 +164,7 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
     }
     .navbar-brand,
     .collapse .navbar-nav .nav-link {
-      color: $white-color !important;
+      color: variables.$white-color !important;
     }
   }
 
@@ -173,7 +177,7 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 
     nav > ul a:not(.btn),
     .copyright {
-      color: $white-color !important;
+      color: variables.$white-color !important;
     }
   }
 

@@ -1,13 +1,15 @@
+@use "variables";
+
 .alert{
     border: 0;
     border-radius: 0;
-    color: $white-color;
+    color: variables.$white-color;
     padding: 10px 15px;
     font-size: 14px;
 
     & .close{
-        font-size: $font-size-large;
-        color: $white-color;
+        font-size: variables.$font-size-large;
+        color: variables.$white-color;
     }
 
     .container &{
@@ -43,19 +45,19 @@
             font-size: 20px;
             top: 5px;
             margin-top: -5px;
-            font-weight: $font-weight-bold;
+            font-weight: variables.$font-weight-bold;
         }
     }
 }
 .alert-info{
-    background-color: $bg-info;
+    background-color: variables.$bg-info;
 }
 .alert-success {
-    background-color: $bg-success;
+    background-color: variables.$bg-success;
 }
 .alert-warning {
-    background-color: $bg-warning;
+    background-color: variables.$bg-warning;
 }
 .alert-danger {
-    background-color: $bg-danger;
+    background-color: variables.$bg-danger;
 }

@@ -1,7 +1,9 @@
+@use "variables";
+
 /*           badges & Progress-bar              */
 .badge{
     padding: 0.4em 0.9em;
-    color: $white-color;
+    color: variables.$white-color;
     font-weight: 500;
     font-size: 0.75em;
     text-transform: uppercase;
@@ -17,20 +19,20 @@
   }
 }
 .badge-primary{
-    background-color: $primary-color;
+    background-color: variables.$primary-color;
 }
 .badge-info{
-    background-color: $info-color;
+    background-color: variables.$info-color;
 }
 .badge-success{
-    background-color: $success-color;
+    background-color: variables.$success-color;
 }
 .badge-warning{
-    background-color: $warning-color;
+    background-color: variables.$warning-color;
 }
 .badge-danger{
-    background-color: $danger-color;
+    background-color: variables.$danger-color;
 }
 .badge-default{
-    background-color: $default-color;
+    background-color: variables.$default-color;
 }

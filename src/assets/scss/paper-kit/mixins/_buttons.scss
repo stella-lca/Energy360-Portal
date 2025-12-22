@@ -1,9 +1,12 @@
+@use "../variables";
+@use "transparency";
+
 // Mixin for generating new styles
 @mixin btn-styles($btn-color, $btn-states-color) {
     background-color: $btn-color;
     border-color: $btn-color;
-    color: $white-color;
-    @include opacity(1);
+    color: variables.$white-color;
+    @include transparency.opacity(1);
 
     &:hover,
     &:focus,
@@ -18,13 +21,13 @@
     &:not(:disabled):not(.disabled).active:focus,
     .show > &.dropdown-toggle{
         background-color: $btn-states-color;
-        color: $white-color;
+        color: variables.$white-color;
         border-color: $btn-states-color;
         box-shadow: none;
     }
 
     .caret{
-        border-top-color: $white-color;
+        border-top-color: variables.$white-color;
     }
 
     &.disabled,
@@ -51,7 +54,7 @@
         &.active,
         &:focus:active,
         .open > &.dropdown-toggle{
-            background-color: $transparent-bg !important;
+            background-color: variables.$transparent-bg !important;
             color: $btn-states-color !important;
         }
 
@@ -61,14 +64,14 @@
     }
 
     .caret{
-      border-top-color: $white-color;
+      border-top-color: variables.$white-color;
     }
 }
 
 @mixin btn-outline-styles($btn-color, $btn-states-color){
     border-color: $btn-color;
     color: $btn-color;
-    @include opacity(1);
+    @include transparency.opacity(1);
 
     &:hover,
     &:focus,
@@ -79,15 +82,15 @@
     &.active:focus,
     .show > &.dropdown-toggle {
       background-color: $btn-color !important;
-      color: $fill-font-color;
+      color: variables.$fill-font-color;
       border-color: $btn-color !important;
       .caret{
-          border-top-color: $fill-font-color;
+          border-top-color: variables.$fill-font-color;
       }
     }
 
     .caret{
-        border-top-color: $white-color;
+        border-top-color: variables.$white-color;
     }
 
     &.disabled,
@@ -100,7 +103,7 @@
       &.focus,
       &:active,
       &.active {
-        background-color: $transparent-bg;
+        background-color: variables.$transparent-bg;
         border-color: $btn-color;
       }
     }

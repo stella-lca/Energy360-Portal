@@ -1,3 +1,5 @@
+@use "../variables";
+
 /* ========================================================================
  * bootstrap-switch - v3.3.2
  * http://www.bootstrap-switch.org
@@ -80,37 +82,37 @@
  .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
  .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
    color: #fff;
-   background: $primary-color;
+   background: variables.$primary-color;
  }
 
  .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-info,
  .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-info {
    color: #fff;
-   background: $info-color;
+   background: variables.$info-color;
  }
 
  .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-success,
  .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-success {
    color: #fff;
-   background: $success-color;
+   background: variables.$success-color;
  }
 
  .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-warning,
  .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-warning {
-   background: $warning-color;
+   background: variables.$warning-color;
    color: #fff;
  }
 
  .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-danger,
  .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-danger {
    color: #fff;
-   background: $danger-color;
+   background: variables.$danger-color;
  }
 
 
  .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-default {
    color: #fff;
-   background: $default-color;
+   background: variables.$default-color;
  }
 
  .bootstrap-switch .bootstrap-switch-label {
@@ -243,26 +245,26 @@
  }
 
  .bootstrap-switch.bootstrap-switch-on .bootstrap-switch-danger  {
-   background-color: $danger-color;
+   background-color: variables.$danger-color;
  }
 
  .bootstrap-switch.bootstrap-switch-on .bootstrap-switch-warning  {
-   background-color: $warning-color;
+   background-color: variables.$warning-color;
  }
 
  .bootstrap-switch.bootstrap-switch-on .bootstrap-switch-success  {
-   background-color: $success-color;
+   background-color: variables.$success-color;
  }
 
  .bootstrap-switch.bootstrap-switch-on .bootstrap-switch-primary  {
-   background-color: $primary-color;
+   background-color: variables.$primary-color;
  }
 
  .bootstrap-switch.bootstrap-switch-on .bootstrap-switch-info  {
-   background-color: $info-color;
+   background-color: variables.$info-color;
  }
  .bootstrap-switch.bootstrap-switch-on .bootstrap-switch-default  {
-   background-color: $default-color;
+   background-color: variables.$default-color;
  }
 
  .bootstrap-switch.bootstrap-switch-off .bootstrap-switch-danger,

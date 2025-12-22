@@ -1,5 +1,7 @@
+@use "variables";
+
 .carousel-control{
-    background-color: $danger-color;
+    background-color: variables.$danger-color;
     border-radius: 50%;
     opacity: 1;
     text-shadow: none;
@@ -7,7 +9,7 @@
     &:hover,
     &:focus{
         opacity: 1;
-        background-color: $danger-states-color;
+        background-color: variables.$danger-states-color;
     }
 }
 
@@ -38,7 +40,7 @@
 }
 
  .page-carousel{
-    border-radius: $border-radius-extreme !important;
+    border-radius: variables.$border-radius-extreme !important;
     border: none !important;
     width: 100%;
 }
@@ -46,7 +48,7 @@
 .carousel-inner {
   > .carousel-item > img,
   > .carousel-item > a > img {
-      border-radius: $border-radius-extreme;
+      border-radius: variables.$border-radius-extreme;
       box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
   }
   .carousel-item img {
@@ -59,7 +61,7 @@
     border: 0 none;
 }
 .carousel-indicators .active{
-    background-color: $danger-color;
+    background-color: variables.$danger-color;
 }
 .page-carousel:hover{
     .carousel-control.right,
@@ -75,9 +77,9 @@
         }
         a {
             position: absolute;
-            color: $white-color !important;
+            color: variables.$white-color !important;
         &:hover {
-            color: $white-color !important;
+            color: variables.$white-color !important;
         }
         .fa-angle-left:before {
             padding-right: 3px;

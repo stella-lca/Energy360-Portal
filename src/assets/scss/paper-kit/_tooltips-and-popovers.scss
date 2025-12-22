@@ -1,13 +1,17 @@
+@use "mixins/popovers";
+@use "mixins/transparency";
+@use "variables";
+
 .tooltip {
-    font-size: $font-size-small;
-    font-weight: $font-weight-normal;
+    font-size: variables.$font-size-small;
+    font-weight: variables.$font-weight-normal;
 }
 
 .tooltip-inner {
-    background-color: $white-color;
-    border-radius: $border-radius-base;
+    background-color: variables.$white-color;
+    border-radius: variables.$border-radius-base;
     box-shadow: 0 1px 13px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(115, 71, 38, 0.23);
-    color: $default-color;
+    color: variables.$default-color;
     max-width: 200px;
     padding: 10px 10px;
     text-align: center;
@@ -130,7 +134,7 @@
 .popover{
     border: 0;
     border-radius: 4px;
-    background-color: $white-color;
+    background-color: variables.$white-color;
     color: #66615b;
     font-weight: 400;
     padding: 0;
@@ -142,18 +146,18 @@
 .popover-header{
     background-color: #FFFCF5;
     border-bottom: 0 none;
-    font-size: $font-paragraph;
+    font-size: variables.$font-paragraph;
     font-weight: normal;
     line-height: 22px;
     padding: 15px 15px 0px 15px;
     margin: 0;
     color: #66615b;
     text-align: center;
-    border-radius: $border-radius-base $border-radius-base 0 0;
+    border-radius: variables.$border-radius-base variables.$border-radius-base 0 0;
     margin-bottom: -10px;
 }
 .popover-header{
-    background-color: $white-color !important;
+    background-color: variables.$white-color !important;
     text-align: center;
 }
 .popover-body{
@@ -167,7 +171,7 @@
     margin-left: 0;
 }
 .popover.bottom .arrow:after{
-    border-bottom-color: $bg-danger;
+    border-bottom-color: variables.$bg-danger;
 }
 .popover-filter{
     position: fixed;
@@ -177,51 +181,51 @@
     left: 0;
     z-index: 1030;
     background-color: #000000;
-    @include opacity(0);
+    @include transparency.opacity(0);
     visibility: hidden;
 
     transition: visibility 0s linear 0.3s,opacity 0.3s linear;
 }
 .popover-filter.in{
      visibility:visible;
-     @include opacity(0.2);
+     @include transparency.opacity(0.2);
      transition-delay: 0s;
 }
 .popover.left > .arrow::after{
-    border-left-color: $bg-danger;
+    border-left-color: variables.$bg-danger;
     bottom: -20px;
 }
 .popover.top > .arrow::after{
-    border-top-color: $bg-danger;
+    border-top-color: variables.$bg-danger;
 }
 .popover.right > .arrow::after{
-    border-right-color: $bg-danger;
+    border-right-color: variables.$bg-danger;
 }
 
 .popover.left::before{
-    border-left-color: $bg-danger;
+    border-left-color: variables.$bg-danger;
     bottom: -20px;
 }
 
 .popover-filter.in{
      visibility:visible;
-     @include opacity(0.2);
+     @include transparency.opacity(0.2);
      transition-delay: 0s;
 }
 .popover-primary{
-    @include popover-style($bg-primary);
+    @include popovers.popover-style(variables.$bg-primary);
 }
 .popover-info{
-    @include popover-style($bg-info);
+    @include popovers.popover-style(variables.$bg-info);
 }
 .popover-success {
-    @include popover-style($bg-success);
+    @include popovers.popover-style(variables.$bg-success);
 }
 .popover-warning {
-    @include popover-style($bg-warning);
+    @include popovers.popover-style(variables.$bg-warning);
 }
 .popover-danger {
-    @include popover-style($bg-danger);
+    @include popovers.popover-style(variables.$bg-danger);
 }
 
 // popover color
@@ -229,35 +233,35 @@
 .popover-primary.bs-tether-element-attached-bottom::before,
 .popover-primary.popover-top::after,
 .popover-primary.popover-top::before{
-    border-top-color: $bg-primary !important;
+    border-top-color: variables.$bg-primary !important;
  }
 
 .popover.popover-info.bs-tether-element-attached-top::after,
 .popover.popover-info.popover-bottom::after,
 .popover.popover-info.bs-tether-element-attached-top::before,
 .popover.popover-info.popover-bottom::before{
-    border-bottom-color: $bg-info !important;
+    border-bottom-color: variables.$bg-info !important;
 }
 
 .popover-success.bs-tether-element-attached-left::after,
 .popover-success.bs-tether-element-attached-left::before,
 .popover-success.popover-right::after,
 .popover-success.popover-right::before{
-    border-right-color: $bg-success !important;
+    border-right-color: variables.$bg-success !important;
 }
 
 .popover.popover-warning.bs-tether-element-attached-right::after,
 .popover.popover-warning.bs-tether-element-attached-right::before,
 .popover.popover-warning.popover-left::after,
 .popover.popover-warning.popover-left::before{
-    border-left-color: $bg-warning !important;
+    border-left-color: variables.$bg-warning !important;
 }
 
 .popover.popover-danger.bs-tether-element-attached-right::after,
 .popover.popover-danger.bs-tether-element-attached-right::before,
 .popover.popover-danger.popover-left::after,
 .popover.popover-danger.popover-left::before{
-    border-left-color: $bg-danger !important;
+    border-left-color: variables.$bg-danger !important;
 }
 
 .popover.bs-tether-element-attached-top::after, .popover.popover-bottom::after,

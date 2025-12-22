@@ -1,10 +1,10 @@
 // Plugins CSS
-@import "plugins/plugin-nouislider";
-@import "plugins/plugin-react-bootstrap-switch";
-@import "plugins/plugin-react-datetime";
+@use "plugins/plugin-nouislider";
+@use "plugins/plugin-react-bootstrap-switch";
+@use "plugins/plugin-react-datetime";
 // components
-@import "paper-kit/dropdown";
-@import "paper-kit/inputs";
-@import "paper-kit/navbars";
-@import "paper-kit/responsive";
-@import "paper-kit/tooltips-and-popovers";
+@use "paper-kit/dropdown";
+@use "paper-kit/inputs";
+@use "paper-kit/navbars";
+@use "paper-kit/responsive";
+@use "paper-kit/tooltips-and-popovers";

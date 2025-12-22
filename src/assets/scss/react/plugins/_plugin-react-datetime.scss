@@ -1,3 +1,5 @@
+@use "../../paper-kit/variables";
+
 /*!
 * https://github.com/YouCanBookMe/react-datetime
 */
@@ -81,7 +83,7 @@
 .rdtPicker table {
   width: 100%;
   margin: 0;
-  border-color: $white-color !important;
+  border-color: variables.$white-color !important;
 }
 .rdtPicker td,
 .rdtPicker th {
@@ -101,8 +103,8 @@
   &.rdtToday.rdtActive,
   &.rdtActive,
   &.rdtActive:hover {
-    background-color: $primary-color !important;
-    color: $white-color;
+    background-color: variables.$primary-color !important;
+    color: variables.$white-color;
   }
 }
 .rdtDays{
@@ -118,7 +120,7 @@
     }
     .rdtOld,
     .rdtNew{
-      color: $medium-gray;
+      color: variables.$medium-gray;
     }
   }
 }
@@ -176,7 +178,7 @@
   th.rdtNext,
   th.rdtPrev,
   .rdtTimeToggle{
-    color: $primary-color;
+    color: variables.$primary-color;
   }
 }
 
@@ -265,9 +267,9 @@ td.rdtYear:hover {
 .rdtCounters{
   .rdtCounter:last-child{
     .rdtCount{
-      color: $primary-color;
+      color: variables.$primary-color;
       border-radius: 50%;
-      border: 1px solid $primary-color;
+      border: 1px solid variables.$primary-color;
     }
   }
 }
@@ -281,7 +283,7 @@ td.rdtYear:hover {
   cursor: pointer;
   display: block;
   border-radius: 50%;
-  color: $medium-gray;
+  color: variables.$medium-gray;
   -webkit-transition: all 60ms ease-in;
   -moz-transition: all 60ms ease-in;
   -o-transition: all 60ms ease-in;
@@ -331,8 +333,8 @@ td.rdtYear:hover {
     text-align: center;
 
     &.rdtActive{
-      background-color: $primary-color !important;
-      color: $white-color;
+      background-color: variables.$primary-color !important;
+      color: variables.$white-color;
     }
   }
 }
@@ -348,7 +350,7 @@ td.rdtYear:hover {
   border-bottom-left-radius: 0;
   border-left: 0;
   padding-left: 0;
-  border-right: 1px solid $medium-gray;
+  border-right: 1px solid variables.$medium-gray;
 }
 
 .input-group>.rdt:not(:last-child) .form-control {
@@ -356,6 +358,6 @@ td.rdtYear:hover {
   border-bottom-right-radius: 0;
   border-right: 0;
   padding-right: 0;
-  border-left: 1px solid $medium-gray;
+  border-left: 1px solid variables.$medium-gray;
   padding-left: .75rem;
 }

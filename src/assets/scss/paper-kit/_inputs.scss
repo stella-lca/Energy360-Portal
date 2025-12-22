@@ -1,31 +1,35 @@
-@include placeholder() {
-  color: $dark-gray;
+@use "mixins/inputs";
+@use "mixins/vendor-prefixes";
+@use "variables";
+
+@include inputs.placeholder() {
+  color: variables.$dark-gray;
 };
 
 .form-control:focus + .input-group-text{
     border: 1px solid black;
 }
 .form-control {
-    background-color: $white-bg;
-    border: 1px solid $medium-gray;
-    border-radius: $border-radius-base;
-    color: $font-color;
-    font-size: $font-size-base;
+    background-color: variables.$white-bg;
+    border: 1px solid variables.$medium-gray;
+    border-radius: variables.$border-radius-base;
+    color: variables.$font-color;
+    font-size: variables.$font-size-base;
     transition: background-color 0.3s ease 0s;
     padding-right: 0 !important;
-    @include input-size($padding-base-vertical, $padding-label-horizontal, $height-base);
-    @include box-shadow(none);
+    @include inputs.input-size(variables.$padding-base-vertical, variables.$padding-label-horizontal, variables.$height-base);
+    @include vendor-prefixes.box-shadow(none);
 
     &:focus{
-       background-color: $white-bg;
-       border: 1px solid $table-line-color;
-       @include box-shadow(none);
+       background-color: variables.$white-bg;
+       border: 1px solid variables.$table-line-color;
+       @include vendor-prefixes.box-shadow(none);
        outline: 0 !important;
 
        + .input-group-prepend,
        + .input-group-append {
             .input-group-text {
-              border: 1px solid $table-line-color;
+              border: 1px solid variables.$table-line-color;
               border-left: none;
             }
        }
@@ -48,54 +52,54 @@
     .has-error &,
     .has-success &:focus,
     .has-error &:focus{
-        @include box-shadow(none);
+        @include vendor-prefixes.box-shadow(none);
     }
 
     .has-success &{
-        border: 1px solid $table-line-color;
-        color: $font-color;
+        border: 1px solid variables.$table-line-color;
+        color: variables.$font-color;
 
         &.form-control-success{
             padding-right: 2.5em !important;
         }
     }
     .has-success &:focus{
-        border: 1px solid $success-color;
-        color: $success-color;
+        border: 1px solid variables.$success-color;
+        color: variables.$success-color;
     }
     .has-danger &{
-        background-color: $danger-input-bg;
-        border: 1px solid $danger-color;
-        color: $danger-color;
+        background-color: variables.$danger-input-bg;
+        border: 1px solid variables.$danger-color;
+        color: variables.$danger-color;
 
         &.form-control-danger{
             padding-right: 2.5em !important;
         }
     }
     .has-danger &:focus{
-        background-color: $white-color;
-        border: 1px solid $danger-color;
+        background-color: variables.$white-color;
+        border: 1px solid variables.$danger-color;
     }
 
     & + .form-control-feedback{
-        border-radius: $border-radius-large;
-        font-size: $font-size-base;
-        color: $danger-color;
+        border-radius: variables.$border-radius-large;
+        font-size: variables.$font-size-base;
+        color: variables.$danger-color;
         font-size: .8rem;
         position: absolute;
         top: 100%;
-        padding-left: $padding-label-horizontal;
+        padding-left: variables.$padding-label-horizontal;
         vertical-align: middle;
     }
 
     .open &{
-        border-radius: $border-radius-base $border-radius-base 0 0;
+        border-radius: variables.$border-radius-base variables.$border-radius-base 0 0;
         border-bottom-color: transparent;
     }
 
     &.form-control-lg {
       height: 55px;
-      padding: $padding-large-vertical 13px;
+      padding: variables.$padding-large-vertical 13px;
       font-size: 1.25rem;
       line-height: 1.5;
     }
@@ -110,12 +114,12 @@
 
 .has-error{
     .form-control-feedback, .control-label{
-        color: $danger-color;
+        color: variables.$danger-color;
     }
 }
 .has-success{
     .form-control-feedback, .control-label{
-        color: $success-color;
+        color: variables.$success-color;
     }
 }
 
@@ -133,24 +137,24 @@
 }
 
 .input-group-text {
-    background-color: $white-bg;
-    border-radius: $border-radius-base;
+    background-color: variables.$white-bg;
+    border-radius: variables.$border-radius-base;
     border: 1px solid #ddd;
     border-right: none;
 
     .has-success &,
     .has-error &{
-        background-color: $white-color;
+        background-color: variables.$white-color;
     }
     .has-error .form-control:focus + &{
-        color: $danger-color;
+        color: variables.$danger-color;
     }
     .has-success .form-control:focus + &{
-        color: $success-color;
+        color: variables.$success-color;
     }
     .form-control:focus + &,
     .form-control:focus ~ &{
-        background-color: $white-color;
+        background-color: variables.$white-color;
     }
 }
 

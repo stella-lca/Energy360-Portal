@@ -10,7 +10,8 @@ const authUtils = () => {
 		handleError,
 		handleSuccess,
 		checkAuth,
-		loadingStart
+		loadingStart,
+		loadingStop
 	} = useContext(ContextState);
 
 	const saveToken = token => {
@@ -133,6 +134,7 @@ const authUtils = () => {
 					msg: "Request Error, Please try it later!"
 				});
 			});
+			loadingStop();
 	};
 
 	const resetPasswordCallback = ({ password, token }) => {

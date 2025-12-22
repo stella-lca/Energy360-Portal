@@ -1,48 +1,50 @@
+@use "variables";
+
 /*           Font Smoothing      */
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6, p, .navbar, .brand, a, .td-name, td, button, input, select, textarea{
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
-    font-family: $font-family-sans-serif;
-    font-weight: $font-weight-light;
+    font-family: variables.$font-family-sans-serif;
+    font-weight: variables.$font-weight-light;
 }
 
 h1, .h1, h2, .h2, h3, .h3, h4, .h4{
-    margin: $margin-large-vertical 0 0;
+    margin: variables.$margin-large-vertical 0 0;
 }
 h1, .h1 {
-    font-size: $font-size-h1;
+    font-size: variables.$font-size-h1;
 }
 h2, .h2{
-    font-size: $font-size-h2;
+    font-size: variables.$font-size-h2;
 }
 h3, .h3{
-    font-size: $font-size-h3;
+    font-size: variables.$font-size-h3;
     line-height: 1.4;
     margin: 20px 0 0px;
 }
 h4, .h4{
-    font-size: $font-size-h4;
+    font-size: variables.$font-size-h4;
     line-height: 1.2em;
 }
 h5, .h5 {
-    font-size: $font-size-h5;
+    font-size: variables.$font-size-h5;
     line-height: 1.4em;
 }
 h6, .h6{
-    font-size: $font-size-h6;
-    font-weight: $font-weight-bold;
+    font-size: variables.$font-size-h6;
+    font-weight: variables.$font-weight-bold;
     text-transform: uppercase;
     line-height: 1.5em;
 }
 p{
-    font-size: $font-paragraph;
-    line-height: $line-height-general;
+    font-size: variables.$font-paragraph;
+    line-height: variables.$line-height-general;
     margin-bottom: 5px;
 }
 
 h1 small, h2 small, h3 small, h4 small, h5 small, h6 small, .h1 small, .h2 small, .h3 small, .h4 small, .h5 small, .h6 small, h1 .small, h2 .small, h3 .small, h4 .small, h5 .small, h6 .small, .h1 .small, .h2 .small, .h3 .small, .h4 .small, .h5 .small, .h6 .small {
-    color: $dark-gray;
-    line-height: $line-height-general;
+    color: variables.$dark-gray;
+    line-height: variables.$line-height-general;
 }
 
 h1 small, h2 small, h3 small, h1 .small, h2 .small, h3 .small {
@@ -56,11 +58,11 @@ h1 small, h2 small, h3 small, h1 .small, h2 .small, h3 .small {
 .footer-big h5,
 .footer-big h4,
 .media .media-heading{
-    font-family: $font-family-sans-serif;;
+    font-family: variables.$font-family-sans-serif;;
 
     &,
     a{
-        color: $card-black-color;
+        color: variables.$card-black-color;
         text-decoration: none;
     }
 }
@@ -68,28 +70,28 @@ h1 small, h2 small, h3 small, h1 .small, h2 .small, h3 .small {
     text-transform: uppercase;
 }
 .description{
-    color: $dark-gray;
+    color: variables.$dark-gray;
 }
 blockquote small{
     font-style: normal;
 }
 .text-muted{
-    color: $medium-gray;
+    color: variables.$medium-gray;
 }
 .text-primary, .text-primary:hover{
-    color: $primary-color !important;
+    color: variables.$primary-color !important;
 }
 .text-info, .text-info:hover{
-    color: $info-color !important;
+    color: variables.$info-color !important;
 }
 .text-success, .text-success:hover{
-    color: $success-color !important;
+    color: variables.$success-color !important;
 }
 .text-warning, .text-warning:hover{
-    color: $warning-color !important;
+    color: variables.$warning-color !important;
 }
 .text-danger, .text-danger:hover{
-    color: $danger-color !important;
+    color: variables.$danger-color !important;
 }
 .glyphicon{
     line-height: 1;
