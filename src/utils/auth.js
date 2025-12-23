@@ -2,6 +2,9 @@ import { useContext } from "react";
 import { ContextState } from "../context";
 import axios from "axios";
 
+
+				console.log("this is new");
+				
 const authUtils = () => {
 	const {
 		handleUserLogin,
@@ -136,7 +139,6 @@ const authUtils = () => {
 				});
 			})
 			.finally(() => {
-				console.log("this is new");
 				if (typeof loadingStop === "function") loadingStop();
 			});
 	};
