@@ -46,3 +46,10 @@ export const loading_start = () => {
 		type: ACTION_TYPES.LOADING_START
 	};
 };
+
+export const loading_stop = () => {
+	return {
+		type: ACTION_TYPES.LOADING_STOP
+	};
+};
+

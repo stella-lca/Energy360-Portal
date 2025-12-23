@@ -5,16 +5,15 @@ const path = require("path");
 const cors = require("cors");
 const session = require("express-session");
 
-require("dotenv").config(); 
+require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT || 5000);
 
 const router = require("./api/routes");
 const { EnvCall } = require("./api/utils/errorTacker");
 
 let dbState = { status: false, message: "DB not initialized yet" };
-
 const db = require("./api/models");
 
 // Cron imports
@@ -24,12 +23,10 @@ const { meterHourlyErrorDataInput, meterReadingHourly } = require("./api/cronjob
 // ---- Helpers ----
 async function initDatabase() {
   try {
-    // Safe check: verify credentials/connection without touching schema
     await db.sequelize.authenticate();
 
-    // Only auto-sync in dev (or if explicitly enabled)
     const isProd = process.env.NODE_ENV === "production";
-    const autoSync = process.env.AUTO_SYNC === "true"; // optional override
+    const autoSync = process.env.AUTO_SYNC === "true";
     if (!isProd || autoSync) {
       await db.sequelize.sync({ alter: false });
     }
@@ -38,7 +35,6 @@ async function initDatabase() {
     dbState.message = "DB connected";
     console.log("DB connected successfully!");
 
-    // Load Env settings (Slack hook etc.)
     await EnvCall();
   } catch (err) {
     dbState.status = false;
@@ -48,14 +44,11 @@ async function initDatabase() {
 }
 
 function anyBodyParser(req, res, next) {
-  const { headers } = req;
-  const contentType = headers["content-type"];
+  const contentType = req.headers["content-type"];
   if (contentType && contentType.includes("xml")) {
     let data = "";
     req.setEncoding("utf8");
-    req.on("data", chunk => {
-      data += chunk;
-    });
+    req.on("data", chunk => (data += chunk));
     req.on("end", () => {
       req.testBody = data;
       next();
@@ -66,8 +59,26 @@ function anyBodyParser(req, res, next) {
 }
 
 // ---- Middleware ----
-app.use(session({ secret: "gReEnConNEct", saveUninitialized: true, resave: true }));
-app.use(cors());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "gReEnConNEct",
+    saveUninitialized: true,
+    resave: true
+  })
+);
+
+// Allow frontend dev server
+const allowedOrigins = [
+  process.env.FRONTEND_ORIGIN || "http://localhost:3000"
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true
+  })
+);
+
 app.use(express.static(path.resolve(__dirname, "dist")));
 app.use(express.static("files"));
 app.use(express.static("log"));
@@ -79,10 +90,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // If you want to run locally without DB, set SKIP_DB=true in .env
 app.use((req, res, next) => {
   if (process.env.SKIP_DB === "true") return next();
-
   if (dbState.status) return next();
 
-  // Don’t spam sync() per request. Just return a clear error.
   return res.status(503).json({
     error: "Database not connected",
     message: dbState.message
@@ -92,7 +101,7 @@ app.use((req, res, next) => {
 // ---- Routes ----
 app.use("/", router);
 
-// React Routing
+// React Routing (only for prod build / dist)
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist/index.html"));
 });
@@ -101,10 +110,8 @@ app.get("*", (req, res) => {
 http.createServer(app).listen(PORT, async () => {
   console.log(`Server running at http://localhost:${PORT}/`);
 
-  // Initialize DB once when server starts
   await initDatabase();
 
-  // Only start cron jobs when DB is connected (or when SKIP_DB=true)
   if (dbState.status || process.env.SKIP_DB === "true") {
     meterReading();
     meterErrorDataInput();

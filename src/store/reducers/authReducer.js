@@ -58,6 +58,11 @@ export const AuthReducer = (state = initialState, action) => {
 				...state,
 				loading: true
 			};
+		case ACTION_TYPES.LOADING_STOP:
+			return {
+				...state,
+				loading: false,
+			};
 		default:
 			return state;
 	}
