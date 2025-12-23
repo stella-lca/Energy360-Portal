@@ -200,11 +200,11 @@ exports.sendForgotEmail = async (req, res) => {
     });
 
     sendEmail({ email, token, res });
-  } else {
-    return res.status(202).send({
-      message: 'User Email Not found.'
-    });
-  }
+    } else {
+      return res.status(202).send({
+        message: 'User Email Not found.'
+      });
+    }
 };
 
 // Forgot password

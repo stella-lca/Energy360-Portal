@@ -115,7 +115,7 @@ const authUtils = () => {
 
 	const forgotPassword = email => {
 		if (typeof loadingStart === "function") loadingStart();
-		
+
 		axios({
 			method: "post",
 			url: "/api/user/forgot-password",
@@ -138,7 +138,6 @@ const authUtils = () => {
 			.finally(() => {
 				if (typeof loadingStop === "function") loadingStop();
 			});
-});
 	};
 
 	const resetPasswordCallback = ({ password, token }) => {
