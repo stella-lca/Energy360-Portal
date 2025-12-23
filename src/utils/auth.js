@@ -11,7 +11,7 @@ const authUtils = () => {
 		handleSuccess,
 		checkAuth,
 		loadingStart,
-		// loadingStop
+		loadingStop
 	} = useContext(ContextState);
 
 	const saveToken = token => {
@@ -136,6 +136,7 @@ const authUtils = () => {
 				});
 			})
 			.finally(() => {
+				console.log("this is new");
 				if (typeof loadingStop === "function") loadingStop();
 			});
 	};

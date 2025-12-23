@@ -734,8 +734,8 @@ const intervalBlockHourlyTest = async (refreshToken, subscriptionId, usagePointI
     if (error && error.payload) {
       const payload = {
         errorMessage:
-          error.error && error.error.message
-            ? error.error.message
+          error.error && typeof error.error === 'object'
+            ? error.error.message || null
             : null,
 
         tokenId: error.payload.tokenId,
