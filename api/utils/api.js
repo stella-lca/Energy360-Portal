@@ -731,13 +731,22 @@ const intervalBlockHourlyTest = async (refreshToken, subscriptionId, usagePointI
   } catch (error) {
     createLogItem(true, 'meterReadingHourly CRON ERROR', "error in meterReadingHourly cron", JSON.stringify(error))
     console.log('meterReadingHourly Cron Error ', error)
-    if (error.payload) {
-      let payload = {
-        errorMessage: error?.error?.message, tokenId: error.payload.tokenId, minDate: error.payload.startDate, maxDate: error.payload.endDate
-      }
-      await db.MeterCronError.create(payload)
+    if (error && error.payload) {
+      const payload = {
+        errorMessage:
+          error.error && error.error.message
+            ? error.error.message
+            : null,
+
+        tokenId: error.payload.tokenId,
+        minDate: error.payload.startDate,
+        maxDate: error.payload.endDate
+      };
+
+      await db.MeterCronError.create(payload);
     }
-    throw error
+
+    throw error;
   }
 }
 
