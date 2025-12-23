@@ -11,7 +11,7 @@ const authUtils = () => {
 		handleSuccess,
 		checkAuth,
 		loadingStart,
-		loadingStop
+		// loadingStop
 	} = useContext(ContextState);
 
 	const saveToken = token => {
@@ -114,7 +114,8 @@ const authUtils = () => {
 	};
 
 	const forgotPassword = email => {
-		loadingStart();
+		if (typeof loadingStart === "function") loadingStart();
+		
 		axios({
 			method: "post",
 			url: "/api/user/forgot-password",
@@ -125,16 +126,19 @@ const authUtils = () => {
 				if (status === 200 && data) {
 					handleSuccess({ status: true, msg: data.message });
 				} else {
-					handleSuccess({ status: false, msg: data.message });
+					handleSuccess({ status: false, msg: data.message || "Request failed" });
 				}
 			})
 			.catch(error => {
 				handleSuccess({
 					status: false,
-					msg: "Request Error, Please try it later!"
+					msg: "Request Error, Please try it later."
 				});
+			})
+			.finally(() => {
+				if (typeof loadingStop === "function") loadingStop();
 			});
-			loadingStop();
+});
 	};
 
 	const resetPasswordCallback = ({ password, token }) => {
