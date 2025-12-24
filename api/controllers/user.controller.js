@@ -188,23 +188,21 @@ exports.checkToken = async (req, res) => {
 exports.sendForgotEmail = async (req, res) => {
   const { email } = req.body;
   let user = await findUser(email);
-  if (user !== undefined) {
 
-    const token = await createJwtToken({
+  if(!user){
+    return res.status(202).send({message:"Email not found."});
+  }
+
+  const token = await createJwtToken({
       userId: user.id,
       email: user.email
     });
 
-    user.update({
+  await user.update({
       password: token
     });
 
-    sendEmail({ email, token, res });
-    } else {
-      return res.status(202).send({
-        message: 'User Email Not found.'
-      });
-    }
+  sendEmail({ email, token, res });
 };
 
 // Forgot password

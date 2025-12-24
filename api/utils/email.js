@@ -1,221 +1,192 @@
+// api/utils/email.js
 const sgMail = require("@sendgrid/mail");
 const { email_body, user_email_body } = require("./body");
-require("dotenv").config();
-var nodemailer = require('nodemailer');
 
-let {
-	APPSETTING_HOST,
-	APPSETTING_ADMIN_EMAIL,
-	APPSETTING_NOREPLY_EMAIL,
-	APPSETTING_SENDGRID_API_KEY
+require("dotenv").config();
+
+const {
+  APPSETTING_HOST,
+  APPSETTING_ADMIN_EMAIL,
+  APPSETTING_NOREPLY_EMAIL,
+  APPSETTING_SENDGRID_API_KEY
 } = process.env;
 
-APPSETTING_SENDGRID_API_KEY = "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"
-sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
-
-try {
-	const devEmail = "stella@cutone.org";
-	APPSETTING_NOREPLY_EMAIL = devEmail;
-
-	if (!APPSETTING_ADMIN_EMAIL) {
-		APPSETTING_ADMIN_EMAIL = devEmail;
-		return;
-	}
-
-	if (!APPSETTING_ADMIN_EMAIL.includes(APPSETTING_ADMIN_EMAIL)) {
-		APPSETTING_ADMIN_EMAIL = APPSETTING_ADMIN_EMAIL + ',' + devEmail;
-	}
-	APPSETTING_ADMIN_EMAIL = APPSETTING_ADMIN_EMAIL.replace(/\s/g, '').split(',');
-} catch (e) {
-
+// --- Validate required env vars (do NOT hardcode keys in code) ---
+if (!APPSETTING_SENDGRID_API_KEY) {
+  console.warn("⚠️ Missing APPSETTING_SENDGRID_API_KEY in environment.");
+} else {
+  sgMail.setApiKey(APPSETTING_SENDGRID_API_KEY);
 }
 
+// Admin emails can be comma-separated
+const adminEmails = (APPSETTING_ADMIN_EMAIL || "")
+  .replace(/\s/g, "")
+  .split(",")
+  .filter(Boolean);
 
+// Fallback "from" address
+const noReplyEmail = APPSETTING_NOREPLY_EMAIL || "no-reply@cutone.org";
 
-const generateEmailBody = token => {
-	const resetPasswordURL = `${APPSETTING_HOST}/reset-password?token=${token}`;
-	return `<style>h2{color:green;}#container{position:relative;padding:20px;margin:20pxauto;max-width:500px;border:3pxsolid#f1f1f1;}.form-group{margin:10px}</style><div id="container"><div class="text-center"><img class="d-blockmx-automb-4" src="https://cutone.org/wp-content/themes/wp_lcassociates/img/GC-logo.PNG" alt="logo" class="d-block"/><div><p>You requested forapassword reset, kindly use this <a href="${resetPasswordURL}">Link</a> to reset your password</p><br></div></div><p>Very Truly Yours,<br>GreenConnect EntrepreneurPortal</p></div>`;
-};
+// --- Helpers ---
+function generateResetEmailHtml(token) {
+  const base = (APPSETTING_HOST || "").replace(/\/$/, "");
+  const resetPasswordURL = `${base}/reset-password?token=${encodeURIComponent(token)}`;
 
+  return `
+    <div style="max-width:560px;margin:0 auto;padding:24px;font-family:Arial,sans-serif">
+      <div style="text-align:center;margin-bottom:20px">
+        <img src="https://cutone.org/wp-content/themes/wp_lcassociates/img/GC-logo.PNG"
+             alt="GreenConnect"
+             style="max-width:180px;height:auto" />
+      </div>
 
+      <h2 style="color:#1b7f3a;margin:0 0 16px">Reset your password</h2>
+
+      <p style="margin:0 0 16px;line-height:1.5">
+        You requested a password reset. Click the link below to set a new password:
+      </p>
+
+      <p style="margin:0 0 20px">
+        <a href="${resetPasswordURL}" style="color:#0b5ed7;text-decoration:underline">
+          Reset Password
+        </a>
+      </p>
+
+      <p style="margin:0;line-height:1.5">
+        If you did not request this, you can ignore this email.
+      </p>
+
+      <p style="margin-top:24px">
+        Very truly yours,<br/>
+        GreenConnect Entrepreneur Portal
+      </p>
+    </div>
+  `;
+}
+
+async function sendViaSendgrid(msg) {
+  if (!APPSETTING_SENDGRID_API_KEY) {
+    throw new Error("SendGrid API key not configured (APPSETTING_SENDGRID_API_KEY).");
+  }
+  return sgMail.send(msg);
+}
+
+// --- Exports used by controllers ---
 exports.sendEmail = async ({ email, token, res }) => {
-	try {
-		const emailBody = generateEmailBody(token);
-		const msg = {
-			to: email,
-			from: APPSETTING_NOREPLY_EMAIL,
-			subject: "GreenConnect - reset your password!",
-			html: emailBody
-		};
-		sgMail
-			.send(msg)
-			.then(msg => {
-				const result = {
-					msg,
-					APPSETTING_HOST,
-					to: email,
-					from: APPSETTING_NOREPLY_EMAIL,
-					sendgrid: APPSETTING_SENDGRID_API_KEY
-				};
-				res.send(result);
-			})
-			.catch(err => {
-				console.log("sendEmail")
-				res.status(404).send(err);
-			});
-	} catch (e) {
-		throw e;
-	}
+  try {
+    const html = generateResetEmailHtml(token);
+
+    const msg = {
+      to: email,
+      from: noReplyEmail,
+      subject: "GreenConnect - reset your password!",
+      html
+    };
+
+    await sendViaSendgrid(msg);
+
+    // IMPORTANT: your frontend expects data.message (see auth.js)
+    return res.status(200).send({ message: "Reset email sent. Please check your inbox." });
+  } catch (err) {
+    console.error("sendEmail error:", err?.response?.body || err);
+    return res.status(500).send({ message: "Failed to send reset email." });
+  }
 };
 
 exports.sendAdminEmail = async ({ content, subject, callback }) => {
-	try {
-		const emailBody = email_body(content);
-		const msg = {
-			to: APPSETTING_ADMIN_EMAIL,
-			from: APPSETTING_NOREPLY_EMAIL,
-			subject: subject,
-			html: emailBody
-		};
-		sgMail
-			.send(msg)
-			.then(msg => {
-				console.log("sendAdminEmail", "true")
+  try {
+    const html = email_body(content);
 
-				if (callback) callback(true);
-				return msg;
-			})
-			.catch(err => {
-				console.log("sendAdminEmail", err)
-				if (callback) callback(err.response.body);
-				return err;
-			});
-	} catch (e) {
-		if (callback) callback(false)
-	}
+    const msg = {
+      to: adminEmails.length ? adminEmails : undefined,
+      from: noReplyEmail,
+      subject: subject || "Greenconnect - Notification",
+      html
+    };
+
+    if (!msg.to) {
+      const e = new Error("APPSETTING_ADMIN_EMAIL not configured.");
+      if (callback) callback(e.message);
+      return e;
+    }
+
+    const result = await sendViaSendgrid(msg);
+    if (callback) callback(true);
+    return result;
+  } catch (err) {
+    console.error("sendAdminEmail error:", err?.response?.body || err);
+    if (callback) callback(err?.response?.body || err.message || false);
+    return err;
+  }
 };
 
 exports.sendUserEmail = async ({ content, subject, callback }) => {
-	try {
-		console.log(content)
-		const emailBody = user_email_body(content);
-		const msg = {
-			to: APPSETTING_ADMIN_EMAIL,
-			from: APPSETTING_NOREPLY_EMAIL,
-			subject: subject,
-			html: emailBody
-		};
-		sgMail
-			.send(msg)
-			.then(msg => {
-				console.log("sendUserEmail", "true")
+  try {
+    const html = user_email_body(content);
 
-				if (callback) callback(true);
-				return msg;
-			})
-			.catch(err => {
-				console.log("sendAdminEmail", err)
-				if (callback) callback(err.response.body);
-				return err;
-			});
-	} catch (e) {
-		console.log("==============")
-		if (callback) callback(false)
-	}
+    const msg = {
+      to: adminEmails.length ? adminEmails : undefined,
+      from: noReplyEmail,
+      subject: subject || "Greenconnect - User Message",
+      html
+    };
+
+    if (!msg.to) {
+      const e = new Error("APPSETTING_ADMIN_EMAIL not configured.");
+      if (callback) callback(e.message);
+      return e;
+    }
+
+    const result = await sendViaSendgrid(msg);
+    if (callback) callback(true);
+    return result;
+  } catch (err) {
+    console.error("sendUserEmail error:", err?.response?.body || err);
+    if (callback) callback(err?.response?.body || err.message || false);
+    return err;
+  }
 };
 
 exports.sendNotifyEmail = async ({ to, subject, content, callback }) => {
-	try {
-		const msg = {
-			to: to || APPSETTING_ADMIN_EMAIL,
-			from: APPSETTING_NOREPLY_EMAIL,
-			subject: subject,
-			html: content
-		};
+  try {
+    const msg = {
+      to: to || (adminEmails.length ? adminEmails : undefined),
+      from: noReplyEmail,
+      subject: subject || "Greenconnect - Notification",
+      html: content
+    };
 
-		sgMail
-			.send(msg)
-			.then(res => {
-				if (callback) callback(true);
-				return res;
-			})
-			.catch(err => {
-				console.log(err.response.body)
-				if (callback) callback(err.response.body);
-				return err;
-			});
-	} catch (e) {
-		callback(false)
-	}
+    if (!msg.to) {
+      const e = new Error("No recipient configured (to or APPSETTING_ADMIN_EMAIL).");
+      if (callback) callback(e.message);
+      return e;
+    }
+
+    const result = await sendViaSendgrid(msg);
+    if (callback) callback(true);
+    return result;
+  } catch (err) {
+    console.error("sendNotifyEmail error:", err?.response?.body || err);
+    if (callback) callback(err?.response?.body || err.message || false);
+    return err;
+  }
 };
 
-const setEmailConfig = async (data) => {
-	return nodemailer.createTransport({
-		// service: 'gmail',
-		// auth: {
-		// 	user: 'shreehariji.test1@gmail.com',
-		// 	pass: 'bmoiwbqgcyvxuhmk'
-		// }
-		host: 'smtp.ethereal.email',
-		port: 587,
-		auth: {
-			user: 'wbrffjoiaczem5pc@ethereal.email',
-			pass: '1kRM18b1dwUa9YzSMJ'
-		}
-	});
+// Optional: keep an error email helper if other code calls it
+exports.errorEmail = async (data) => {
+  try {
+    const msg = {
+      to: adminEmails.length ? adminEmails : undefined,
+      from: noReplyEmail,
+      subject: "Greenconnect - Error",
+      html: `<pre style="white-space:pre-wrap">${String(data)}</pre>`
+    };
 
-}
-
-const sendEmail = async (data, mailOptions) => {
-
-	try {
-
-		// var getEmailData = await getEmailConfig(data);
-		// var transporter = await setEmailConfig(getEmailData);
-		var transporter = await setEmailConfig();
-
-
-		// mailOptions.from = getEmailData.from_email;
-		mailOptions.from = "shreehariji.test1@gmail.com"
-
-		return new Promise((resolve, reject) => {
-			transporter.sendMail(mailOptions, function (error, info) {
-				if (error) {
-					console.log(error);
-					console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-					reject(error)
-				} else {
-					console.log('Email sent: ' + info.response);
-					resolve(true);
-				}
-			});
-		})
-	}
-	catch (e) {
-		console.log(e)
-		throw e;
-	}
-}
-
-
-const errorEmail = async (data) => {
-
-	var mailOptions = {
-		to: "althea.weissnat49@ethereal.email",
-		subject: "Error In Cron",
-		html: data
-	};
-
-	try {
-		await sendEmail(data, mailOptions);
-		return true;
-
-	} catch (e) {
-		console.log(e)
-		throw e
-	}
-}
-
-module.exports = {
-	errorEmail
-}
+    if (!msg.to) return false;
+    await sendViaSendgrid(msg);
+    return true;
+  } catch (err) {
+    console.error("errorEmail error:", err?.response?.body || err);
+    return false;
+  }
+};

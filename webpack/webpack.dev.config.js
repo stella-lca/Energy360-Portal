@@ -14,6 +14,21 @@ const envKeys = Object.keys(env).reduce((prev, next) => {
 module.exports = {
   mode: "development",
   devtool: "inline-source-map",
+
+  devServer: {
+    port: 3000,
+    historyApiFallback: true,
+    hot: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000",
+        changeOrigin: true,
+        secure: false,
+        logLevel: "debug"
+      }
+    }
+  },
+
   module: {
     rules: [
       {
@@ -27,13 +42,14 @@ module.exports = {
       }
     ]
   },
+
   watch: true,
   watchOptions: {
     aggregateTimeout: 600,
     poll: 1000
   },
+
   plugins: [
     new webpack.DefinePlugin(envKeys)
-
   ]
 };
