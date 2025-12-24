@@ -639,3 +639,25 @@
   padding-bottom: 0;
 }
 
+.reset-password .card-signup {
+  border-radius: 14px;
+}
+
+.reset-password-form label {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+
+.btn-back-login {
+  border: 2px solid #adb5bd;   /* neutral gray */
+  color: #495057;
+  background-color: transparent;
+  min-width: 160px;
+}
+
+.btn-back-login:hover {
+  background-color: #f8f9fa;
+  border-color: #6c757d;
+  color: #212529;
+}
