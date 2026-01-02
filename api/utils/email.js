@@ -17,8 +17,8 @@ const {
 } = process.env;
 
 const fromEmail = APPSETTING_NOREPLY_EMAIL || "no-reply@greenconnect.nyc";
-const fromName = EMAIL_FROM_NAME || "GreenConnect Entrepreneur Portal";
-const devMode = String(EMAIL_DEV_MODE || "").toLowerCase() === "true";
+const fromName = APPSETTING_EMAIL_FROM_NAME || "GreenConnect Entrepreneur Portal";
+const devMode = String(APPSETTING_EMAIL_DEV_MODE || "").toLowerCase() === "true";
 
 const adminEmails = (APPSETTING_ADMIN_EMAIL || "")
   .replace(/\s/g, "")
@@ -87,7 +87,7 @@ function normalizeRecipients(to) {
 // ✅ await lives ONLY inside this async function
 async function sendMail({ to, subject, html, text, replyTo }) {
   if (devMode) {
-    console.log("📧 EMAIL_DEV_MODE=true — not sending email.");
+    console.log("📧 APPSETTING_EMAIL_DEV_MODE=true — not sending email.");
     console.log("To:", to);
     console.log("Subject:", subject);
     console.log("HTML preview:", html?.slice?.(0, 200));
