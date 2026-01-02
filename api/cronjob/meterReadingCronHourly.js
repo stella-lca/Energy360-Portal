@@ -13,7 +13,12 @@ const { APPSETTING_SUBSCRIPTION_KEY } = process.env
 const meterReadingHourly = () => {
     // 45 23 * * *
     // */30 * * * *
+
+    
+
+
     cron.schedule('0 3 * * *', async () => {
+        console.log("[CRON][meterReadingHourly] tick", new Date().toISOString());
         console.log('running a task every two minutes');
         createLogItem(true, 'meterReadingHourly', "meterReadingHourly started", "running a task every two minutes  ")
 

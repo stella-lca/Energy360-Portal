@@ -1,23 +1,21 @@
-// api/utils/email.js  (Brevo SMTP via Nodemailer)
-const nodemailer = require("nodemailer");
+// Mailchimp Transactional / Mandrill
 require("dotenv").config();
+
+const mailchimpTx = require("@mailchimp/mailchimp_transactional");
 
 const { email_body, user_email_body } = require("./body");
 
 const {
-  APPSETTING_HOST,
+  APPSETTING_MAILCHIMP_HOST,
   APPSETTING_ADMIN_EMAIL,
   APPSETTING_NOREPLY_EMAIL,
-  BREVO_SMTP_USER,
-  BREVO_SMTP_KEY,
-  BREVO_SMTP_HOST,
-  BREVO_SMTP_PORT,
-  EMAIL_FROM_NAME,
-  EMAIL_DEV_MODE
+  APPSETTING_EMAIL_FROM_NAME,
+  APPSETTING_EMAIL_DEV_MODE,
+
+  // NEW: Mailchimp Transactional
+  APPSETTING_MAILCHIMP_API_KEY
 } = process.env;
 
-const smtpHost = BREVO_SMTP_HOST || "smtp-relay.brevo.com";
-const smtpPort = Number(BREVO_SMTP_PORT || 587);
 const fromEmail = APPSETTING_NOREPLY_EMAIL || "no-reply@greenconnect.nyc";
 const fromName = EMAIL_FROM_NAME || "GreenConnect Entrepreneur Portal";
 const devMode = String(EMAIL_DEV_MODE || "").toLowerCase() === "true";
@@ -32,7 +30,7 @@ function requireEnv(value, name) {
 }
 
 function buildResetUrl(token) {
-  const base = (APPSETTING_HOST || "").replace(/\/$/, "");
+  const base = (APPSETTING_MAILCHIMP_HOST || "").replace(/\/$/, "");
   return `${base}/reset-password?token=${encodeURIComponent(token)}`;
 }
 
@@ -65,23 +63,25 @@ function resetEmailHtml(token) {
   `;
 }
 
-// create transporter lazily (no await at top-level)
-let transporter;
-function getTransporter() {
+// create client lazily (no top-level await)
+let txClient;
+function getTxClient() {
   if (devMode) return null;
+  requireEnv(MAILCHIMP_TX_API_KEY, "MAILCHIMP_TX_API_KEY");
+  if (!txClient) txClient = mailchimpTx(MAILCHIMP_TX_API_KEY);
+  return txClient;
+}
 
-  requireEnv(BREVO_SMTP_USER, "BREVO_SMTP_USER");
-  requireEnv(BREVO_SMTP_KEY, "BREVO_SMTP_KEY");
+function normalizeRecipients(to) {
+  if (!to) return [];
+  if (Array.isArray(to)) return to.filter(Boolean).map((e) => String(e).trim()).filter(Boolean);
 
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: false, // STARTTLS on 587
-      auth: { user: BREVO_SMTP_USER, pass: BREVO_SMTP_KEY }
-    });
-  }
-  return transporter;
+  // allow comma-separated string
+  const s = String(to);
+  return s
+    .split(",")
+    .map((e) => e.trim())
+    .filter(Boolean);
 }
 
 // ✅ await lives ONLY inside this async function
@@ -90,26 +90,34 @@ async function sendMail({ to, subject, html, text, replyTo }) {
     console.log("📧 EMAIL_DEV_MODE=true — not sending email.");
     console.log("To:", to);
     console.log("Subject:", subject);
-    console.log("Reset/HTML preview:", html?.slice?.(0, 200));
+    console.log("HTML preview:", html?.slice?.(0, 200));
     return { devMode: true };
   }
 
-  const tx = getTransporter();
-  return await tx.sendMail({
-    from: `"${fromName}" <${fromEmail}>`,
-    to,
+  const tx = getTxClient();
+
+  const recipients = normalizeRecipients(to);
+  if (!recipients.length) throw new Error("No recipients provided to sendMail().");
+
+  const message = {
+    from_email: fromEmail,
+    from_name: fromName,
     subject,
     html,
     text,
-    replyTo
-  });
+    to: recipients.map((email) => ({ email, type: "to" })),
+    headers: replyTo ? { "Reply-To": replyTo } : undefined
+  };
+
+  // Mailchimp Transactional returns an array of per-recipient results
+  return await tx.messages.send({ message });
 }
 
 // ---- Exported functions used by your app ----
 
 exports.sendEmail = async ({ email, token, res }) => {
   try {
-    requireEnv(APPSETTING_HOST, "APPSETTING_HOST");
+    requireEnv(APPSETTING_MAILCHIMP_HOST, "APPSETTING_HOST");
     if (!email) return res.status(400).send({ message: "Email is required." });
     if (!token) return res.status(400).send({ message: "Token is required." });
 
