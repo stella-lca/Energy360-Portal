@@ -32,18 +32,20 @@ const MainLayout = ({ className, children }) => (
 const SingleLayout = (props) => <>{props.children}</>;
 
 const routes = [
-  { path: "/home", component: Home, className: "home-component", container: "home-layout", layout: MainLayout, exact: false },
-  { path: "/policy", component: Policy, className: "policy-component", container: "single-layout", layout: MainLayout, exact: false },
-  { path: "/terms-of-service", component: Terms, className: "terms-component", container: "single-layout", layout: MainLayout, exact: false },
-  { path: "/scope-selection", component: Scope, className: "scope-component", container: "single-layout", layout: MainLayout, exact: false },
-  { path: "/", component: Login, className: "login-component", layout: SingleLayout, exact: true },
-  { path: "/register", component: Register, className: "login-component", layout: SingleLayout, exact: false },
-  { path: "/profile", component: Profile, className: "profile-component", container: "single-layout", layout: MainLayout, exact: false },
-  { path: "/forgot-password", component: ForgotPassword, className: "forgotpassword-component", layout: SingleLayout, exact: false },
-  { path: "/reset-password", component: ResetPassword, className: "resetpassword-component", layout: SingleLayout, exact: false },
-  { path: "/contactus", component: ContactUS, className: "contactus-component", container: "single-layout", layout: MainLayout, exact: false },
-  { path: "/callback", component: Callback, className: "callback-component", layout: SingleLayout, exact: false }
+  { path: "/home", component: Home, layout: MainLayout },
+  { path: "/policy", component: Policy, layout: MainLayout },
+  { path: "/terms-of-service", component: Terms, layout: MainLayout },
+  { path: "/scope-selection", component: Scope, layout: MainLayout },
+  { path: "/register", component: Register, layout: SingleLayout, exact: true },
+  // "/" MUST ALWAYS BE LAST
+  { path: "/", component: Login, layout: SingleLayout, exact: true },
+  { path: "/profile", component: Profile, layout: MainLayout },
+  { path: "/forgot-password", component: ForgotPassword, layout: SingleLayout },
+  { path: "/reset-password", component: ResetPassword, layout: SingleLayout },
+  { path: "/contactus", component: ContactUS, layout: MainLayout },
+  { path: "/callback", component: Callback, layout: SingleLayout }
 ];
+
 
 const AppRoute = ({
   component: Component,

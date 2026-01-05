@@ -13,3 +13,5 @@ export const REQUEST_SUCCESS = "REQUEST_SUCCESS";
 export const LOADING_START = "LOADING_START";
 
 export const LOADING_STOP = "LOADING_STOP";
+
+export const CLEAR_ERROR = "CLEAR_ERROR";

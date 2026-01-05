@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { Container, Button, Row, Col, Card, Alert } from "reactstrap";
 import { Form } from "tabler-react";
 import Loading from "../components/Loading";
@@ -93,7 +93,8 @@ const Login = () => {
 									Login
 								</Button>
 								<Button
-									href="/register"
+									tag = {Link}
+									to ="/register"
 									block
 									className="btn-round"
 									color="info"
@@ -104,9 +105,10 @@ const Login = () => {
 						</Form>
 						<div className="forgot">
 							<Button
+								tag = {Link}
 								className="btn-link"
 								color="danger"
-								href="/forgot-password"
+								to ="/forgot-password"
 								// onClick={e => e.preventDefault()}
 							>
 								Forgot password?

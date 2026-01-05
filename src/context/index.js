@@ -42,6 +42,9 @@ const ContextProvider = props => {
 		dispatchAuthReducer(ACTIONS.loading_stop(data));
 	};
 
+	const clearError = () => {
+		dispatchAuthReducer(ACTIONS.clear_error());
+	};
 
 	const {
 		is_authenticated: authState,
@@ -66,7 +69,8 @@ const ContextProvider = props => {
 				handleSuccess: data => handleSuccess(data),
 				checkAuth: data => checkAuth(data),
 				loadingStart: () => loadingStart(),
-				loadingStop: () => loadingStop()
+				loadingStop: () => loadingStop(),
+				clearError: () => clearError()
 			}}
 		>
 			{props.children}

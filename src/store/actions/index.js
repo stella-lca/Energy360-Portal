@@ -53,3 +53,6 @@ export const loading_stop = () => {
 	};
 };
 
+export const clear_error = () => ({
+  type: ACTION_TYPES.CLEAR_ERROR
+});
